@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Файлы заголовков">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Файлы ресурсов">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Active_Brick.h" />
+    <ClInclude Include="Ball.h" />
+    <ClInclude Include="Border.h" />
+    <ClInclude Include="Config.h" />
+    <ClInclude Include="Engine.h" />
+    <ClInclude Include="Level.h" />
+    <ClInclude Include="Main.h" />
+    <ClInclude Include="Platform.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="PopCorn.rc">
+      <Filter>Файлы ресурсов</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="small.ico">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+    <Image Include="PopCorn.ico">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Active_Brick.cpp" />
+    <ClCompile Include="Ball.cpp" />
+    <ClCompile Include="Border.cpp" />
+    <ClCompile Include="Config.cpp" />
+    <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="Level.cpp" />
+    <ClCompile Include="Mian.cpp" />
+    <ClCompile Include="Platform.cpp" />
+  </ItemGroup>
+</Project>
