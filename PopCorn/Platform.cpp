@@ -2,8 +2,9 @@
 
 
 AsPlatform::AsPlatform()
-    : X_Pos(100), X_Step(AsConfig::GLOBAL_SCALE), Width(28), Inner_width(21), Platform_Rect(), Prev_Platform_Rect(),
-    Platform_Circle_Pen(), Platform_Inner_Pen(), Platform_Circle_Brush(), Platform_Inner_Brush()
+    : X_Pos(100), X_Step(AsConfig::GLOBAL_SCALE), Width(NORMAL_WIDTH), Inner_width(NORMAL_WIDTH - CIRCLE_SIZE), 
+    Platform_Rect(), Prev_Platform_Rect(), Platform_Circle_Pen(), Platform_Inner_Pen(), Platform_Circle_Brush(), 
+    Platform_Inner_Brush(), Platform_State(EPS_Normal), Meltdown_Y_Pos(0), Rolling_Step(0)
 {
 
 }
@@ -14,14 +15,32 @@ void AsPlatform::Init()
     AsConfig::Create_Pen_Brush(85, 255, 255, Platform_Inner_Pen, Platform_Inner_Brush);
 }
 
-void AsPlatform::Redraw_Platform(HWND hwnd)
+void AsPlatform::Redraw_Platform()
 {
+    HWND hwnd = AsConfig::HWnd;
+
+    int platform_width;
+
     Prev_Platform_Rect = Platform_Rect;
+
+    if (Platform_State == EPS_Roll_In)
+    {
+        platform_width = CIRCLE_SIZE;
+    }
+    else
+    {
+        platform_width = Width;
+    }
 
     Platform_Rect.left = X_Pos * AsConfig::GLOBAL_SCALE;
     Platform_Rect.top = AsConfig::Platform_Y_POS * AsConfig::GLOBAL_SCALE;
-    Platform_Rect.right = Platform_Rect.left + Width * AsConfig::GLOBAL_SCALE;
+    Platform_Rect.right = Platform_Rect.left + platform_width * AsConfig::GLOBAL_SCALE;
     Platform_Rect.bottom = Platform_Rect.top + Height * AsConfig::GLOBAL_SCALE;
+    
+    if (Platform_State == EPS_Meltdown)
+    {
+        Prev_Platform_Rect.bottom = (AsConfig::MAX_X_POS + 1) * AsConfig::GLOBAL_SCALE;
+    }
 
     InvalidateRect(hwnd, &Prev_Platform_Rect, FALSE);
     InvalidateRect(hwnd, &Platform_Rect, FALSE);
@@ -36,26 +55,248 @@ void AsPlatform::Draw(HDC hdc, RECT& paint_area)
         return;
     }
 
+    switch (Platform_State)
+    {
+    case EPS_Normal:
+        Draw_Normal_State(hdc, paint_area);
+        break;
 
+    case EPS_Meltdown:
+        Draw_Meltdown_State(hdc, paint_area);
+        break;
+
+    case EPS_Roll_In:
+        Draw_Roll_In_State(hdc, paint_area);
+        break;
+
+    case EPS_Expand_Roll_In:
+        Draw_Expanding_Roll_In_State(hdc, paint_area);
+        break;
+
+    case EPS_Missing:
+        break;
+
+    default:
+        break;
+    }
+
+    
+}
+
+void AsPlatform::Clear_BG(HDC hdc) // Очищаем фоном прежнее место
+{
     SelectObject(hdc, AsConfig::BG_Pen);
     SelectObject(hdc, AsConfig::BG_Brush);
 
     Rectangle(hdc, Prev_Platform_Rect.left, Prev_Platform_Rect.top,
         Prev_Platform_Rect.right, Prev_Platform_Rect.bottom);
+}
+
+void AsPlatform::Draw_Normal_State(HDC hdc, RECT& paint_area)
+{
+    int x = X_Pos;
+    int y = AsConfig::Platform_Y_POS;
+
+    Clear_BG(hdc);
 
     SelectObject(hdc, Platform_Circle_Pen);
     SelectObject(hdc, Platform_Circle_Brush);
 
-    Ellipse(hdc, X_Pos * AsConfig::GLOBAL_SCALE, AsConfig::Platform_Y_POS * AsConfig::GLOBAL_SCALE, (X_Pos + CIRCLE_SIZE) * AsConfig::GLOBAL_SCALE,
-        (AsConfig::Platform_Y_POS + CIRCLE_SIZE) * AsConfig::GLOBAL_SCALE);
-    Ellipse(hdc, (X_Pos + Inner_width) * AsConfig::GLOBAL_SCALE, AsConfig::Platform_Y_POS * AsConfig::GLOBAL_SCALE,
-        (X_Pos + Inner_width + CIRCLE_SIZE) * AsConfig::GLOBAL_SCALE, (AsConfig::Platform_Y_POS + CIRCLE_SIZE) * AsConfig::GLOBAL_SCALE);
+    Ellipse(hdc, x * AsConfig::GLOBAL_SCALE, y * AsConfig::GLOBAL_SCALE, (x + CIRCLE_SIZE) * AsConfig::GLOBAL_SCALE,
+        (y + CIRCLE_SIZE) * AsConfig::GLOBAL_SCALE);
+    Ellipse(hdc, (x + Inner_width) * AsConfig::GLOBAL_SCALE, y * AsConfig::GLOBAL_SCALE,
+        (x + Inner_width + CIRCLE_SIZE) * AsConfig::GLOBAL_SCALE, (y + CIRCLE_SIZE) * AsConfig::GLOBAL_SCALE);
 
     SelectObject(hdc, Platform_Inner_Pen);
     SelectObject(hdc, Platform_Inner_Brush);
 
-    RoundRect(hdc, (X_Pos + 4) * AsConfig::GLOBAL_SCALE, (AsConfig::Platform_Y_POS + 1) * AsConfig::GLOBAL_SCALE,
-        (X_Pos + 4 + 20) * AsConfig::GLOBAL_SCALE, (AsConfig::Platform_Y_POS + 1 + 5) * AsConfig::GLOBAL_SCALE,
+    RoundRect(hdc, (x + 4) * AsConfig::GLOBAL_SCALE, (y + 1) * AsConfig::GLOBAL_SCALE,
+        (x + 4 + Inner_width - 1) * AsConfig::GLOBAL_SCALE, (y + 1 + 5) * AsConfig::GLOBAL_SCALE,
         3 * AsConfig::GLOBAL_SCALE, 3 * AsConfig::GLOBAL_SCALE);
+}
+
+void AsPlatform::Set_State(EPlatform_State new_state)
+{
+    int len;
+
+    if (Platform_State == new_state)
+    {
+        return;
+    }
+
+    switch (new_state)
+    {
+    case EPS_Missing:
+        break;
+    case EPS_Normal:
+        break;
+    case EPS_Meltdown:
+        Platform_State = EPS_Meltdown;
+
+        len = sizeof(Meltdown_Platform_Y_Pos) / sizeof(Meltdown_Platform_Y_Pos[0]);
+
+        for (int i = 0; i < len; i++)
+        {
+            Meltdown_Platform_Y_Pos[i] = Platform_Rect.bottom;
+        }
+        break;
+    case EPS_Roll_In:
+        X_Pos = AsConfig::MAX_X_POS;
+        Rolling_Step = MAX_ROLLING_STEP - 2;
+        break;
+    default:
+        break;
+    }
+
+    Platform_State = new_state;
+}
+
+void AsPlatform::Act()
+{
+    HWND hwnd = AsConfig::HWnd;
+
+    switch (Platform_State)
+    {
+    case EPS_Meltdown:
+        Redraw_Platform();
+        break;
+
+    case EPS_Roll_In:
+        Redraw_Platform();
+        break;
+
+    case EPS_Expand_Roll_In:
+        Redraw_Platform();
+        break;
+
+    default:
+        break;
+    }
+}
+
+void AsPlatform::Draw_Meltdown_State(HDC hdc, RECT& paint_area)
+{
+    int x, y;
+    int y_offset;
+    int area_width = Width* AsConfig::GLOBAL_SCALE;
+    int area_height = Height * AsConfig::GLOBAL_SCALE + 1;
+    int moved_columns_count = 0;
+    int max_platform_y = AsConfig::MAX_Y_POS * AsConfig::GLOBAL_SCALE + area_height;
+    COLORREF pixel;
+    COLORREF bg_pixel = RGB(AsConfig::BG_Color.R, AsConfig::BG_Color.G, AsConfig::BG_Color.B);
+
+
+    for (int i = 0; i < area_width; i++)
+    {
+        if (Meltdown_Platform_Y_Pos[i] > max_platform_y + 5)
+        {
+            continue;
+        }
+
+        moved_columns_count += 1;
+
+        x = Platform_Rect.left + i;
+        
+        y_offset = AsConfig::Rand(AsConfig::Meltdown_Speed) + 1;
+
+        for (int j = 0; j < area_height; j++)
+        {
+            y = Meltdown_Platform_Y_Pos[i] - j;
+
+            pixel = GetPixel(hdc, x, y);
+            SetPixel(hdc, x, y + y_offset, pixel);
+        }
+
+        for (int j = 0; j < y_offset; j++)
+        {
+            y = Meltdown_Platform_Y_Pos[i] - area_height + 1 + j;
+            SetPixel(hdc, x, y, bg_pixel);
+        }
+
+        Meltdown_Platform_Y_Pos[i] += y_offset;
+    }
+
+    if (moved_columns_count == 0)
+    {
+        Platform_State = EPS_Missing;
+    }
+}
+
+void AsPlatform::Draw_Roll_In_State(HDC hdc, RECT paint_area)
+{
+    int x = X_Pos * AsConfig::GLOBAL_SCALE;
+    int y = AsConfig::Platform_Y_POS * AsConfig::GLOBAL_SCALE;
+    int roller_size = CIRCLE_SIZE * AsConfig::GLOBAL_SCALE;
+    double alpha;
+
+    XFORM xform, old_xform;
+
+    Clear_BG(hdc);
+
+    // 1. Шарик
+    SelectObject(hdc, Platform_Circle_Pen);
+    SelectObject(hdc, Platform_Circle_Brush);
+
+    Ellipse(hdc, x , y , x + roller_size, y + roller_size);
+
+    // 2. Разделительная линия
+
+    SetGraphicsMode(hdc, GM_ADVANCED);
+
+    alpha = -2.0 * M_PI / (double)MAX_ROLLING_STEP * (double)Rolling_Step;
+
+    xform.eM11 = (float)cos(alpha);
+    xform.eM12 = (float)sin(alpha);
+    xform.eM21 = (float)-sin(alpha);
+    xform.eM22 = (float)cos(alpha);
+    xform.eDx  = (float)(x + roller_size / 2);
+    xform.eDy  = (float)(y + roller_size / 2);
+
+    GetWorldTransform(hdc, &old_xform);
+    SetWorldTransform(hdc, &xform);
+
+    SelectObject(hdc, AsConfig::BG_Pen);
+    SelectObject(hdc, AsConfig::BG_Brush);
+
+    Rectangle(hdc, - AsConfig::GLOBAL_SCALE / 2, -roller_size / 2, AsConfig::GLOBAL_SCALE / 2, roller_size / 2);
+
+    SetWorldTransform(hdc, &old_xform);
+
+    Rolling_Step += 1;
+
+    if (Rolling_Step > MAX_ROLLING_STEP)
+    {
+        Rolling_Step -= MAX_ROLLING_STEP;
+    }
+
+    X_Pos -= ROLLING_PLATFORM_SPEED;
+
+    if (X_Pos <= ROLL_IN_PLATFORM_END_X_POS)
+    {
+        X_Pos += ROLLING_PLATFORM_SPEED;
+        Platform_State = EPS_Expand_Roll_In;
+        Inner_width = 1;
+    }    
+}
+
+void AsPlatform::Draw_Expanding_Roll_In_State(HDC hdc, RECT paint_area)
+{
+    Draw_Normal_State(hdc, paint_area);
+
+    X_Pos -= 1;
+
+    Inner_width += 2;
+
+    if (Inner_width >= NORMAL_PLATFORM_INNER_WIDTH)
+    {
+        Inner_width = NORMAL_PLATFORM_INNER_WIDTH;
+        Platform_State = EPS_Ready;
+        Redraw_Platform();
+    }
+}
+
+EPlatform_State AsPlatform::Get_State()
+{
+    return Platform_State;
 }
 

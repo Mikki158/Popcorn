@@ -21,7 +21,7 @@ char ALevel::level_01[AsConfig::LEVEL_HEIGHT][AsConfig::LEVEL_WIDTH] =
 
 ALevel::ALevel()
     :Brick_Pink_Pen(), Brick_Blue_Pen(), Letter_Pen(), Brick_Pink_Brush(), Brick_Blue_Brush(), Level_Rect(), 
-    Active_Brick(EBT_Pink)
+    Active_Brick(EBT_Pink), Has_Floor(false)
 {
 
 }
@@ -40,9 +40,9 @@ void ALevel::Init()
 
 }
 
-void ALevel::Check_Level_Brick_Heat(int& next_y_pos, double& ball_direction)
+void ALevel::Check_Level_Brick_Heat(double& next_y_pos, double& ball_direction)
 {
-    int brick_y_pos = AsConfig::LEVEL_Y_OFFSET + AsConfig::LEVEL_HEIGHT * AsConfig::CELL_HEIGHT;
+    double brick_y_pos = AsConfig::LEVEL_Y_OFFSET + AsConfig::LEVEL_HEIGHT * AsConfig::CELL_HEIGHT;
     for (int i = AsConfig::LEVEL_HEIGHT - 1; i >= 0; i--)
     {
         for (int j = 0; j < AsConfig::LEVEL_WIDTH; j++)
@@ -62,7 +62,7 @@ void ALevel::Check_Level_Brick_Heat(int& next_y_pos, double& ball_direction)
     }
 }
 
-void ALevel::Draw(HDC hdc, RECT& paint_area, HWND hwnd)// вывод всех кирпичей уровня
+void ALevel::Draw(HDC hdc, RECT& paint_area)// вывод всех кирпичей уровня
 {
     RECT intersection_rect;
 

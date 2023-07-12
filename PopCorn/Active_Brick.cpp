@@ -54,8 +54,10 @@ void AActive_Brick::Draw(HDC hdc, RECT& paint_area)
         2 * AsConfig::GLOBAL_SCALE, 2 * AsConfig::GLOBAL_SCALE);
 }
 
-void AActive_Brick::Act(HWND hwnd)
+void AActive_Brick::Act()
 {
+    HWND hwnd = AsConfig::HWnd;
+
     if (Fade_Step < AsConfig::MAX_FADE_STEP - 1)
     {
         Fade_Step += 1;
@@ -65,7 +67,7 @@ void AActive_Brick::Act(HWND hwnd)
 
 unsigned char AActive_Brick::Get_Fading_Channel(unsigned char color, unsigned char bg_color, int step)
 {
-    return color - step * (color - bg_color) / AsConfig::MAX_FADE_STEP - 1;
+    return color - step * (color - bg_color) / (AsConfig::MAX_FADE_STEP - 1);
 }
 
 void AActive_Brick::Get_Fading_Color(const AColor &color, int step, HPEN& pen, HBRUSH &brush)

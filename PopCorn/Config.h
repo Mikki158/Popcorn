@@ -48,21 +48,23 @@ public:
 
     // Platform
     static const int Platform_Y_POS = 185;
+    static const int Meltdown_Speed = 3;
 
 
     // Engine
     static const int GLOBAL_SCALE = 3;
     static const int FPS = 20;
+    static int Current_Timer_Tick;
+    static HWND HWnd;
     static HPEN BG_Pen;
     static HBRUSH BG_Brush;
 
     // Engine
     static const int MAX_X_POS = LEVEL_X_OFFSET + CELL_WIDTH * LEVEL_WIDTH;
-    static const int MAX_Y_POS = 199 - BALL_SIZE;
-
-
+    static const int MAX_Y_POS = 199;
 
     static void Setup_Color();
     static void Create_Pen_Brush(const AColor& color, HPEN& hPen, HBRUSH& hBrush);
     static void Create_Pen_Brush(unsigned char r, unsigned char g, unsigned char b, HPEN& hPen, HBRUSH& hBrush);
+    static int Rand(int range);
 };

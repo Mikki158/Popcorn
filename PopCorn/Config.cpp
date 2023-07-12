@@ -1,7 +1,10 @@
 ﻿#include "Config.h"
 
+HWND AsConfig::HWnd;
 HPEN AsConfig::BG_Pen;
 HBRUSH AsConfig::BG_Brush;
+
+int AsConfig::Current_Timer_Tick = 0;
 
 const AColor AsConfig::BG_Color(0, 0, 0);
 const AColor AsConfig::Pink_Brick_Color(255, 85, 255);
@@ -29,3 +32,9 @@ void AsConfig::Create_Pen_Brush(unsigned char r, unsigned char g, unsigned char 
     hPen = CreatePen(PS_SOLID, 0, RGB(r, g, b));
     hBrush = CreateSolidBrush(RGB(r, g, b));
 }
+
+int AsConfig::Rand(int range)
+{
+    return rand() * range / RAND_MAX;
+}
+

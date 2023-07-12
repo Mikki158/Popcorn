@@ -17,14 +17,16 @@ enum ELetter_Type
 class ALevel
 {
 public:
+    bool Has_Floor;
+
     AActive_Brick Active_Brick;
 
     ALevel();
 
     void Init();
 
-    void Check_Level_Brick_Heat(int& next_y_pos, double& ball_direction);
-    void Draw(HDC hdc, RECT& paint_area, HWND hwnd);
+    void Check_Level_Brick_Heat(double& next_y_pos, double& ball_direction);
+    void Draw(HDC hdc, RECT& paint_area);
 
 private:
 

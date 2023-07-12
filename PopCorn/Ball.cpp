@@ -1,9 +1,12 @@
 ﻿#include "Ball.h"
 
-ABall::ABall()
-    :Ball_Direction(M_PI - M_PI_4), Ball_Pen(), Ball_Brush(), Ball_X_Pos(20), Ball_Y_Pos(170), Ball_Speed(3.0), Ball_Rect(), Prev_Ball_Rect()
-{
+const double ABall::START_BALL_Y_POS = 181.0;
 
+ABall::ABall()
+    :Ball_State(EBS_Normal), Ball_Direction(0), Ball_Pen(), Ball_Brush(), 
+    Ball_X_Pos(0.0), Ball_Y_Pos(START_BALL_Y_POS), Ball_Speed(0.0), Ball_Rect(), Prev_Ball_Rect()
+{
+    Set_State(EBS_Normal, 0);
 }
 
 void ABall::Init()
@@ -11,38 +14,48 @@ void ABall::Init()
     AsConfig::Create_Pen_Brush(255, 255, 255, Ball_Pen, Ball_Brush);
 }
 
+
 void ABall::Draw(HDC hdc, RECT& paint_area)
 {
     RECT intersection_rect;
 
-    if (!IntersectRect(&intersection_rect, &paint_area, &Ball_Rect))
+    if (IntersectRect(&intersection_rect, &paint_area, &Prev_Ball_Rect))
+    {
+        // очищаем фон
+        SelectObject(hdc, AsConfig::BG_Pen);
+        SelectObject(hdc, AsConfig::BG_Brush);
+
+        Ellipse(hdc, Prev_Ball_Rect.left, Prev_Ball_Rect.top, Prev_Ball_Rect.right - 1, Prev_Ball_Rect.bottom - 1);
+    }   
+
+    if (IntersectRect(&intersection_rect, &paint_area, &Ball_Rect))
+    {
+        // рисуем шарик
+        SelectObject(hdc, Ball_Pen);
+        SelectObject(hdc, Ball_Brush);
+
+        Ellipse(hdc, Ball_Rect.left, Ball_Rect.top, Ball_Rect.right - 1, Ball_Rect.bottom - 1);
+    }
+}
+
+void ABall::Move(ALevel* level, int platform_x_pos, int platform_width)
+{
+    HWND hwnd = AsConfig::HWnd;
+
+    double next_x_pos, next_y_pos;
+    double max_x_pos = AsConfig::MAX_X_POS - AsConfig::BALL_SIZE;
+    double max_y_pos = AsConfig::MAX_Y_POS - AsConfig::BALL_SIZE;
+    double platform_y_pos = AsConfig::Platform_Y_POS - AsConfig::BALL_SIZE;
+
+    if (Ball_State != EBS_Normal)
     {
         return;
     }
-    // очищаем фон
-    SelectObject(hdc, AsConfig::BG_Pen);
-    SelectObject(hdc, AsConfig::BG_Brush);
 
-    Ellipse(hdc, Prev_Ball_Rect.left, Prev_Ball_Rect.top, Prev_Ball_Rect.right - 1, Prev_Ball_Rect.bottom - 1);
+    
 
-    // рисуем шарик
-    SelectObject(hdc, Ball_Pen);
-    SelectObject(hdc, Ball_Brush);
-
-    Ellipse(hdc, Ball_Rect.left, Ball_Rect.top, Ball_Rect.right - 1, Ball_Rect.bottom - 1);
-
-}
-
-void ABall::Move(HWND hwnd, ALevel* level, int platform_x_pos, int platform_width)
-{
-    int next_x_pos, next_y_pos;
-    int max_x_pos = AsConfig::MAX_X_POS - AsConfig::BALL_SIZE;
-    int platform_y_pos = AsConfig::Platform_Y_POS - AsConfig::BALL_SIZE;
-
-    Prev_Ball_Rect = Ball_Rect;
-
-    next_x_pos = Ball_X_Pos + (int)(Ball_Speed * cos(Ball_Direction));
-    next_y_pos = Ball_Y_Pos - (int)(Ball_Speed * sin(Ball_Direction));
+    next_x_pos = Ball_X_Pos + (Ball_Speed * cos(Ball_Direction));
+    next_y_pos = Ball_Y_Pos - (Ball_Speed * sin(Ball_Direction));
 
     // отражение шарика от стен
     if (next_x_pos < AsConfig::BORDER_X_OFFSET)
@@ -60,10 +73,21 @@ void ABall::Move(HWND hwnd, ALevel* level, int platform_x_pos, int platform_widt
         next_x_pos = max_x_pos - (next_x_pos - max_x_pos);
         Ball_Direction = M_PI - Ball_Direction;
     }
-    if (next_y_pos > AsConfig::MAX_Y_POS)
+    if (next_y_pos > max_y_pos)
     {
-        next_y_pos = AsConfig::MAX_Y_POS - (next_y_pos - AsConfig::MAX_Y_POS);
-        Ball_Direction = M_PI + (M_PI - Ball_Direction);
+        if (level->Has_Floor)
+        {
+            next_y_pos = max_y_pos - (next_y_pos - max_y_pos);
+            Ball_Direction = -Ball_Direction;
+        }
+        else
+        {
+            if (next_y_pos > max_y_pos + AsConfig::BALL_SIZE * 2)
+            {
+                Ball_State = EBS_Lost;
+            }            
+        }
+        
     }
 
     // отражаем шарик от платформы
@@ -84,11 +108,56 @@ void ABall::Move(HWND hwnd, ALevel* level, int platform_x_pos, int platform_widt
     Ball_X_Pos = next_x_pos;
     Ball_Y_Pos = next_y_pos;
 
-    Ball_Rect.left = Ball_X_Pos * AsConfig::GLOBAL_SCALE;
-    Ball_Rect.top = Ball_Y_Pos * AsConfig::GLOBAL_SCALE;
+    Redraw_Ball();
+}
+
+void ABall::Redraw_Ball()
+{
+    HWND hwnd = AsConfig::HWnd;
+
+    Prev_Ball_Rect = Ball_Rect;
+
+    Ball_Rect.left = (int)(Ball_X_Pos * AsConfig::GLOBAL_SCALE);
+    Ball_Rect.top = (int)(Ball_Y_Pos * AsConfig::GLOBAL_SCALE);
     Ball_Rect.right = Ball_Rect.left + AsConfig::BALL_SIZE * AsConfig::GLOBAL_SCALE;
     Ball_Rect.bottom = Ball_Rect.top + AsConfig::BALL_SIZE * AsConfig::GLOBAL_SCALE;
 
-    InvalidateRect(hwnd, &Ball_Rect, FALSE);
-    InvalidateRect(hwnd, &Prev_Ball_Rect, FALSE);
+    InvalidateRect(AsConfig::HWnd, &Prev_Ball_Rect, FALSE);
+    InvalidateRect(AsConfig::HWnd, &Ball_Rect, FALSE);
+}
+
+void ABall::Set_State(EBall_State new_state, int x_pos)
+{
+    switch (new_state)
+    {
+    case EBS_Normal:
+        Ball_X_Pos = x_pos - AsConfig::BALL_SIZE / 2;
+        Ball_Y_Pos = START_BALL_Y_POS;
+        Ball_Speed = 3.0;
+        Ball_Direction = M_PI - M_PI_4;
+        Redraw_Ball();
+        break;
+
+    case EBS_Lost:
+        Ball_Speed = 0.0;
+        break;
+
+    case EBS_On_Platform:
+        Ball_X_Pos = x_pos - AsConfig::BALL_SIZE / 2;
+        Ball_Y_Pos = START_BALL_Y_POS;
+        Ball_Speed = 0.0;
+        Ball_Direction = M_PI - M_PI_4;
+        Redraw_Ball();
+        break;
+
+    default:
+        break;
+    }
+
+    Ball_State = new_state;
+}
+
+EBall_State ABall::Get_State()
+{
+    return Ball_State;
 }
