@@ -4,7 +4,7 @@
 #include <math.h>
 #include <Windows.h>
 
-#include "Config.h"
+#include "Ball.h"
 
 enum EPlatform_State
 {
@@ -17,7 +17,7 @@ enum EPlatform_State
 
 };
 
-class AsPlatform
+class AsPlatform: public AHit_Checker
 {
 public:
     int X_Pos;
@@ -26,6 +26,8 @@ public:
     int Rolling_Step;
 
     AsPlatform();
+
+    virtual bool Check_Hit(double next_x_pos, double next_y_pos, ABall* ball);
 
     void Init();
 

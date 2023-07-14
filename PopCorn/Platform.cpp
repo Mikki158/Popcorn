@@ -9,6 +9,23 @@ AsPlatform::AsPlatform()
 
 }
 
+bool AsPlatform::Check_Hit(double next_x_pos, double next_y_pos, ABall* ball)
+{
+    // отражаем шарик от платформы
+    if (next_y_pos + ball->RADIUS > AsConfig::Platform_Y_POS)
+    {
+        if (next_x_pos + ball->RADIUS >= X_Pos && next_x_pos - ball->RADIUS <= X_Pos + Width)
+        {
+            ball->Reflect(true);
+            return true;
+        }
+    }
+
+    return false;
+
+}
+
+
 void AsPlatform::Init()
 {
     AsConfig::Create_Pen_Brush(255, 85, 255, Platform_Circle_Pen, Platform_Circle_Brush);

@@ -79,3 +79,43 @@ void AsBorder::Draw(HDC hdc)
         Draw_Element(hdc, 3 + i * 4, 0, true);
     }
 }
+
+bool AsBorder::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball)
+{
+    bool got_hit = false;
+
+    // отражение шарика от стен
+    if (next_x_pos - ball->RADIUS < AsConfig::BORDER_X_OFFSET)
+    {
+        got_hit = true;
+        ball->Reflect(false);
+    }
+    else if (next_y_pos - ball->RADIUS < AsConfig::BORDER_Y_OFFSET)
+    {
+        got_hit = true;
+        ball->Reflect(true);
+    }
+    else if (next_x_pos + ball->RADIUS > AsConfig::MAX_X_POS)
+    {
+        got_hit = true;
+        ball->Reflect(false);
+    }
+    else if (next_y_pos + ball->RADIUS > AsConfig::MAX_Y_POS)
+    {
+        if (AsConfig::Level_Has_Floor)
+        {
+            got_hit = true;
+            ball->Reflect(true);
+        }
+        else
+        {
+            if (next_y_pos + ball->RADIUS > AsConfig::MAX_Y_POS + ball->RADIUS * 4.0)
+            {
+                ball->Set_State(EBS_Lost, next_x_pos);
+            }
+        }
+
+    }
+
+    return got_hit;
+}

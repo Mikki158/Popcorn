@@ -4,8 +4,8 @@
 #include <math.h>
 #include <Windows.h>
 
-#include"Config.h"
-#include"Active_Brick.h"
+#include "Active_Brick.h"
+#include "Ball.h"
 
 enum ELetter_Type
 {
@@ -14,18 +14,16 @@ enum ELetter_Type
     ELT_O
 };
 
-class ALevel
+class ALevel: public AHit_Checker
 {
 public:
-    bool Has_Floor;
-
     AActive_Brick Active_Brick;
 
     ALevel();
 
-    void Init();
+    virtual bool Check_Hit(double next_x_pos, double next_y_pos, ABall* ball);
 
-    void Check_Level_Brick_Heat(double& next_y_pos, double& ball_direction);
+    void Init();
     void Draw(HDC hdc, RECT& paint_area);
 
 private:
@@ -42,4 +40,10 @@ private:
     void Draw_Brick(HDC hdc, int x, int y, EBrick_Type brick_type);
     void Set_Brick_Letter_Colors(bool is_switch_color, HPEN& front_pen, HBRUSH& front_brush, HPEN& back_pen, HBRUSH& back_brush);
     void Draw_Brick_Letter(HDC hdc, int x, int y, EBrick_Type brick_type, ELetter_Type letter_type, int rotation_step);
+    bool Check_Vertical_Hit(double next_x_pos, double next_y_pos, double brick_left_x, double brick_right_x,
+        double brick_top_y, double brick_low_y, int level_x, int level_y, ABall* ball);
+    bool Check_Horizontal_Hit(double next_x_pos, double next_y_pos, double brick_left_x, double brick_right_x,
+        double brick_top_y, double brick_low_y, int level_x, int level_y, ABall* ball);
+    bool Hit_Circle_On_Line(double y, double next_x_pos, double left_x, double right_x, double radius);
+
 };

@@ -31,13 +31,14 @@ public:
     static const int CELL_HEIGHT = 8;
     static const int LEVEL_WIDTH = 12; // ширина уровня в кирпичах
     static const int LEVEL_HEIGHT = 14; // высота уровня в кирпичах
+    static bool Level_Has_Floor;
 
     // Border
     static const int BORDER_X_OFFSET = 6;
     static const int BORDER_Y_OFFSET = 4;
 
     // Ball
-    static const int BALL_SIZE = 4;
+
 
     // Brick
     static const int BRICK_WIDTH = 15;
