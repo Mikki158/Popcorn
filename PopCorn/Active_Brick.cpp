@@ -7,20 +7,14 @@ HPEN AActive_Brick::Fading_Pink_Brick_Pens[AsConfig::MAX_FADE_STEP];
 HBRUSH AActive_Brick::Fading_Pink_Brick_Brushes[AsConfig::MAX_FADE_STEP];
 
 
+//
 AActive_Brick::AActive_Brick(EBrick_Type brick_type)
-    :Fade_Step(0), Brick_Type(brick_type)
+    :Brick_Rect(), Brick_Type(brick_type), Fade_Step(0)
 {
 }
 
-void AActive_Brick::setup_Colors()
-{
-    for (int i = 0; i < AsConfig::MAX_FADE_STEP; i++)
-    {
-        Get_Fading_Color(AsConfig::Blue_Brick_Color, i, Fading_Blue_Brick_Pens[i], Fading_Blue_Brick_Brushes[i]);
-        Get_Fading_Color(AsConfig::Pink_Brick_Color, i, Fading_Pink_Brick_Pens[i], Fading_Pink_Brick_Brushes[i]);
-    }
-}
 
+//
 void AActive_Brick::Draw(HDC hdc, RECT& paint_area)
 {
     HPEN pen = 0;
@@ -54,6 +48,8 @@ void AActive_Brick::Draw(HDC hdc, RECT& paint_area)
         2 * AsConfig::GLOBAL_SCALE, 2 * AsConfig::GLOBAL_SCALE);
 }
 
+
+//
 void AActive_Brick::Act()
 {
     HWND hwnd = AsConfig::HWnd;
@@ -65,11 +61,26 @@ void AActive_Brick::Act()
     }    
 }
 
+
+//
+void AActive_Brick::Setup_Color()
+{
+    for (int i = 0; i < AsConfig::MAX_FADE_STEP; i++)
+    {
+        Get_Fading_Color(AsConfig::Blue_Brick_Color, i, Fading_Blue_Brick_Pens[i], Fading_Blue_Brick_Brushes[i]);
+        Get_Fading_Color(AsConfig::Pink_Brick_Color, i, Fading_Pink_Brick_Pens[i], Fading_Pink_Brick_Brushes[i]);
+    }
+}
+
+
+//
 unsigned char AActive_Brick::Get_Fading_Channel(unsigned char color, unsigned char bg_color, int step)
 {
     return color - step * (color - bg_color) / (AsConfig::MAX_FADE_STEP - 1);
 }
 
+
+//
 void AActive_Brick::Get_Fading_Color(const AColor &color, int step, HPEN& pen, HBRUSH &brush)
 {
     unsigned char r, g, b;

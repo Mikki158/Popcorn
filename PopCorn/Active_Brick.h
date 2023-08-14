@@ -12,7 +12,7 @@ public:
 	void Draw(HDC hdc, RECT& paint_area);
 	void Act();
 
-	static void setup_Colors();
+	static void Setup_Color();
 
 private:
 	static HPEN Fading_Blue_Brick_Pens[AsConfig::MAX_FADE_STEP];

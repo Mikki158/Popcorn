@@ -1,7 +1,7 @@
 ﻿#include "Engine.h"
 
 AsEngine::AsEngine()
-    :Active_Brick(EBT_Pink), Game_State(EGS_Play_Level)
+    :Game_State(EGS_Play_Level)
 {
 
 }
@@ -12,18 +12,19 @@ void AsEngine::Init_Engine(HWND hwnd)// Настройка игры при ст�
 
     //AsConfig::Create_Pen_Brush(AsConfig::BG_Color, BG_Pen, BG_Brush);   
 
-    AActive_Brick::setup_Colors();
+    AActive_Brick::Setup_Color();
 
     
     Level.Init();
     Platform.Init();
     Ball.Init();
     Border.Init();
-
+     
     ABall::Add_Hit_Checker(&Border);
     ABall::Add_Hit_Checker(&Level);
     ABall::Add_Hit_Checker(&Platform);
 
+    Level.Set_Current_Level(ALevel::Level_01);
 
     Ball.Set_State(EBS_Normal, Platform.X_Pos + Platform.Width / 2);
 
@@ -38,11 +39,11 @@ void AsEngine::Draw_Frame(HDC hdc, RECT& paint_area)// отрисовка экр
 {   
     Level.Draw(hdc, paint_area); 
 
-    Ball.Draw(hdc, paint_area);
-
     Border.Draw(hdc);
 
     Platform.Draw(hdc, paint_area);
+
+    Ball.Draw(hdc, paint_area);
     
     //Active_Brick.Draw(hdc, paint_area);
 
@@ -99,6 +100,11 @@ int AsEngine::On_Timer()
 
     switch (Game_State)
     {
+    case EGS_Test_Ball:
+        Ball.Set_For_Test();
+        Game_State = EGS_Play_Level;
+        break;
+
     case EGS_Play_Level:
         Ball.Move();
 
@@ -108,6 +114,10 @@ int AsEngine::On_Timer()
             Platform.Set_State(EPS_Meltdown);
         }
 
+        if (Ball.Is_Test_Finished())
+        {
+            Game_State = EGS_Test_Ball;
+        }
         break;
 
     case EGS_Lost_Ball:

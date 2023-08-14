@@ -33,12 +33,22 @@ public:
     static const int LEVEL_HEIGHT = 14; // высота уровня в кирпичах
     static bool Level_Has_Floor;
 
+    // Engine
+    static const int GLOBAL_SCALE = 3;
+    static const int FPS = 20;
+    static const int MAX_X_POS = LEVEL_X_OFFSET + CELL_WIDTH * LEVEL_WIDTH;
+    static const int MAX_Y_POS = 199;
+    static int Current_Timer_Tick;
+    static HWND HWnd;
+    static HPEN BG_Pen;
+    static HBRUSH BG_Brush;
+
     // Border
     static const int BORDER_X_OFFSET = 6;
     static const int BORDER_Y_OFFSET = 4;
 
     // Ball
-
+    static const double STEP_SIZE;
 
     // Brick
     static const int BRICK_WIDTH = 15;
@@ -52,17 +62,6 @@ public:
     static const int Meltdown_Speed = 3;
 
 
-    // Engine
-    static const int GLOBAL_SCALE = 3;
-    static const int FPS = 20;
-    static int Current_Timer_Tick;
-    static HWND HWnd;
-    static HPEN BG_Pen;
-    static HBRUSH BG_Brush;
-
-    // Engine
-    static const int MAX_X_POS = LEVEL_X_OFFSET + CELL_WIDTH * LEVEL_WIDTH;
-    static const int MAX_Y_POS = 199;
 
     static void Setup_Color();
     static void Create_Pen_Brush(const AColor& color, HPEN& hPen, HBRUSH& hBrush);

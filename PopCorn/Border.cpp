@@ -90,17 +90,20 @@ bool AsBorder::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball)
         got_hit = true;
         ball->Reflect(false);
     }
-    else if (next_y_pos - ball->RADIUS < AsConfig::BORDER_Y_OFFSET)
+
+    if (next_y_pos - ball->RADIUS < AsConfig::BORDER_Y_OFFSET)
     {
         got_hit = true;
         ball->Reflect(true);
     }
-    else if (next_x_pos + ball->RADIUS > AsConfig::MAX_X_POS)
+
+    if (next_x_pos + ball->RADIUS > AsConfig::MAX_X_POS + 1)
     {
         got_hit = true;
         ball->Reflect(false);
     }
-    else if (next_y_pos + ball->RADIUS > AsConfig::MAX_Y_POS)
+
+    if (next_y_pos + ball->RADIUS > AsConfig::MAX_Y_POS)
     {
         if (AsConfig::Level_Has_Floor)
         {

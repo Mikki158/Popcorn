@@ -1,7 +1,9 @@
 ﻿#include "Config.h"
 
 int AsConfig::Current_Timer_Tick = 0;
-bool AsConfig::Level_Has_Floor = false;
+bool AsConfig::Level_Has_Floor = true;
+
+const double AsConfig::STEP_SIZE = 1.0 / GLOBAL_SCALE;
 
 HWND AsConfig::HWnd;
 HPEN AsConfig::BG_Pen;
