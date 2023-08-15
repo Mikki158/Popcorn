@@ -38,24 +38,61 @@ char ALevel::Test_Level[AsConfig::LEVEL_HEIGHT][AsConfig::LEVEL_WIDTH] =
 
 
 ALevel::ALevel()
-    :Brick_Pink_Pen(), Brick_Blue_Pen(), Letter_Pen(), Brick_Pink_Brush(), Brick_Blue_Brush(), Level_Rect()
+    :Level_Rect(), 
+    Active_Bricks_Count(0), Falling_Letters_Count(0)
 {
 
 }
 
 void ALevel::Init()
-{
-    Letter_Pen = CreatePen(PS_SOLID, AsConfig::GLOBAL_SCALE, RGB(255, 255, 255));
-
-    AsConfig::Create_Pen_Brush(AsConfig::Pink_Brick_Color, Brick_Pink_Pen, Brick_Pink_Brush);
-    AsConfig::Create_Pen_Brush(AsConfig::Blue_Brick_Color, Brick_Blue_Pen, Brick_Blue_Brush);
-
+{    
     Level_Rect.left = AsConfig::LEVEL_X_OFFSET * AsConfig::GLOBAL_SCALE;
     Level_Rect.top = AsConfig::LEVEL_Y_OFFSET * AsConfig::GLOBAL_SCALE;
     Level_Rect.right = AsConfig::LEVEL_X_OFFSET + AsConfig::CELL_WIDTH * AsConfig::LEVEL_WIDTH * AsConfig::GLOBAL_SCALE;
     Level_Rect.bottom = AsConfig::LEVEL_Y_OFFSET + AsConfig::CELL_HEIGHT * AsConfig::LEVEL_HEIGHT * AsConfig::GLOBAL_SCALE;
 
     memset(Current_Level, 0, sizeof(Current_Level));
+    memset(Active_Briks, 0, sizeof(Active_Briks));
+    memset(Falling_Letters, 0, sizeof(Falling_Letters));
+}
+
+void ALevel::Act()
+{
+    for (int i = 0; i < AsConfig::Max_Active_Bricks_Count; i++)
+    {
+        if (Active_Briks[i] != 0)
+        {
+            Active_Briks[i]->Act();
+
+            if (Active_Briks[i]->Is_Finished())
+            {
+                Current_Level[Active_Briks[i]->level_y][Active_Briks[i]->level_x] = 0;
+
+                delete Active_Briks[i];
+                Active_Briks[i] = 0;
+                Active_Bricks_Count--;
+            }
+        }            
+    }
+
+    //!!!
+
+    for (int i = 0; i < AsConfig::Max_Falling_Letters_Count; i++)
+    {
+        if (Falling_Letters[i] != 0)
+        {
+            Falling_Letters[i]->Act();
+
+            if (Falling_Letters[i]->Is_Finished())
+            {
+                //Current_Level[Falling_Letters[i]->level_y][Falling_Letters[i]->level_x] = 0;
+
+                delete Falling_Letters[i];
+                Falling_Letters[i] = 0;
+                Falling_Letters_Count--;
+            }
+        }
+    }
 }
 
 void ALevel::Set_Current_Level(char level[AsConfig::LEVEL_HEIGHT][AsConfig::LEVEL_WIDTH])
@@ -120,6 +157,8 @@ bool ALevel::Check_Hit(double next_x_pos, double next_y_pos, ABall* ball)
                     ball->Reflect(false);
                 }
 
+                On_Hit(j, i);
+
                 return true;
             }
             else
@@ -127,11 +166,17 @@ bool ALevel::Check_Hit(double next_x_pos, double next_y_pos, ABall* ball)
                 if (got_horizontal_hit)
                 {
                     ball->Reflect(false);
+
+                    On_Hit(j, i);
+
                     return true;
                 }
                 else if(got_vertical_hit)
                 {
                     ball->Reflect(true);
+
+                    On_Hit(j, i);
+
                     return true;
                 }
             } 
@@ -228,22 +273,118 @@ bool ALevel::Check_Horizontal_Hit(double next_x_pos, double next_y_pos, int leve
     return false;
 }
 
+void ALevel::On_Hit(int brick_x, int brick_y)
+{
+    EBrick_Type brick_type;
+
+    brick_type = (EBrick_Type)Current_Level[brick_y][brick_x];
+
+    if (Add_Falling_Letter(brick_x, brick_y, brick_type))
+        Current_Level[brick_y][brick_x] = EBT_None;
+    else
+        Add_Active_Brick(brick_x, brick_y, brick_type);    
+}
+
+bool ALevel::Add_Falling_Letter(int brick_x, int brick_y, EBrick_Type brick_type)
+{// Создаем падующую букву, если можем
+    
+    int letter_x, letter_y;
+
+    ELetter_Type letter_type;
+    AFalling_Letter* falling_letter;
+
+    if (brick_type == EBT_Blue || brick_type == EBT_Pink)
+    {
+        if (AsConfig::Rand(AsConfig::Hits_Per_Letter) == 0)
+        {
+            if (Falling_Letters_Count < AsConfig::Max_Falling_Letters_Count)
+            {
+                letter_type = ELT_O;
+
+                for (int i = 0; i < AsConfig::Max_Falling_Letters_Count; i++)
+                {
+                    if (Falling_Letters[i] == 0)
+                    {
+                        letter_x = (brick_x * AsConfig::CELL_WIDTH + AsConfig::LEVEL_X_OFFSET) * AsConfig::GLOBAL_SCALE;
+                        letter_y = (brick_y * AsConfig::CELL_HEIGHT + AsConfig::LEVEL_Y_OFFSET) * AsConfig::GLOBAL_SCALE;
+
+                        falling_letter = new AFalling_Letter(brick_type, letter_type, letter_x, letter_y);
+                        Falling_Letters[i] = falling_letter;
+                        Falling_Letters_Count++;
+                        break;
+                    }
+                }
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+void ALevel::Add_Active_Brick(int brick_x, int brick_y, EBrick_Type brick_type)
+{// Создаем активный кирпич, если можем
+    AActive_Brick* active_brick;
+
+    if (Active_Bricks_Count >= AsConfig::Max_Active_Bricks_Count)
+        return;
+
+    switch (brick_type)
+    {
+    case EBT_None:
+        return;
+
+    case EBT_Pink:
+    case EBT_Blue:
+        active_brick = new AActive_Brick(brick_type, brick_x, brick_y);
+        Current_Level[brick_y][brick_x] = EBT_None;
+        break;
+
+    default:
+        return;
+    }
+
+    for (int i = 0; i < AsConfig::Max_Active_Bricks_Count; i++)
+    {
+        if(Active_Briks[i] == 0)
+            Active_Briks[i] = active_brick;
+
+        Active_Bricks_Count++;
+        break;
+    }
+
+    
+}
+
 
 void ALevel::Draw(HDC hdc, RECT& paint_area)// вывод всех кирпичей уровня
 {
     RECT intersection_rect;
 
-    if (!IntersectRect(&intersection_rect, &paint_area, &Level_Rect))
+    if (IntersectRect(&intersection_rect, &paint_area, &Level_Rect))
     {
-        return;
-    }
-    for (int i = 0; i < AsConfig::LEVEL_HEIGHT; i++)
-    {
-        for (int j = 0; j < AsConfig::LEVEL_WIDTH; j++)
+        for (int i = 0; i < AsConfig::LEVEL_HEIGHT; i++)
         {
-            Draw_Brick(hdc, AsConfig::LEVEL_X_OFFSET + (AsConfig::CELL_WIDTH * j),
-                AsConfig::LEVEL_Y_OFFSET + (AsConfig::CELL_HEIGHT * i), (EBrick_Type)Current_Level[i][j]);
+            for (int j = 0; j < AsConfig::LEVEL_WIDTH; j++)
+            {
+                Draw_Brick(hdc, AsConfig::LEVEL_X_OFFSET + (AsConfig::CELL_WIDTH * j),
+                    AsConfig::LEVEL_Y_OFFSET + (AsConfig::CELL_HEIGHT * i), (EBrick_Type)Current_Level[i][j]);
+            }
         }
+
+        for (int i = 0; i < AsConfig::Max_Active_Bricks_Count; i++)
+        {
+            if (Active_Briks[i] != 0)
+                Active_Briks[i]->Draw(hdc, paint_area);
+        }
+    }
+       
+
+    //!!!
+    for (int i = 0; i < AsConfig::Max_Falling_Letters_Count; i++)
+    {
+        if (Falling_Letters[i] != 0)
+            Falling_Letters[i]->Draw(hdc, paint_area);
     }
 }
 
@@ -255,16 +396,18 @@ void ALevel::Draw_Brick(HDC hdc, int x, int y, EBrick_Type brick_type)
     switch (brick_type)
     {
     case EBT_None:
-        return;
+        pen = AsConfig::BG_Pen;
+        brush = AsConfig::BG_Brush;
+        break;
 
     case EBT_Pink:
-        pen = Brick_Pink_Pen;
-        brush = Brick_Pink_Brush;
+        pen = AsConfig::Brick_Pink_Pen;
+        brush = AsConfig::Brick_Pink_Brush;
         break;
 
     case EBT_Blue:
-        pen = Brick_Blue_Pen;
-        brush = Brick_Blue_Brush;
+        pen = AsConfig::Brick_Blue_Pen;
+        brush = AsConfig::Brick_Blue_Brush;
         break;
 
     default:
@@ -275,33 +418,29 @@ void ALevel::Draw_Brick(HDC hdc, int x, int y, EBrick_Type brick_type)
     SelectObject(hdc, pen);
     SelectObject(hdc, brush);
 
-    RoundRect(hdc, x * AsConfig::GLOBAL_SCALE, y * AsConfig::GLOBAL_SCALE, (x + AsConfig::BRICK_WIDTH) * AsConfig::GLOBAL_SCALE,
-        (y + AsConfig::BRICK_HEIGHT) * AsConfig::GLOBAL_SCALE, 2 * AsConfig::GLOBAL_SCALE, 2 * AsConfig::GLOBAL_SCALE);
+    RoundRect(hdc, x * AsConfig::GLOBAL_SCALE, y * AsConfig::GLOBAL_SCALE, (x + AsConfig::BRICK_WIDTH) * AsConfig::GLOBAL_SCALE - 1,
+        (y + AsConfig::BRICK_HEIGHT) * AsConfig::GLOBAL_SCALE - 1, 2 * AsConfig::GLOBAL_SCALE, 2 * AsConfig::GLOBAL_SCALE);
 
 }
 
-void ALevel::Set_Brick_Letter_Colors(bool is_switch_color, HPEN& front_pen, HBRUSH& front_brush, HPEN& back_pen, HBRUSH& back_brush)
+
+
+
+
+AFalling_Letter::AFalling_Letter(EBrick_Type brick_type, ELetter_Type letter_type, int x, int y)
+    :brick_type(brick_type), letter_type(letter_type), X(x), Y(y), Rotation_step(2), 
+    Next_Rotation_Tick(AsConfig::Current_Timer_Tick + Ticks_Per_Step), Got_Hit(false)
 {
-    if (is_switch_color)
-    {
-        front_pen = Brick_Pink_Pen;
-        front_brush = Brick_Pink_Brush;
+    Letter_Cell.left = X;
+    Letter_Cell.top = Y;
+    Letter_Cell.right = Letter_Cell.left + AsConfig::BRICK_WIDTH * AsConfig::GLOBAL_SCALE;
+    Letter_Cell.bottom = Letter_Cell.top + AsConfig::BRICK_HEIGHT * AsConfig::GLOBAL_SCALE;
 
-        back_pen = Brick_Blue_Pen;
-        back_brush = Brick_Blue_Brush;
-    }
-    else
-    {
-        front_pen = Brick_Blue_Pen;
-        front_brush = Brick_Blue_Brush;
-
-        back_pen = Brick_Pink_Pen;
-        back_brush = Brick_Pink_Brush;
-    }
+    Prev_Letter_Cell = Letter_Cell;
 }
 
-void ALevel::Draw_Brick_Letter(HDC hdc, int x, int y, EBrick_Type brick_type, ELetter_Type letter_type, int rotation_step)
-{
+void AFalling_Letter::Draw_Brick_Letter(HDC hdc)
+{// Вывод падающих букв
     double offSet;
     double rotation_angle;
     int brick_Half_height = AsConfig::BRICK_HEIGHT * AsConfig::GLOBAL_SCALE / 2;
@@ -317,52 +456,59 @@ void ALevel::Draw_Brick_Letter(HDC hdc, int x, int y, EBrick_Type brick_type, EL
     }
 
     // корректируем шаг вращения и угол поворота
-    rotation_step = rotation_step % 16;
-    if (rotation_step < 8)
+    Rotation_step = Rotation_step % 16;
+    if (Rotation_step < 8)
     {
-        rotation_angle = 2.0 * M_PI / 16.0 * (double)rotation_step;
+        rotation_angle = 2.0 * M_PI / 16.0 * (double)Rotation_step;
     }
     else
     {
-        rotation_angle = 2.0 * M_PI / 16.0 * (double)(8 - rotation_step);
+        rotation_angle = 2.0 * M_PI / 16.0 * (double)(8 - Rotation_step);
     }
 
-    if (rotation_step > 4 && rotation_step <= 12)
+    if (Rotation_step > 4 && Rotation_step <= 12)
     {
-        switch_color = brick_type == EBT_Blue;
+        if (brick_type == EBT_Pink)
+            switch_color = true;
+        else
+            switch_color = false;
     }
     else
     {
-        switch_color = brick_type == EBT_Pink;
+        if (brick_type == EBT_Blue)
+            switch_color = true;
+        else
+            switch_color = false;
     }
 
     Set_Brick_Letter_Colors(switch_color, front_pen, front_brush, back_pen, back_brush);
 
-    if (rotation_step == 4 || rotation_step == 12)
+    if (Rotation_step == 4 || Rotation_step == 12)
     {
         // выводим фон
         SelectObject(hdc, back_pen);
         SelectObject(hdc, back_brush);
 
 
-        Rectangle(hdc, x, y + brick_Half_height - AsConfig::GLOBAL_SCALE, x + AsConfig::BRICK_WIDTH * AsConfig::GLOBAL_SCALE, y + brick_Half_height);
+        Rectangle(hdc, X, Y + brick_Half_height - AsConfig::GLOBAL_SCALE, 
+            X + AsConfig::BRICK_WIDTH * AsConfig::GLOBAL_SCALE, Y + brick_Half_height);
 
         // выводим передний план
         SelectObject(hdc, front_pen);
         SelectObject(hdc, front_brush);
 
-        Rectangle(hdc, x, y + brick_Half_height, x + AsConfig::BRICK_WIDTH * AsConfig::GLOBAL_SCALE, y + brick_Half_height + AsConfig::GLOBAL_SCALE);
+        Rectangle(hdc, X, Y + brick_Half_height, 
+            X + AsConfig::BRICK_WIDTH * AsConfig::GLOBAL_SCALE, Y + brick_Half_height + AsConfig::GLOBAL_SCALE);
     }
     else
     {
-        SetGraphicsMode(hdc, GM_ADVANCED);
 
         xForm.eM11 = 1.0;
         xForm.eM12 = 0.0;
         xForm.eM21 = 0.0;
         xForm.eM22 = (float)-cos(rotation_angle);
-        xForm.eDx = (float)x;
-        xForm.eDy = (float)y + (float)(brick_Half_height);
+        xForm.eDx = (float)X;
+        xForm.eDy = (float)Y + (float)(brick_Half_height);
 
         GetWorldTransform(hdc, &old_xForm);
         SetWorldTransform(hdc, &xForm);
@@ -383,11 +529,11 @@ void ALevel::Draw_Brick_Letter(HDC hdc, int x, int y, EBrick_Type brick_type, EL
 
         Rectangle(hdc, 0, -brick_Half_height, AsConfig::BRICK_WIDTH * AsConfig::GLOBAL_SCALE, brick_Half_height);
 
-        if (rotation_step > 4 && rotation_step <= 12)
+        if (Rotation_step > 4 && Rotation_step <= 12)
         {
             if (letter_type == ELT_O)
             {
-                SelectObject(hdc, Letter_Pen);
+                SelectObject(hdc, AsConfig::Letter_Pen);
                 Ellipse(hdc, 0 + 5 * AsConfig::GLOBAL_SCALE, -5 * AsConfig::GLOBAL_SCALE / 2,
                     0 + 10 * AsConfig::GLOBAL_SCALE, 5 * AsConfig::GLOBAL_SCALE / 2);
             }
@@ -396,4 +542,70 @@ void ALevel::Draw_Brick_Letter(HDC hdc, int x, int y, EBrick_Type brick_type, EL
     }
 }
 
+void AFalling_Letter::Set_Brick_Letter_Colors(bool is_switch_color, HPEN& front_pen, HBRUSH& front_brush, HPEN& back_pen, HBRUSH& back_brush)
+{
+    if (is_switch_color)
+    {
+        front_pen = AsConfig::Brick_Pink_Pen;
+        front_brush = AsConfig::Brick_Pink_Brush;
 
+        back_pen = AsConfig::Brick_Blue_Pen;
+        back_brush = AsConfig::Brick_Blue_Brush;
+    }
+    else
+    {
+        front_pen = AsConfig::Brick_Blue_Pen;
+        front_brush = AsConfig::Brick_Blue_Brush;
+
+        back_pen = AsConfig::Brick_Pink_Pen;
+        back_brush = AsConfig::Brick_Pink_Brush;
+    }
+}
+
+void AFalling_Letter::Draw(HDC hdc, RECT& paint_area)
+{
+    RECT intersection_rect;
+
+    if (IntersectRect(&intersection_rect, &paint_area, &Prev_Letter_Cell))
+    {
+        // очищаем фон
+        SelectObject(hdc, AsConfig::BG_Pen);
+        SelectObject(hdc, AsConfig::BG_Brush);
+
+        Rectangle(hdc, Prev_Letter_Cell.left, Prev_Letter_Cell.top, Prev_Letter_Cell.right, Prev_Letter_Cell.bottom);
+    }
+
+    if(IntersectRect(&intersection_rect, &paint_area, &Letter_Cell))
+        Draw_Brick_Letter(hdc);
+}
+
+
+//
+void AFalling_Letter::Act()
+{
+    Prev_Letter_Cell = Letter_Cell;
+
+    Y += AsConfig::GLOBAL_SCALE;
+
+    Letter_Cell.top += AsConfig::GLOBAL_SCALE;
+    Letter_Cell.bottom += AsConfig::GLOBAL_SCALE;
+
+    if (AsConfig::Current_Timer_Tick >= Next_Rotation_Tick)
+    {
+        Rotation_step++;
+
+        Next_Rotation_Tick += Ticks_Per_Step;
+    }
+    
+    InvalidateRect(AsConfig::HWnd, &Prev_Letter_Cell, FALSE);
+    InvalidateRect(AsConfig::HWnd, &Letter_Cell, FALSE);
+}
+
+bool AFalling_Letter::Is_Finished()
+{
+
+    if (Got_Hit || Letter_Cell.top >= AsConfig::MAX_Y_POS * AsConfig::GLOBAL_SCALE)
+        return true;
+    else
+        return false;
+}

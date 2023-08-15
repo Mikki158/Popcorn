@@ -37,23 +37,41 @@ void AsEngine::Init_Engine(HWND hwnd)// Настройка игры при ст�
 
 void AsEngine::Draw_Frame(HDC hdc, RECT& paint_area)// отрисовка экрана игры
 {   
+    COLORREF pixel;
+    SetGraphicsMode(hdc, GM_ADVANCED);
+
+
     Level.Draw(hdc, paint_area); 
-
+    
     Border.Draw(hdc);
-
+    
     Platform.Draw(hdc, paint_area);
-
+    
     Ball.Draw(hdc, paint_area);
     
-    //Active_Brick.Draw(hdc, paint_area);
 
-    //Draw_Brick_Letter(hdc, 5);
 
-    /*for (int i = 0; i < 16; i++)
-    {
-        Draw_Brick_Letter(hdc, 20 + i * CELL_WIDTH * GLOBAL_SCALE, 100, EBT_Blue, ELT_O, i);
-        Draw_Brick_Letter(hdc, 20 + i * CELL_WIDTH * GLOBAL_SCALE, 130, EBT_Pink, ELT_O, i);
-    }*/
+    //for (int i = 0; i < 84 * 21 * 100; i++)
+    //{
+    //    pixel = GetPixel(hdc, 100, 100);
+    //    SetPixel(hdc, 100, 100, pixel);
+    //}
+
+    //for (int i = 0; i < 84 * 100; i++)
+    //{
+    //    MoveToEx(hdc, 100, 555, 0);
+    //
+    //    SelectObject(hdc, AsConfig::BG_Pen);
+    //    LineTo(hdc, 100, 557);
+    //
+    //    SelectObject(hdc, AsConfig::Brick_Blue_Pen);
+    //    LineTo(hdc, 100, 572);
+    //
+    //    SelectObject(hdc, AsConfig::BG_Pen);
+    //    LineTo(hdc, 100, 575);
+    //}
+    //
+    //int b = 0;
 }
 
 int AsEngine::On_Key_Down(EKey_Type key_type)
@@ -141,7 +159,7 @@ int AsEngine::On_Timer()
     }
 
 
-    //Level.Active_Brick.Act();
+    Level.Act();
     
     //if (AsConfig::Current_Timer_Tick % 10 == 0)
     {

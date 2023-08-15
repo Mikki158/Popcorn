@@ -22,12 +22,12 @@ void AsBorder::Draw_Element(HDC hdc, int x, int y, bool top_border)
     if (top_border)
     {
         Rectangle(hdc, x * AsConfig::GLOBAL_SCALE, (y + 1) * AsConfig::GLOBAL_SCALE,
-            (x + 4) * AsConfig::GLOBAL_SCALE, (y + 4) * AsConfig::GLOBAL_SCALE);
+            (x + 4) * AsConfig::GLOBAL_SCALE - 1, (y + 4) * AsConfig::GLOBAL_SCALE) - 1;
     }
     else
     {
         Rectangle(hdc, (x + 1) * AsConfig::GLOBAL_SCALE, y * AsConfig::GLOBAL_SCALE,
-            (x + 4) * AsConfig::GLOBAL_SCALE, (y + 4) * AsConfig::GLOBAL_SCALE);
+            (x + 4) * AsConfig::GLOBAL_SCALE - 1, (y + 4) * AsConfig::GLOBAL_SCALE) - 1;
     }
 
     // белая кайма
@@ -37,12 +37,12 @@ void AsBorder::Draw_Element(HDC hdc, int x, int y, bool top_border)
     if (top_border)
     {
         Rectangle(hdc, x * AsConfig::GLOBAL_SCALE, y * AsConfig::GLOBAL_SCALE,
-            (x + 4) * AsConfig::GLOBAL_SCALE, (y + 1) * AsConfig::GLOBAL_SCALE);
+            (x + 4) * AsConfig::GLOBAL_SCALE - 1, (y + 1) * AsConfig::GLOBAL_SCALE - 1);
     }
     else
     {
         Rectangle(hdc, x * AsConfig::GLOBAL_SCALE, y * AsConfig::GLOBAL_SCALE,
-            (x + 1) * AsConfig::GLOBAL_SCALE, (y + 4) * AsConfig::GLOBAL_SCALE);
+            (x + 1) * AsConfig::GLOBAL_SCALE - 1, (y + 4) * AsConfig::GLOBAL_SCALE - 1);
     }
 
     // перфорация
@@ -52,12 +52,12 @@ void AsBorder::Draw_Element(HDC hdc, int x, int y, bool top_border)
     if (top_border)
     {
         Rectangle(hdc, (x + 2) * AsConfig::GLOBAL_SCALE, (y + 2) * AsConfig::GLOBAL_SCALE,
-            (x + 3) * AsConfig::GLOBAL_SCALE, (y + 3) * AsConfig::GLOBAL_SCALE);
+            (x + 3) * AsConfig::GLOBAL_SCALE - 1, (y + 3) * AsConfig::GLOBAL_SCALE - 1);
     }
     else
     {
         Rectangle(hdc, (x + 2) * AsConfig::GLOBAL_SCALE, (y + 1) * AsConfig::GLOBAL_SCALE,
-            (x + 3) * AsConfig::GLOBAL_SCALE, (y + 2) * AsConfig::GLOBAL_SCALE);
+            (x + 3) * AsConfig::GLOBAL_SCALE - 1, (y + 2) * AsConfig::GLOBAL_SCALE - 1);
     }
 
 }

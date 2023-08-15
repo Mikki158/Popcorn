@@ -7,7 +7,15 @@ enum EBrick_Type
     EBT_None,
 
     EBT_Pink,
-    EBT_Blue
+    EBT_Blue,
+    EBT_Unbreakable,
+    EBT_Multihit_1,
+    EBT_Multihit_2,
+    EBT_Multihit_3,
+    EBT_Multihit_4,
+    EBT_Parachute,
+    EBT_Teleport,
+    EBT_Ad
 };
 
 class AColor;
@@ -54,8 +62,15 @@ public:
     static const int BRICK_WIDTH = 15;
     static const int BRICK_HEIGHT = 7;
     static const int MAX_FADE_STEP = 40;
+    static const int Max_Active_Bricks_Count = 10;
+    static const int Max_Falling_Letters_Count = 10;
+    static const int Hits_Per_Letter = 1; // Вероятность выбить букву = 1.0 / Hits_Per_Letter
     
     static const AColor Pink_Brick_Color, Blue_Brick_Color, BG_Color;
+
+    static HPEN Brick_Pink_Pen, Brick_Blue_Pen, Letter_Pen;
+    static HBRUSH Brick_Pink_Brush, Brick_Blue_Brush;
+
 
     // Platform
     static const int Platform_Y_POS = 185;
