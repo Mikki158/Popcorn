@@ -1,3 +1,8 @@
 ﻿  Engine.cpp
-D:\Work\PopCornProject\PopCorn\Popcorn\PopCorn\Engine.cpp(40,14): warning C4101: 'pixel': unreferenced local variable
+D:\Work\PopCornProject\PopCorn\Popcorn\PopCorn\Engine.cpp(166,29): warning C4101: 'platform_rect': unreferenced local variable
+D:\Work\PopCornProject\PopCorn\Popcorn\PopCorn\Engine.cpp(166,10): warning C4101: 'intersection_rect': unreferenced local variable
+D:\Work\PopCornProject\PopCorn\Popcorn\PopCorn\Engine.cpp(166,44): warning C4101: 'falling_letter_rect': unreferenced local variable
+  Level.cpp
+  Mian.cpp
+  Generating Code...
   PopCorn.vcxproj -> D:\Work\PopCornProject\PopCorn\Popcorn\Debug\PopCorn.exe

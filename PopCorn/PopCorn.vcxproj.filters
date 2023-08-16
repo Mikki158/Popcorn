@@ -28,6 +28,7 @@
     <ClInclude Include="Level.h" />
     <ClInclude Include="Main.h" />
     <ClInclude Include="Platform.h" />
+    <ClInclude Include="Falling_Letter.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="PopCorn.rc">
@@ -51,5 +52,6 @@
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="Mian.cpp" />
     <ClCompile Include="Platform.cpp" />
+    <ClCompile Include="Falling_Letter.cpp" />
   </ItemGroup>
 </Project>

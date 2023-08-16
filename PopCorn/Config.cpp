@@ -16,6 +16,11 @@ const AColor AsConfig::BG_Color(0, 0, 0);
 const AColor AsConfig::Pink_Brick_Color(255, 85, 255);
 const AColor AsConfig::Blue_Brick_Color(85, 255, 255);
 
+int AColor::Get_RGB() const
+{
+    return RGB(R, G, B);
+}
+
 AColor::AColor(unsigned char r, unsigned char g, unsigned char b)
     :R(r), G(g), B(b)
 {

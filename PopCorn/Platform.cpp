@@ -4,9 +4,16 @@
 AsPlatform::AsPlatform()
     : X_Pos(100), X_Step(AsConfig::GLOBAL_SCALE), Width(NORMAL_WIDTH), Inner_width(NORMAL_WIDTH - CIRCLE_SIZE), 
     Platform_Rect(), Prev_Platform_Rect(), Platform_Circle_Pen(), Platform_Inner_Pen(), Platform_Circle_Brush(), 
-    Platform_Inner_Brush(), Platform_State(EPS_Normal), Meltdown_Y_Pos(0), Rolling_Step(0)
+    Platform_Inner_Brush(), Platform_State(EPS_Normal), Meltdown_Y_Pos(0), Rolling_Step(0), Normal_Platform_Image(nullptr),
+    Normal_Platform_Image_Width(0), Normal_Platform_Image_Height(0), Platform_Circle_Pen_Color(255, 85, 255), 
+    Platform_Inner_Pen_Color(85, 255, 255)
 {
 
+}
+
+AsPlatform::~AsPlatform()
+{
+    delete[] Normal_Platform_Image;
 }
 
 bool AsPlatform::Check_Hit(double next_x_pos, double next_y_pos, ABall* ball)
@@ -106,8 +113,8 @@ bool AsPlatform::Reflect_On_Circle(double next_x_pos, double next_y_pos, double 
 
 void AsPlatform::Init()
 {
-    AsConfig::Create_Pen_Brush(255, 85, 255, Platform_Circle_Pen, Platform_Circle_Brush);
-    AsConfig::Create_Pen_Brush(85, 255, 255, Platform_Inner_Pen, Platform_Inner_Brush);
+    AsConfig::Create_Pen_Brush(Platform_Circle_Pen_Color, Platform_Circle_Pen, Platform_Circle_Brush);
+    AsConfig::Create_Pen_Brush(Platform_Inner_Pen_Color, Platform_Inner_Pen, Platform_Inner_Brush);
 }
 
 void AsPlatform::Redraw_Platform()
@@ -189,11 +196,13 @@ void AsPlatform::Clear_BG(HDC hdc) // Очищаем фоном прежнее �
 
 void AsPlatform::Draw_Normal_State(HDC hdc, RECT& paint_area)
 {
+    int offset = 0;
     int x = X_Pos;
     int y = AsConfig::Platform_Y_POS;
 
     Clear_BG(hdc);
 
+    // Рисуем боковые шарики
     SelectObject(hdc, Platform_Circle_Pen);
     SelectObject(hdc, Platform_Circle_Brush);
 
@@ -202,12 +211,32 @@ void AsPlatform::Draw_Normal_State(HDC hdc, RECT& paint_area)
     Ellipse(hdc, (x + Inner_width) * AsConfig::GLOBAL_SCALE, y * AsConfig::GLOBAL_SCALE,
         (x + Inner_width + CIRCLE_SIZE) * AsConfig::GLOBAL_SCALE - 1, (y + CIRCLE_SIZE) * AsConfig::GLOBAL_SCALE - 1);
 
+    // Рисуем среднюю платформу
     SelectObject(hdc, Platform_Inner_Pen);
     SelectObject(hdc, Platform_Inner_Brush);
 
     RoundRect(hdc, (x + 4) * AsConfig::GLOBAL_SCALE, (y + 1) * AsConfig::GLOBAL_SCALE,
         (x + 4 + Inner_width - 1) * AsConfig::GLOBAL_SCALE - 1, (y + 1 + 5) * AsConfig::GLOBAL_SCALE - 1,
         3 * AsConfig::GLOBAL_SCALE, 3 * AsConfig::GLOBAL_SCALE);
+
+    x *= AsConfig::GLOBAL_SCALE;
+    y *= AsConfig::GLOBAL_SCALE;
+
+    if (Normal_Platform_Image == nullptr)
+    {
+        Normal_Platform_Image_Width = Width * AsConfig::GLOBAL_SCALE;
+        Normal_Platform_Image_Height = Height * AsConfig::GLOBAL_SCALE;
+
+        Normal_Platform_Image = new int[Normal_Platform_Image_Width * Normal_Platform_Image_Height];
+
+        for (int i = 0; i < Normal_Platform_Image_Height; i++)
+        {
+            for (int j = 0; j < Normal_Platform_Image_Width; j++)
+            {
+                Normal_Platform_Image[offset++] = GetPixel(hdc, x + j, y + i);
+            }
+        }
+    }
 }
 
 void AsPlatform::Set_State(EPlatform_State new_state)
@@ -232,7 +261,7 @@ void AsPlatform::Set_State(EPlatform_State new_state)
 
         for (int i = 0; i < len; i++)
         {
-            Meltdown_Platform_Y_Pos[i] = Platform_Rect.bottom;
+            Meltdown_Platform_Y_Pos[i] = Platform_Rect.top;
         }
         break;
     case EPS_Roll_In:
@@ -269,19 +298,59 @@ void AsPlatform::Act()
     }
 }
 
+void AsPlatform::Move(bool to_left)
+{
+    if (Platform_State != EPS_Normal)
+        return;
+
+    if (to_left)
+    {
+        X_Pos -= X_Step;
+
+        if (X_Pos <= AsConfig::BORDER_X_OFFSET)
+        {
+            X_Pos = AsConfig::BORDER_X_OFFSET;
+        }
+
+        Redraw_Platform();
+    }
+    else
+    {
+        X_Pos += X_Step;
+
+        if (X_Pos >= AsConfig::MAX_X_POS - Width + 1)
+        {
+            X_Pos = AsConfig::MAX_X_POS - Width + 1;
+        }
+
+        Redraw_Platform();
+    }
+}
+
+bool AsPlatform::Hit_by(AFalling_Letter* falling_letter)
+{
+    RECT intersection_rect, falling_letter_rect;
+
+    falling_letter->Get_Letter_Cell(falling_letter_rect);
+
+    if (IntersectRect(&intersection_rect, &falling_letter_rect, &Platform_Rect))
+        return true;
+    else
+        return false;
+}
+
 void AsPlatform::Draw_Meltdown_State(HDC hdc, RECT& paint_area)
 {
-    int x, y;
+    int x, y, j;
     int y_offset;
-    int area_width = Width* AsConfig::GLOBAL_SCALE;
-    int area_height = Height * AsConfig::GLOBAL_SCALE + 1;
+    int stroke_len;
     int moved_columns_count = 0;
-    int max_platform_y = AsConfig::MAX_Y_POS * AsConfig::GLOBAL_SCALE + area_height;
-    COLORREF pixel;
+    int max_platform_y = (AsConfig::MAX_Y_POS + 1)* AsConfig::GLOBAL_SCALE;
+    HPEN color_pen;
     COLORREF bg_pixel = RGB(AsConfig::BG_Color.R, AsConfig::BG_Color.G, AsConfig::BG_Color.B);
 
 
-    for (int i = 0; i < area_width; i++)
+    for (int i = 0; i < Normal_Platform_Image_Width; i++)
     {
         if (Meltdown_Platform_Y_Pos[i] > max_platform_y + 5)
         {
@@ -294,19 +363,26 @@ void AsPlatform::Draw_Meltdown_State(HDC hdc, RECT& paint_area)
         
         y_offset = AsConfig::Rand(AsConfig::Meltdown_Speed) + 1;
 
-        for (int j = 0; j < area_height; j++)
-        {
-            y = Meltdown_Platform_Y_Pos[i] - j;
+        j = 0;
+        y = Meltdown_Platform_Y_Pos[i];
 
-            pixel = GetPixel(hdc, x, y);
-            SetPixel(hdc, x, y + y_offset, pixel);
+        MoveToEx(hdc, x, y, 0);
+
+        // Рисуем последовательность вертикальных штрихов разного цвета (согласно прообразу, сохраненному в Normal_Platform_Image)
+        while (Get_Platform_Image_Stroke_Color(i, j, color_pen, stroke_len))
+        {
+            SelectObject(hdc, color_pen);
+            LineTo(hdc, x, y + stroke_len);
+
+            y += stroke_len;
+            j += stroke_len;
         }
 
-        for (int j = 0; j < y_offset; j++)
-        {
-            y = Meltdown_Platform_Y_Pos[i] - area_height + 1 + j;
-            SetPixel(hdc, x, y, bg_pixel);
-        }
+        // Стираем фоном пиксели над штрихом
+        y = Meltdown_Platform_Y_Pos[i];
+        MoveToEx(hdc, x, y, 0);
+        SelectObject(hdc, AsConfig::BG_Pen);
+        LineTo(hdc, x, y + y_offset);
 
         Meltdown_Platform_Y_Pos[i] += y_offset;
     }
@@ -315,6 +391,55 @@ void AsPlatform::Draw_Meltdown_State(HDC hdc, RECT& paint_area)
     {
         Platform_State = EPS_Missing;
     }
+}
+
+bool AsPlatform::Get_Platform_Image_Stroke_Color(int x, int y, HPEN &color_pen, int &stroke_len)
+{// Вычисляет длину очередного вертикального штриха
+    int offset = y * Normal_Platform_Image_Width + x; // Позиция в массиве Normal_Platform_Image_Height соответствующая смещению (x, y)
+    int color;  
+
+    stroke_len = 0;
+
+    if (y >= Normal_Platform_Image_Height)
+        return false;
+
+    for (int i = y; i < Normal_Platform_Image_Height; i++)
+    {
+        if (i == y)
+        {
+            color = Normal_Platform_Image[offset];
+            stroke_len = 1;
+        }
+        else
+        {
+            if (color == Normal_Platform_Image[offset])
+                stroke_len++;
+            else
+                break;
+        }
+
+        offset += Normal_Platform_Image_Width; // Переходим на строку ниже
+    }
+
+    if (color == Platform_Circle_Pen_Color.Get_RGB())
+        color_pen = Platform_Circle_Pen;
+    else if (color == Platform_Inner_Pen_Color.Get_RGB())
+        color_pen = Platform_Inner_Pen;
+    else if (color == AsConfig::BG_Color.Get_RGB())
+        color_pen = AsConfig::BG_Pen;
+    else
+        color_pen = 0;
+
+    return true;
+
+    //switch (color)
+    //{
+    //case BG:
+    //    color_pen = AsConfig::BG_Pen;
+    //    break;
+    //default:
+    //    break;
+    //}
 }
 
 void AsPlatform::Draw_Roll_In_State(HDC hdc, RECT paint_area)

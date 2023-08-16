@@ -44,7 +44,7 @@ void AActive_Brick::Draw(HDC hdc, RECT& paint_area)
     SelectObject(hdc, brush);
  
 
-    RoundRect(hdc, Brick_Rect.left, Brick_Rect.top, Brick_Rect.right, Brick_Rect.bottom,
+    RoundRect(hdc, Brick_Rect.left, Brick_Rect.top, Brick_Rect.right - 1, Brick_Rect.bottom - 1,
         2 * AsConfig::GLOBAL_SCALE, 2 * AsConfig::GLOBAL_SCALE);
 }
 

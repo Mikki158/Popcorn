@@ -1,6 +1,6 @@
 ﻿#include "Level.h"
 
-char ALevel::Level_01[AsConfig::LEVEL_HEIGHT][AsConfig::LEVEL_WIDTH] =
+char AsLevel::Level_01[AsConfig::LEVEL_HEIGHT][AsConfig::LEVEL_WIDTH] =
 {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -18,7 +18,7 @@ char ALevel::Level_01[AsConfig::LEVEL_HEIGHT][AsConfig::LEVEL_WIDTH] =
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
-char ALevel::Test_Level[AsConfig::LEVEL_HEIGHT][AsConfig::LEVEL_WIDTH] =
+char AsLevel::Test_Level[AsConfig::LEVEL_HEIGHT][AsConfig::LEVEL_WIDTH] =
 {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -37,14 +37,14 @@ char ALevel::Test_Level[AsConfig::LEVEL_HEIGHT][AsConfig::LEVEL_WIDTH] =
 };
 
 
-ALevel::ALevel()
+AsLevel::AsLevel()
     :Level_Rect(), 
     Active_Bricks_Count(0), Falling_Letters_Count(0)
 {
 
 }
 
-void ALevel::Init()
+void AsLevel::Init()
 {    
     Level_Rect.left = AsConfig::LEVEL_X_OFFSET * AsConfig::GLOBAL_SCALE;
     Level_Rect.top = AsConfig::LEVEL_Y_OFFSET * AsConfig::GLOBAL_SCALE;
@@ -56,51 +56,36 @@ void ALevel::Init()
     memset(Falling_Letters, 0, sizeof(Falling_Letters));
 }
 
-void ALevel::Act()
+void AsLevel::Act()
+{    
+    Act_Objects((AGraphics_Object**)Active_Briks, AsConfig::Max_Active_Bricks_Count, Active_Bricks_Count);
+    Act_Objects((AGraphics_Object**)Falling_Letters, AsConfig::Max_Falling_Letters_Count, Falling_Letters_Count);
+}
+
+void AsLevel::Act_Objects(AGraphics_Object** object_array, int objects_max_count, int &current_count_objects)
 {
-    for (int i = 0; i < AsConfig::Max_Active_Bricks_Count; i++)
-    {
-        if (Active_Briks[i] != 0)
-        {
-            Active_Briks[i]->Act();
-
-            if (Active_Briks[i]->Is_Finished())
-            {
-                Current_Level[Active_Briks[i]->level_y][Active_Briks[i]->level_x] = 0;
-
-                delete Active_Briks[i];
-                Active_Briks[i] = 0;
-                Active_Bricks_Count--;
-            }
-        }            
-    }
-
-    //!!!
-
     for (int i = 0; i < AsConfig::Max_Falling_Letters_Count; i++)
     {
-        if (Falling_Letters[i] != 0)
+        if (object_array[i] != 0)
         {
-            Falling_Letters[i]->Act();
+            object_array[i]->Act();
 
-            if (Falling_Letters[i]->Is_Finished())
+            if (object_array[i]->Is_Finished())
             {
-                //Current_Level[Falling_Letters[i]->level_y][Falling_Letters[i]->level_x] = 0;
-
-                delete Falling_Letters[i];
-                Falling_Letters[i] = 0;
-                Falling_Letters_Count--;
+                delete object_array[i];
+                object_array[i] = 0;
+                current_count_objects--;
             }
         }
     }
 }
 
-void ALevel::Set_Current_Level(char level[AsConfig::LEVEL_HEIGHT][AsConfig::LEVEL_WIDTH])
+void AsLevel::Set_Current_Level(char level[AsConfig::LEVEL_HEIGHT][AsConfig::LEVEL_WIDTH])
 {
     memcpy(Current_Level, level, sizeof(Current_Level));
 }
 
-bool ALevel::Check_Hit(double next_x_pos, double next_y_pos, ABall* ball)
+bool AsLevel::Check_Hit(double next_x_pos, double next_y_pos, ABall* ball)
 {
     double direction = ball->Get_Direction();
 
@@ -186,7 +171,7 @@ bool ALevel::Check_Hit(double next_x_pos, double next_y_pos, ABall* ball)
     return false;
 }
 
-bool ALevel::Check_Vertical_Hit(double next_x_pos, double next_y_pos, int level_x, int level_y, 
+bool AsLevel::Check_Vertical_Hit(double next_x_pos, double next_y_pos, int level_x, int level_y, 
     ABall* ball, double &reflection_pos)
 {
     double direction = ball->Get_Direction();
@@ -224,7 +209,7 @@ bool ALevel::Check_Vertical_Hit(double next_x_pos, double next_y_pos, int level_
     return false;
 }
 
-bool ALevel::Check_Horizontal_Hit(double next_x_pos, double next_y_pos, int level_x, int level_y, 
+bool AsLevel::Check_Horizontal_Hit(double next_x_pos, double next_y_pos, int level_x, int level_y, 
     ABall* ball, double& reflection_pos)
 {
     double direction = ball->Get_Direction();
@@ -273,7 +258,7 @@ bool ALevel::Check_Horizontal_Hit(double next_x_pos, double next_y_pos, int leve
     return false;
 }
 
-void ALevel::On_Hit(int brick_x, int brick_y)
+void AsLevel::On_Hit(int brick_x, int brick_y)
 {
     EBrick_Type brick_type;
 
@@ -285,7 +270,7 @@ void ALevel::On_Hit(int brick_x, int brick_y)
         Add_Active_Brick(brick_x, brick_y, brick_type);    
 }
 
-bool ALevel::Add_Falling_Letter(int brick_x, int brick_y, EBrick_Type brick_type)
+bool AsLevel::Add_Falling_Letter(int brick_x, int brick_y, EBrick_Type brick_type)
 {// Создаем падующую букву, если можем
     
     int letter_x, letter_y;
@@ -322,7 +307,7 @@ bool ALevel::Add_Falling_Letter(int brick_x, int brick_y, EBrick_Type brick_type
     return false;
 }
 
-void ALevel::Add_Active_Brick(int brick_x, int brick_y, EBrick_Type brick_type)
+void AsLevel::Add_Active_Brick(int brick_x, int brick_y, EBrick_Type brick_type)
 {// Создаем активный кирпич, если можем
     AActive_Brick* active_brick;
 
@@ -357,9 +342,9 @@ void ALevel::Add_Active_Brick(int brick_x, int brick_y, EBrick_Type brick_type)
 }
 
 
-void ALevel::Draw(HDC hdc, RECT& paint_area)// вывод всех кирпичей уровня
+void AsLevel::Draw(HDC hdc, RECT& paint_area)// вывод всех кирпичей уровня
 {
-    RECT intersection_rect;
+    RECT intersection_rect, brick_rect;;
 
     if (IntersectRect(&intersection_rect, &paint_area, &Level_Rect))
     {
@@ -367,28 +352,56 @@ void ALevel::Draw(HDC hdc, RECT& paint_area)// вывод всех кирпич�
         {
             for (int j = 0; j < AsConfig::LEVEL_WIDTH; j++)
             {
-                Draw_Brick(hdc, AsConfig::LEVEL_X_OFFSET + (AsConfig::CELL_WIDTH * j),
-                    AsConfig::LEVEL_Y_OFFSET + (AsConfig::CELL_HEIGHT * i), (EBrick_Type)Current_Level[i][j]);
+                
+                brick_rect.left = (AsConfig::LEVEL_X_OFFSET + AsConfig::CELL_WIDTH * j) * AsConfig::GLOBAL_SCALE;
+                brick_rect.top = (AsConfig::LEVEL_Y_OFFSET + AsConfig::CELL_HEIGHT * i)* AsConfig::GLOBAL_SCALE;
+                brick_rect.right = brick_rect.left + AsConfig::BRICK_WIDTH * AsConfig::GLOBAL_SCALE;
+                brick_rect.bottom = brick_rect.top + AsConfig::BRICK_HEIGHT * AsConfig::GLOBAL_SCALE;
+
+                if (IntersectRect(&intersection_rect, &paint_area, &brick_rect))
+                    Draw_Brick(hdc, brick_rect, (EBrick_Type)Current_Level[i][j]);
             }
         }
 
-        for (int i = 0; i < AsConfig::Max_Active_Bricks_Count; i++)
-        {
-            if (Active_Briks[i] != 0)
-                Active_Briks[i]->Draw(hdc, paint_area);
-        }
+        Draw_Objects(hdc, paint_area, (AGraphics_Object**)&Active_Briks, AsConfig::Max_Active_Bricks_Count);
     }
-       
 
-    //!!!
-    for (int i = 0; i < AsConfig::Max_Falling_Letters_Count; i++)
+    Draw_Objects(hdc, paint_area, (AGraphics_Object**)&Falling_Letters, AsConfig::Max_Falling_Letters_Count);
+}
+
+bool AsLevel::Get_Next_Falling_Leter(AFalling_Letter** falling_letter, int& index)
+{
+    AFalling_Letter* current_letter;
+
+    if (Falling_Letters_Count == 0)
+        return false;
+
+    if (index < 0 || index >= AsConfig::Max_Falling_Letters_Count)
+        return false;
+
+    while (index < AsConfig::Max_Falling_Letters_Count)
     {
-        if (Falling_Letters[i] != 0)
-            Falling_Letters[i]->Draw(hdc, paint_area);
+        current_letter = Falling_Letters[index++];
+        if (current_letter != nullptr)
+        {
+            *falling_letter = current_letter;
+            return true;
+        }            
+    }
+        
+    return false;   
+}
+
+void AsLevel::Draw_Objects(HDC hdc, RECT& paint_area, AGraphics_Object **object_array, int objects_max_count)
+{
+    for (int i = 0; i < objects_max_count; i++)
+    {
+        if (object_array[i] != 0)
+            object_array[i]->Draw(hdc, paint_area);
     }
 }
 
-void ALevel::Draw_Brick(HDC hdc, int x, int y, EBrick_Type brick_type)
+void AsLevel::Draw_Brick(HDC hdc, RECT brick_rect, EBrick_Type brick_type)
 {
     HPEN pen;
     HBRUSH brush;
@@ -418,194 +431,11 @@ void ALevel::Draw_Brick(HDC hdc, int x, int y, EBrick_Type brick_type)
     SelectObject(hdc, pen);
     SelectObject(hdc, brush);
 
-    RoundRect(hdc, x * AsConfig::GLOBAL_SCALE, y * AsConfig::GLOBAL_SCALE, (x + AsConfig::BRICK_WIDTH) * AsConfig::GLOBAL_SCALE - 1,
-        (y + AsConfig::BRICK_HEIGHT) * AsConfig::GLOBAL_SCALE - 1, 2 * AsConfig::GLOBAL_SCALE, 2 * AsConfig::GLOBAL_SCALE);
-
+    RoundRect(hdc, brick_rect.left, brick_rect.top, brick_rect.right - 1, brick_rect.bottom - 1,
+        2 * AsConfig::GLOBAL_SCALE, 2 * AsConfig::GLOBAL_SCALE);
 }
 
 
 
 
 
-AFalling_Letter::AFalling_Letter(EBrick_Type brick_type, ELetter_Type letter_type, int x, int y)
-    :brick_type(brick_type), letter_type(letter_type), X(x), Y(y), Rotation_step(2), 
-    Next_Rotation_Tick(AsConfig::Current_Timer_Tick + Ticks_Per_Step), Got_Hit(false)
-{
-    Letter_Cell.left = X;
-    Letter_Cell.top = Y;
-    Letter_Cell.right = Letter_Cell.left + AsConfig::BRICK_WIDTH * AsConfig::GLOBAL_SCALE;
-    Letter_Cell.bottom = Letter_Cell.top + AsConfig::BRICK_HEIGHT * AsConfig::GLOBAL_SCALE;
-
-    Prev_Letter_Cell = Letter_Cell;
-}
-
-void AFalling_Letter::Draw_Brick_Letter(HDC hdc)
-{// Вывод падающих букв
-    double offSet;
-    double rotation_angle;
-    int brick_Half_height = AsConfig::BRICK_HEIGHT * AsConfig::GLOBAL_SCALE / 2;
-    int back_part_offset;
-    bool switch_color;
-    HPEN front_pen, back_pen;
-    HBRUSH front_brush, back_brush;
-    XFORM xForm, old_xForm;
-
-    if (!(brick_type == EBT_Blue || brick_type == EBT_Pink))
-    {
-        return;
-    }
-
-    // корректируем шаг вращения и угол поворота
-    Rotation_step = Rotation_step % 16;
-    if (Rotation_step < 8)
-    {
-        rotation_angle = 2.0 * M_PI / 16.0 * (double)Rotation_step;
-    }
-    else
-    {
-        rotation_angle = 2.0 * M_PI / 16.0 * (double)(8 - Rotation_step);
-    }
-
-    if (Rotation_step > 4 && Rotation_step <= 12)
-    {
-        if (brick_type == EBT_Pink)
-            switch_color = true;
-        else
-            switch_color = false;
-    }
-    else
-    {
-        if (brick_type == EBT_Blue)
-            switch_color = true;
-        else
-            switch_color = false;
-    }
-
-    Set_Brick_Letter_Colors(switch_color, front_pen, front_brush, back_pen, back_brush);
-
-    if (Rotation_step == 4 || Rotation_step == 12)
-    {
-        // выводим фон
-        SelectObject(hdc, back_pen);
-        SelectObject(hdc, back_brush);
-
-
-        Rectangle(hdc, X, Y + brick_Half_height - AsConfig::GLOBAL_SCALE, 
-            X + AsConfig::BRICK_WIDTH * AsConfig::GLOBAL_SCALE, Y + brick_Half_height);
-
-        // выводим передний план
-        SelectObject(hdc, front_pen);
-        SelectObject(hdc, front_brush);
-
-        Rectangle(hdc, X, Y + brick_Half_height, 
-            X + AsConfig::BRICK_WIDTH * AsConfig::GLOBAL_SCALE, Y + brick_Half_height + AsConfig::GLOBAL_SCALE);
-    }
-    else
-    {
-
-        xForm.eM11 = 1.0;
-        xForm.eM12 = 0.0;
-        xForm.eM21 = 0.0;
-        xForm.eM22 = (float)-cos(rotation_angle);
-        xForm.eDx = (float)X;
-        xForm.eDy = (float)Y + (float)(brick_Half_height);
-
-        GetWorldTransform(hdc, &old_xForm);
-        SetWorldTransform(hdc, &xForm);
-
-
-        offSet = 3.0 * (1.0 - fabs(xForm.eM22)) * (double)AsConfig::GLOBAL_SCALE;
-        back_part_offset = (int)round(offSet);
-
-        // выводим фон
-        SelectObject(hdc, front_pen);
-        SelectObject(hdc, front_brush);
-
-        Rectangle(hdc, 0, -brick_Half_height - back_part_offset, AsConfig::BRICK_WIDTH * AsConfig::GLOBAL_SCALE, brick_Half_height - back_part_offset);
-
-        // выводим передний план
-        SelectObject(hdc, back_pen);
-        SelectObject(hdc, back_brush);
-
-        Rectangle(hdc, 0, -brick_Half_height, AsConfig::BRICK_WIDTH * AsConfig::GLOBAL_SCALE, brick_Half_height);
-
-        if (Rotation_step > 4 && Rotation_step <= 12)
-        {
-            if (letter_type == ELT_O)
-            {
-                SelectObject(hdc, AsConfig::Letter_Pen);
-                Ellipse(hdc, 0 + 5 * AsConfig::GLOBAL_SCALE, -5 * AsConfig::GLOBAL_SCALE / 2,
-                    0 + 10 * AsConfig::GLOBAL_SCALE, 5 * AsConfig::GLOBAL_SCALE / 2);
-            }
-        }
-        SetWorldTransform(hdc, &old_xForm);
-    }
-}
-
-void AFalling_Letter::Set_Brick_Letter_Colors(bool is_switch_color, HPEN& front_pen, HBRUSH& front_brush, HPEN& back_pen, HBRUSH& back_brush)
-{
-    if (is_switch_color)
-    {
-        front_pen = AsConfig::Brick_Pink_Pen;
-        front_brush = AsConfig::Brick_Pink_Brush;
-
-        back_pen = AsConfig::Brick_Blue_Pen;
-        back_brush = AsConfig::Brick_Blue_Brush;
-    }
-    else
-    {
-        front_pen = AsConfig::Brick_Blue_Pen;
-        front_brush = AsConfig::Brick_Blue_Brush;
-
-        back_pen = AsConfig::Brick_Pink_Pen;
-        back_brush = AsConfig::Brick_Pink_Brush;
-    }
-}
-
-void AFalling_Letter::Draw(HDC hdc, RECT& paint_area)
-{
-    RECT intersection_rect;
-
-    if (IntersectRect(&intersection_rect, &paint_area, &Prev_Letter_Cell))
-    {
-        // очищаем фон
-        SelectObject(hdc, AsConfig::BG_Pen);
-        SelectObject(hdc, AsConfig::BG_Brush);
-
-        Rectangle(hdc, Prev_Letter_Cell.left, Prev_Letter_Cell.top, Prev_Letter_Cell.right, Prev_Letter_Cell.bottom);
-    }
-
-    if(IntersectRect(&intersection_rect, &paint_area, &Letter_Cell))
-        Draw_Brick_Letter(hdc);
-}
-
-
-//
-void AFalling_Letter::Act()
-{
-    Prev_Letter_Cell = Letter_Cell;
-
-    Y += AsConfig::GLOBAL_SCALE;
-
-    Letter_Cell.top += AsConfig::GLOBAL_SCALE;
-    Letter_Cell.bottom += AsConfig::GLOBAL_SCALE;
-
-    if (AsConfig::Current_Timer_Tick >= Next_Rotation_Tick)
-    {
-        Rotation_step++;
-
-        Next_Rotation_Tick += Ticks_Per_Step;
-    }
-    
-    InvalidateRect(AsConfig::HWnd, &Prev_Letter_Cell, FALSE);
-    InvalidateRect(AsConfig::HWnd, &Letter_Cell, FALSE);
-}
-
-bool AFalling_Letter::Is_Finished()
-{
-
-    if (Got_Hit || Letter_Cell.top >= AsConfig::MAX_Y_POS * AsConfig::GLOBAL_SCALE)
-        return true;
-    else
-        return false;
-}

@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #define _USE_MATH_DEFINES
-#include <math.h>
 #include <Windows.h>
 
 #include "Config.h"
@@ -39,16 +38,20 @@ public:
     void Init_Engine(HWND hWnd);
     void Draw_Frame(HDC hdc, RECT& paint_area);
     int On_Key_Down(EKey_Type key_type);
-    int On_Timer();    
+    int On_Timer();  
+    
 
 private:
     EGame_State Game_State;
 
     ABall Ball;
-    ALevel Level;
+    AsLevel Level;
     AsPlatform Platform;
     AsBorder Border;
     //AActive_Brick Active_Brick;
+
+    void Act();
+    void On_Falling_Letter(AFalling_Letter* falling_letter);
 };
 
 

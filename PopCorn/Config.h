@@ -1,6 +1,8 @@
 ﻿#pragma once
 
 #include <Windows.h>
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 enum EBrick_Type
 {
@@ -25,6 +27,8 @@ class AColor
 {
 public:
     unsigned char R, G, B;
+
+    int Get_RGB() const;
 
     AColor(unsigned char r, unsigned char g, unsigned char b);
 };
@@ -61,7 +65,7 @@ public:
     // Brick
     static const int BRICK_WIDTH = 15;
     static const int BRICK_HEIGHT = 7;
-    static const int MAX_FADE_STEP = 40;
+    static const int MAX_FADE_STEP = FPS;
     static const int Max_Active_Bricks_Count = 10;
     static const int Max_Falling_Letters_Count = 10;
     static const int Hits_Per_Letter = 1; // Вероятность выбить букву = 1.0 / Hits_Per_Letter

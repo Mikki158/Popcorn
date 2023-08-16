@@ -8,6 +8,13 @@ AsEngine::AsEngine()
 
 void AsEngine::Init_Engine(HWND hwnd)// Настройка игры при старте
 {
+    SYSTEMTIME sys_time;
+    FILETIME file_time;
+
+    GetSystemTime(&sys_time);
+    SystemTimeToFileTime(&sys_time, &file_time);
+    srand(file_time.dwLowDateTime);
+
     AsConfig::HWnd = hwnd;
 
     //AsConfig::Create_Pen_Brush(AsConfig::BG_Color, BG_Pen, BG_Brush);   
@@ -24,7 +31,7 @@ void AsEngine::Init_Engine(HWND hwnd)// Настройка игры при ст�
     ABall::Add_Hit_Checker(&Level);
     ABall::Add_Hit_Checker(&Platform);
 
-    Level.Set_Current_Level(ALevel::Level_01);
+    Level.Set_Current_Level(AsLevel::Level_01);
 
     Ball.Set_State(EBS_Normal, Platform.X_Pos + Platform.Width / 2);
 
@@ -37,7 +44,7 @@ void AsEngine::Init_Engine(HWND hwnd)// Настройка игры при ст�
 
 void AsEngine::Draw_Frame(HDC hdc, RECT& paint_area)// отрисовка экрана игры
 {   
-    COLORREF pixel;
+    //COLORREF pixel;
     SetGraphicsMode(hdc, GM_ADVANCED);
 
 
@@ -79,25 +86,11 @@ int AsEngine::On_Key_Down(EKey_Type key_type)
     switch (key_type)
     {
     case EKT_Left:
-        Platform.X_Pos -= Platform.X_Step;
-
-        if (Platform.X_Pos <= AsConfig::BORDER_X_OFFSET)
-        {
-            Platform.X_Pos = AsConfig::BORDER_X_OFFSET;
-        }
-
-        Platform.Redraw_Platform();
+        Platform.Move(true);
         break;
 
     case EKT_Right:
-        Platform.X_Pos += Platform.X_Step;
-
-        if (Platform.X_Pos >= AsConfig::MAX_X_POS - Platform.Width + 1)
-        {
-            Platform.X_Pos = AsConfig::MAX_X_POS - Platform.Width + 1;
-        }
-
-        Platform.Redraw_Platform();
+        Platform.Move(false);
         break;
 
     case EKT_Space:
@@ -158,18 +151,33 @@ int AsEngine::On_Timer()
         break;
     }
 
-
-    Level.Act();
-    
-    //if (AsConfig::Current_Timer_Tick % 10 == 0)
-    {
-        Platform.Act();
-    }
-
-    
+    Act();
 
     return 0;
 }
+
+void AsEngine::Act()
+{
+    Level.Act();
+    Platform.Act();
+
+    AFalling_Letter *falling_letter;
+    int index = 0;
+    RECT intersection_rect, platform_rect, falling_letter_rect;
+
+    while (Level.Get_Next_Falling_Leter(&falling_letter, index))
+    {
+        if (Platform.Hit_by(falling_letter))
+            On_Falling_Letter(falling_letter);
+    }
+}
+
+void AsEngine::On_Falling_Letter(AFalling_Letter* falling_letter)
+{
+    falling_letter->Finalize();
+}
+
+
 
 
 
