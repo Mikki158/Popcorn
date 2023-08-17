@@ -1,14 +1,14 @@
 #include "Active_Brick.h"
 
-HPEN AActive_Brick::Fading_Blue_Brick_Pens[AsConfig::MAX_FADE_STEP];
-HBRUSH AActive_Brick::Fading_Blue_Brick_Brushes[AsConfig::MAX_FADE_STEP];
+HPEN AActive_Brick_Pink_Blue::Fading_Blue_Brick_Pens[AsConfig::MAX_FADE_STEP];
+HBRUSH AActive_Brick_Pink_Blue::Fading_Blue_Brick_Brushes[AsConfig::MAX_FADE_STEP];
 
-HPEN AActive_Brick::Fading_Pink_Brick_Pens[AsConfig::MAX_FADE_STEP];
-HBRUSH AActive_Brick::Fading_Pink_Brick_Brushes[AsConfig::MAX_FADE_STEP];
+HPEN AActive_Brick_Pink_Blue::Fading_Pink_Brick_Pens[AsConfig::MAX_FADE_STEP];
+HBRUSH AActive_Brick_Pink_Blue::Fading_Pink_Brick_Brushes[AsConfig::MAX_FADE_STEP];
 
 
 //
-AActive_Brick::AActive_Brick(EBrick_Type brick_type, int level_x, int level_y)
+AActive_Brick_Pink_Blue::AActive_Brick_Pink_Blue(EBrick_Type brick_type, int level_x, int level_y)
     :Brick_Rect(), Brick_Type(brick_type), Fade_Step(0), level_x(level_x), level_y(level_y)
 {
     Brick_Rect.left = (AsConfig::LEVEL_X_OFFSET + level_x * AsConfig::CELL_WIDTH) * AsConfig::GLOBAL_SCALE;
@@ -19,7 +19,7 @@ AActive_Brick::AActive_Brick(EBrick_Type brick_type, int level_x, int level_y)
 
 
 //
-void AActive_Brick::Draw(HDC hdc, RECT& paint_area)
+void AActive_Brick_Pink_Blue::Draw(HDC hdc, RECT& paint_area)
 {
     HPEN pen = 0;
     HBRUSH brush = 0;
@@ -50,18 +50,16 @@ void AActive_Brick::Draw(HDC hdc, RECT& paint_area)
 
 
 //
-void AActive_Brick::Act()
-{
-    HWND hwnd = AsConfig::HWnd;
-
+void AActive_Brick_Pink_Blue::Act()
+{    
     if (Fade_Step < AsConfig::MAX_FADE_STEP - 1)
     {
         Fade_Step += 1;
-        InvalidateRect(hwnd, &Brick_Rect, FALSE);
-    }    
+        InvalidateRect(AsConfig::HWnd, &Brick_Rect, FALSE);
+    }
 }
 
-bool AActive_Brick::Is_Finished()
+bool AActive_Brick_Pink_Blue::Is_Finished()
 {
     if (Fade_Step >= AsConfig::MAX_FADE_STEP - 1)
         return true;
@@ -71,7 +69,7 @@ bool AActive_Brick::Is_Finished()
 
 
 //
-void AActive_Brick::Setup_Color()
+void AActive_Brick_Pink_Blue::Setup_Color()
 {
     for (int i = 0; i < AsConfig::MAX_FADE_STEP; i++)
     {
@@ -82,14 +80,14 @@ void AActive_Brick::Setup_Color()
 
 
 //
-unsigned char AActive_Brick::Get_Fading_Channel(unsigned char color, unsigned char bg_color, int step)
+unsigned char AActive_Brick_Pink_Blue::Get_Fading_Channel(unsigned char color, unsigned char bg_color, int step)
 {
     return color - step * (color - bg_color) / (AsConfig::MAX_FADE_STEP - 1);
 }
 
 
 //
-void AActive_Brick::Get_Fading_Color(const AColor &color, int step, HPEN& pen, HBRUSH &brush)
+void AActive_Brick_Pink_Blue::Get_Fading_Color(const AColor &color, int step, HPEN& pen, HBRUSH &brush)
 {
     unsigned char r, g, b;
 
@@ -99,6 +97,78 @@ void AActive_Brick::Get_Fading_Color(const AColor &color, int step, HPEN& pen, H
 
     AsConfig::Create_Pen_Brush(r, g, b, pen, brush);
 }
+
+
+
+
+
+
+
+
+
+
+AActive_Brick_Unbreakable::AActive_Brick_Unbreakable(int level_x, int level_y)
+    :Brick_Rect(), Brick_Type(EBT_Unbreakable), level_x(level_x), level_y(level_y), Unbreakable_Animation_Step(0)
+{
+    Brick_Rect.left = (AsConfig::LEVEL_X_OFFSET + level_x * AsConfig::CELL_WIDTH) * AsConfig::GLOBAL_SCALE;
+    Brick_Rect.top = (AsConfig::LEVEL_Y_OFFSET + level_y * AsConfig::CELL_HEIGHT) * AsConfig::GLOBAL_SCALE;
+    Brick_Rect.right = Brick_Rect.left + AsConfig::BRICK_WIDTH * AsConfig::GLOBAL_SCALE;
+    Brick_Rect.bottom = Brick_Rect.top + AsConfig::BRICK_HEIGHT * AsConfig::GLOBAL_SCALE;
+}
+
+
+//
+void AActive_Brick_Unbreakable::Draw(HDC hdc, RECT& paint_area)
+{
+    //HPEN pen = 0;
+    //HBRUSH brush = 0;
+
+    //switch (Brick_Type)
+    //{
+    //case EBT_Pink:
+    //    pen = Fading_Pink_Brick_Pens[Fade_Step];
+    //    brush = Fading_Pink_Brick_Brushes[Fade_Step];
+    //    break;
+
+    //case EBT_Blue:
+    //    pen = Fading_Blue_Brick_Pens[Fade_Step];
+    //    brush = Fading_Blue_Brick_Brushes[Fade_Step];
+    //    break;
+
+    //default:
+    //    break;
+    //}
+
+    //SelectObject(hdc, pen);
+    //SelectObject(hdc, brush);
+
+
+    //RoundRect(hdc, Brick_Rect.left, Brick_Rect.top, Brick_Rect.right - 1, Brick_Rect.bottom - 1,
+    //    2 * AsConfig::GLOBAL_SCALE, 2 * AsConfig::GLOBAL_SCALE);
+
+
+}
+
+
+//
+void AActive_Brick_Unbreakable::Act()
+{
+    if (Unbreakable_Animation_Step <= Max_Unbreakable_Animation_Step)
+    {
+        Unbreakable_Animation_Step++;
+        InvalidateRect(AsConfig::HWnd, &Brick_Rect, FALSE);
+    }
+}
+
+bool AActive_Brick_Unbreakable::Is_Finished()
+{
+    //if (Fade_Step >= AsConfig::MAX_FADE_STEP - 1)
+    //    return true;
+    //else
+        return false;
+}
+
+
 
 
 

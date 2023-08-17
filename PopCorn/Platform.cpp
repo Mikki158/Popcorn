@@ -4,7 +4,7 @@
 AsPlatform::AsPlatform()
     : X_Pos(100), X_Step(AsConfig::GLOBAL_SCALE), Width(NORMAL_WIDTH), Inner_width(NORMAL_WIDTH - CIRCLE_SIZE), 
     Platform_Rect(), Prev_Platform_Rect(), Platform_Circle_Pen(), Platform_Inner_Pen(), Platform_Circle_Brush(), 
-    Platform_Inner_Brush(), Platform_State(EPS_Normal), Meltdown_Y_Pos(0), Rolling_Step(0), Normal_Platform_Image(nullptr),
+    Platform_Inner_Brush(), Platform_State(EPS_Missing), Meltdown_Y_Pos(0), Rolling_Step(0), Normal_Platform_Image(nullptr),
     Normal_Platform_Image_Width(0), Normal_Platform_Image_Height(0), Platform_Circle_Pen_Color(255, 85, 255), 
     Platform_Inner_Pen_Color(85, 255, 255)
 {
@@ -18,16 +18,10 @@ AsPlatform::~AsPlatform()
 
 bool AsPlatform::Check_Hit(double next_x_pos, double next_y_pos, ABall* ball)
 {
-    
-
     double inner_top_y, inner_low_y;;
     double inner_left_x, inner_right_x;
     double inner_y;
     double reflection_pos;
-
-    
-
-
 
     // отражаем шарик от платформы
     if (next_y_pos + ball->RADIUS < AsConfig::Platform_Y_POS)
@@ -159,6 +153,7 @@ void AsPlatform::Draw(HDC hdc, RECT& paint_area)
 
     switch (Platform_State)
     {
+    case EPS_Ready:
     case EPS_Normal:
         Draw_Normal_State(hdc, paint_area);
         break;
@@ -222,7 +217,7 @@ void AsPlatform::Draw_Normal_State(HDC hdc, RECT& paint_area)
     x *= AsConfig::GLOBAL_SCALE;
     y *= AsConfig::GLOBAL_SCALE;
 
-    if (Normal_Platform_Image == nullptr)
+    if (Normal_Platform_Image == nullptr && Platform_State == EPS_Ready)
     {
         Normal_Platform_Image_Width = Width * AsConfig::GLOBAL_SCALE;
         Normal_Platform_Image_Height = Height * AsConfig::GLOBAL_SCALE;
@@ -477,7 +472,7 @@ void AsPlatform::Draw_Roll_In_State(HDC hdc, RECT paint_area)
     SelectObject(hdc, AsConfig::BG_Pen);
     SelectObject(hdc, AsConfig::BG_Brush);
 
-    Rectangle(hdc, - AsConfig::GLOBAL_SCALE / 2, -roller_size / 2, AsConfig::GLOBAL_SCALE / 2 - 1, roller_size / 2 - 1);
+    Rectangle(hdc, - AsConfig::GLOBAL_SCALE / 2, -roller_size / 2, AsConfig::GLOBAL_SCALE / 2, roller_size / 2);
 
     SetWorldTransform(hdc, &old_xform);
 

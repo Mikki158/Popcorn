@@ -1,8 +1,11 @@
 ﻿  Engine.cpp
-D:\Work\PopCornProject\PopCorn\Popcorn\PopCorn\Engine.cpp(166,29): warning C4101: 'platform_rect': unreferenced local variable
-D:\Work\PopCornProject\PopCorn\Popcorn\PopCorn\Engine.cpp(166,10): warning C4101: 'intersection_rect': unreferenced local variable
-D:\Work\PopCornProject\PopCorn\Popcorn\PopCorn\Engine.cpp(166,44): warning C4101: 'falling_letter_rect': unreferenced local variable
+D:\Work\PopCornProject\PopCorn\Popcorn\PopCorn\Engine.cpp(142,29): warning C4101: 'platform_rect': unreferenced local variable
+D:\Work\PopCornProject\PopCorn\Popcorn\PopCorn\Engine.cpp(142,10): warning C4101: 'intersection_rect': unreferenced local variable
+D:\Work\PopCornProject\PopCorn\Popcorn\PopCorn\Engine.cpp(142,44): warning C4101: 'falling_letter_rect': unreferenced local variable
+  Falling_Letter.cpp
   Level.cpp
+D:\Work\PopCornProject\PopCorn\Popcorn\PopCorn\Level.cpp(281,24): warning C4806: '==': unsafe operation: no value of type 'bool' promoted to type 'EBrick_Type' can equal the given constant
   Mian.cpp
+  Platform.cpp
   Generating Code...
   PopCorn.vcxproj -> D:\Work\PopCornProject\PopCorn\Popcorn\Debug\PopCorn.exe

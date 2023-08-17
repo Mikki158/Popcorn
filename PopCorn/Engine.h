@@ -48,7 +48,7 @@ private:
     AsLevel Level;
     AsPlatform Platform;
     AsBorder Border;
-    //AActive_Brick Active_Brick;
+    //AActive_Brick_Pink_Blue Active_Brick;
 
     void Act();
     void On_Falling_Letter(AFalling_Letter* falling_letter);

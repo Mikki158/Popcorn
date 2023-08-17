@@ -278,38 +278,38 @@ bool AsLevel::Add_Falling_Letter(int brick_x, int brick_y, EBrick_Type brick_typ
     ELetter_Type letter_type;
     AFalling_Letter* falling_letter;
 
-    if (brick_type == EBT_Blue || brick_type == EBT_Pink)
+    if (!brick_type == EBT_Blue || !brick_type == EBT_Pink)
+        return false;
+
+    if (AsConfig::Rand(AsConfig::Hits_Per_Letter) != 0)
+        return false;
+
+    
+    if (Falling_Letters_Count >= AsConfig::Max_Falling_Letters_Count)
+        return false;
+    
+    for (int i = 0; i < AsConfig::Max_Falling_Letters_Count; i++)
     {
-        if (AsConfig::Rand(AsConfig::Hits_Per_Letter) == 0)
+        if (Falling_Letters[i] == 0)
         {
-            if (Falling_Letters_Count < AsConfig::Max_Falling_Letters_Count)
-            {
-                letter_type = ELT_O;
+            letter_x = (brick_x * AsConfig::CELL_WIDTH + AsConfig::LEVEL_X_OFFSET) * AsConfig::GLOBAL_SCALE;
+            letter_y = (brick_y * AsConfig::CELL_HEIGHT + AsConfig::LEVEL_Y_OFFSET) * AsConfig::GLOBAL_SCALE;
 
-                for (int i = 0; i < AsConfig::Max_Falling_Letters_Count; i++)
-                {
-                    if (Falling_Letters[i] == 0)
-                    {
-                        letter_x = (brick_x * AsConfig::CELL_WIDTH + AsConfig::LEVEL_X_OFFSET) * AsConfig::GLOBAL_SCALE;
-                        letter_y = (brick_y * AsConfig::CELL_HEIGHT + AsConfig::LEVEL_Y_OFFSET) * AsConfig::GLOBAL_SCALE;
+            //letter_type = (ELetter_Type)AsConfig::Rand(ELT_MAX - 1);
+            letter_type = AFalling_Letter::Get_Random_Letter_Type();
 
-                        falling_letter = new AFalling_Letter(brick_type, letter_type, letter_x, letter_y);
-                        Falling_Letters[i] = falling_letter;
-                        Falling_Letters_Count++;
-                        break;
-                    }
-                }
-                return true;
-            }
+            falling_letter = new AFalling_Letter(brick_type, letter_type, letter_x, letter_y);
+            Falling_Letters[i] = falling_letter;
+            Falling_Letters_Count++;
+            return true;
         }
     }
-
     return false;
 }
 
 void AsLevel::Add_Active_Brick(int brick_x, int brick_y, EBrick_Type brick_type)
 {// Создаем активный кирпич, если можем
-    AActive_Brick* active_brick;
+    AActive_Brick_Pink_Blue* active_brick;
 
     if (Active_Bricks_Count >= AsConfig::Max_Active_Bricks_Count)
         return;
@@ -321,7 +321,7 @@ void AsLevel::Add_Active_Brick(int brick_x, int brick_y, EBrick_Type brick_type)
 
     case EBT_Pink:
     case EBT_Blue:
-        active_brick = new AActive_Brick(brick_type, brick_x, brick_y);
+        active_brick = new AActive_Brick_Pink_Blue(brick_type, brick_x, brick_y);
         Current_Level[brick_y][brick_x] = EBT_None;
         break;
 
@@ -345,6 +345,9 @@ void AsLevel::Add_Active_Brick(int brick_x, int brick_y, EBrick_Type brick_type)
 void AsLevel::Draw(HDC hdc, RECT& paint_area)// вывод всех кирпичей уровня
 {
     RECT intersection_rect, brick_rect;;
+
+    //AFalling_Letter falling_letter(EBT_Blue, ELT_PLUS, 10 * AsConfig::GLOBAL_SCALE, 150 * AsConfig::GLOBAL_SCALE);
+    //falling_letter.Test_Draw_All_Steps(hdc);
 
     if (IntersectRect(&intersection_rect, &paint_area, &Level_Rect))
     {

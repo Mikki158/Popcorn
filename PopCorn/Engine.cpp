@@ -1,7 +1,7 @@
 ﻿#include "Engine.h"
 
 AsEngine::AsEngine()
-    :Game_State(EGS_Play_Level)
+    :Game_State(EGS_Lost_Ball)
 {
 
 }
@@ -19,13 +19,15 @@ void AsEngine::Init_Engine(HWND hwnd)// Настройка игры при ст�
 
     //AsConfig::Create_Pen_Brush(AsConfig::BG_Color, BG_Pen, BG_Brush);   
 
-    AActive_Brick::Setup_Color();
+    AActive_Brick_Pink_Blue::Setup_Color();
 
     
     Level.Init();
     Platform.Init();
     Ball.Init();
     Border.Init();
+
+    AFalling_Letter::Init();
      
     ABall::Add_Hit_Checker(&Border);
     ABall::Add_Hit_Checker(&Level);
@@ -33,9 +35,8 @@ void AsEngine::Init_Engine(HWND hwnd)// Настройка игры при ст�
 
     Level.Set_Current_Level(AsLevel::Level_01);
 
-    Ball.Set_State(EBS_Normal, Platform.X_Pos + Platform.Width / 2);
-
-    Platform.Set_State(EPS_Normal);
+    Ball.Set_State(EBS_Lost, -10);
+    //Platform.Set_State(EPS_Normal);
 
     Platform.Redraw_Platform();
 
@@ -43,8 +44,7 @@ void AsEngine::Init_Engine(HWND hwnd)// Настройка игры при ст�
 }
 
 void AsEngine::Draw_Frame(HDC hdc, RECT& paint_area)// отрисовка экрана игры
-{   
-    //COLORREF pixel;
+{  
     SetGraphicsMode(hdc, GM_ADVANCED);
 
 
@@ -55,30 +55,6 @@ void AsEngine::Draw_Frame(HDC hdc, RECT& paint_area)// отрисовка экр
     Platform.Draw(hdc, paint_area);
     
     Ball.Draw(hdc, paint_area);
-    
-
-
-    //for (int i = 0; i < 84 * 21 * 100; i++)
-    //{
-    //    pixel = GetPixel(hdc, 100, 100);
-    //    SetPixel(hdc, 100, 100, pixel);
-    //}
-
-    //for (int i = 0; i < 84 * 100; i++)
-    //{
-    //    MoveToEx(hdc, 100, 555, 0);
-    //
-    //    SelectObject(hdc, AsConfig::BG_Pen);
-    //    LineTo(hdc, 100, 557);
-    //
-    //    SelectObject(hdc, AsConfig::Brick_Blue_Pen);
-    //    LineTo(hdc, 100, 572);
-    //
-    //    SelectObject(hdc, AsConfig::BG_Pen);
-    //    LineTo(hdc, 100, 575);
-    //}
-    //
-    //int b = 0;
 }
 
 int AsEngine::On_Key_Down(EKey_Type key_type)
