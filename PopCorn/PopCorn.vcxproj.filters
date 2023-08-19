@@ -36,6 +36,9 @@
     <Filter Include="Platform">
       <UniqueIdentifier>{8175cfb7-d93f-45f1-a3d5-f3ab10c96fe9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="CodeStyle">
+      <UniqueIdentifier>{6412e020-e35d-43e9-949d-6f3718d358e5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -73,6 +76,9 @@
     </ClInclude>
     <ClInclude Include="Platform.h">
       <Filter>Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="CodeStyle.h">
+      <Filter>CodeStyle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -115,6 +121,9 @@
     </ClCompile>
     <ClCompile Include="Platform.cpp">
       <Filter>Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="CodeStyle.cpp">
+      <Filter>CodeStyle</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

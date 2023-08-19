@@ -35,7 +35,7 @@ private:
     char Current_Level[AsConfig::LEVEL_HEIGHT][AsConfig::LEVEL_WIDTH];
 
     int Active_Bricks_Count;
-    AActive_Brick_Pink_Blue* Active_Briks[AsConfig::Max_Active_Bricks_Count];
+    AActive_Brick* Active_Briks[AsConfig::Max_Active_Bricks_Count];
     int Falling_Letters_Count;
     AFalling_Letter* Falling_Letters[AsConfig::Max_Falling_Letters_Count];
 

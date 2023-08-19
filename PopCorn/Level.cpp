@@ -10,7 +10,7 @@ char AsLevel::Level_01[AsConfig::LEVEL_HEIGHT][AsConfig::LEVEL_WIDTH] =
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+    2, 2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -267,7 +267,10 @@ void AsLevel::On_Hit(int brick_x, int brick_y)
     if (Add_Falling_Letter(brick_x, brick_y, brick_type))
         Current_Level[brick_y][brick_x] = EBT_None;
     else
-        Add_Active_Brick(brick_x, brick_y, brick_type);    
+    {
+        Add_Active_Brick(brick_x, brick_y, brick_type);
+    }
+         
 }
 
 bool AsLevel::Add_Falling_Letter(int brick_x, int brick_y, EBrick_Type brick_type)
@@ -309,7 +312,7 @@ bool AsLevel::Add_Falling_Letter(int brick_x, int brick_y, EBrick_Type brick_typ
 
 void AsLevel::Add_Active_Brick(int brick_x, int brick_y, EBrick_Type brick_type)
 {// Создаем активный кирпич, если можем
-    AActive_Brick_Pink_Blue* active_brick;
+    AActive_Brick* active_brick;
 
     if (Active_Bricks_Count >= AsConfig::Max_Active_Bricks_Count)
         return;
@@ -325,8 +328,12 @@ void AsLevel::Add_Active_Brick(int brick_x, int brick_y, EBrick_Type brick_type)
         Current_Level[brick_y][brick_x] = EBT_None;
         break;
 
+    case EBT_Unbreakable:
+        active_brick = new AActive_Brick_Unbreakable(brick_x, brick_y);
+        break;
+
     default:
-        return;
+        throw 14;
     }
 
     for (int i = 0; i < AsConfig::Max_Active_Bricks_Count; i++)
@@ -426,7 +433,13 @@ void AsLevel::Draw_Brick(HDC hdc, RECT brick_rect, EBrick_Type brick_type)
         brush = AsConfig::Brick_Blue_Brush;
         break;
 
+    case EBT_Unbreakable:
+        pen = AsConfig::Brick_White_Pen;
+        brush = AsConfig::Brick_White_Brush;
+        break;
+
     default:
+        throw 14;
         return;
     }
 

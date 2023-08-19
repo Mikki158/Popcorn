@@ -13,6 +13,7 @@ enum EBall_State
     EBS_On_Platform
 };
 
+class AHit_Checker;
 class ABall;
 
 class AHit_Checker
