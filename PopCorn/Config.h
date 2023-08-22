@@ -26,11 +26,23 @@ class AsEngine;
 class AColor
 {
 public:
-    unsigned char R, G, B;
+    AColor();
+    AColor(unsigned char r, unsigned char g, unsigned char b);
+    AColor(const AColor &color, int pen_size);
+    AColor(const AColor& pen_color, const AColor& brush_color, int pen_size);
+
+    void Select(HDC hdc) const;
+    void Select_Pen(HDC hdc) const;
 
     int Get_RGB() const;
+    HBRUSH Get_Brush() const;
 
-    AColor(unsigned char r, unsigned char g, unsigned char b);
+    unsigned char R, G, B;    
+
+
+private:
+    HPEN Pen;
+    HBRUSH Brush;
 };
 
 class AsConfig
@@ -43,7 +55,9 @@ public:
     static const int CELL_HEIGHT = 8;
     static const int LEVEL_WIDTH = 12; // ширина уровня в кирпичах
     static const int LEVEL_HEIGHT = 14; // высота уровня в кирпичах
+    static const AColor BG_Color;
     static bool Level_Has_Floor;
+
 
     // Engine
     static const int GLOBAL_SCALE = 3;
@@ -52,8 +66,6 @@ public:
     static const int MAX_Y_POS = 199;
     static int Current_Timer_Tick;
     static HWND HWnd;
-    static HPEN BG_Pen;
-    static HBRUSH BG_Brush;
 
     // Border
     static const int BORDER_X_OFFSET = 6;
@@ -65,25 +77,19 @@ public:
     // Brick
     static const int BRICK_WIDTH = 15;
     static const int BRICK_HEIGHT = 7;
-    static const int MAX_FADE_STEP = FPS;
     static const int Max_Active_Bricks_Count = 10;
     static const int Max_Falling_Letters_Count = 10;
     static const int Hits_Per_Letter = 10; // Вероятность выбить букву = 1.0 / Hits_Per_Letter
     
-    static const AColor Pink_Brick_Color, Blue_Brick_Color, BG_Color, White_Brick_Color;
-
-    static HPEN Brick_Pink_Pen, Brick_Blue_Pen, Letter_Pen, Brick_White_Pen;
-    static HBRUSH Brick_Pink_Brush, Brick_Blue_Brush, Brick_White_Brush;
+    static const AColor Pink_Color, Blue_Color, White_Color, Letter_Color;
 
 
     // Platform
     static const int Platform_Y_POS = 185;
     static const int Meltdown_Speed = 3;
 
+    static void Round_Rect(HDC hdc, RECT& rect, int corner_radius = 2);
+    static void Throw();
 
-
-    static void Setup_Color();
-    static void Create_Pen_Brush(const AColor& color, HPEN& hPen, HBRUSH& hBrush);
-    static void Create_Pen_Brush(unsigned char r, unsigned char g, unsigned char b, HPEN& hPen, HBRUSH& hBrush);
     static int Rand(int range);
 };

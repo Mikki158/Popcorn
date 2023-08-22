@@ -19,14 +19,13 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 
-int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
+int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
 	// TODO: Разместите код здесь.
 
-	AsConfig::Setup_Color();
 
 	// Инициализация глобальных строк
 	LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -76,7 +75,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 	wcex.hInstance = hInstance;
 	wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_POPCORN));
 	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
-	wcex.hbrBackground = AsConfig::BG_Brush;
+	wcex.hbrBackground = AsConfig::BG_Color.Get_Brush();
 	wcex.lpszMenuName = MAKEINTRESOURCEW(IDC_POPCORN);
 	wcex.lpszClassName = szWindowClass;
 	wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
@@ -238,16 +237,16 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 + 1.2.1 Без буквы - создается активный кирпич
 + 1.2.2 С буквой - создается падующая буква
 
-2. Неразрушаемый кирпич
-2.1 Анимация при попадании
++ 2. Неразрушаемый кирпич
++ 2.1 Анимация при попадании
 
-3. Многоразовый кирпич
-3.1 4 состояния кирпича (1-4 удара до разрушения)
-3.2 Переход по состояниям
-3.3 Анимация приза при разрушении (кирпич исчезает, анимация - остается)
++ 3. Многоразовый кирпич
++ 3.1 4 состояния кирпича (1-4 удара до разрушения)
++ 3.2 Переход по состояниям
++ 3.3 Анимация приза при разрушении (кирпич исчезает, анимация - остается)
 
-4. Кирпич с парашютом
-4.1 Анимация парашюта - как вариант падающей буквы
++ 4. Кирпич с парашютом
++ 4.1 Анимация парашюта - как вариант падающей буквы
 
 5. Кирпич телепортации
 5.1 Анимация при захвате и выпуске мяча

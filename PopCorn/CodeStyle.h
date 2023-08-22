@@ -2,6 +2,13 @@
 
 #include<iostream>
 
+enum ECode
+{
+	Epython,
+	Ejava,
+	Ecss
+};
+
 class Code;
 class CodeStyle;
 
@@ -42,4 +49,8 @@ public:
 	static int FooStaticInt();
 
 	static const int FooStaticConstInt();
+
+
+protected:
+
 };

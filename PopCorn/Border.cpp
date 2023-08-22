@@ -1,86 +1,15 @@
 ﻿#include "Border.h"
 
+// AsBorder
+//
 AsBorder::AsBorder()
-    :Border_Black_Brush(), Border_Black_Pen(), Border_Blue_Brush(), Border_Blue_Pen(), Border_White_Brush(), Border_White_Pen()
 {
 
 }
 
-void AsBorder::Init()
-{
-    AsConfig::Create_Pen_Brush(85, 255, 255, Border_Blue_Pen, Border_Blue_Brush);
-    AsConfig::Create_Pen_Brush(AsConfig::BG_Color, Border_Black_Pen, Border_Black_Brush);
-    AsConfig::Create_Pen_Brush(255, 255, 255, Border_White_Pen, Border_White_Brush);
-}
 
-void AsBorder::Draw_Element(HDC hdc, int x, int y, bool top_border)
-{
-    // основная линия
-    SelectObject(hdc, Border_Blue_Pen);
-    SelectObject(hdc, Border_Blue_Brush);
-
-    if (top_border)
-    {
-        Rectangle(hdc, x * AsConfig::GLOBAL_SCALE, (y + 1) * AsConfig::GLOBAL_SCALE,
-            (x + 4) * AsConfig::GLOBAL_SCALE - 1, (y + 4) * AsConfig::GLOBAL_SCALE) - 1;
-    }
-    else
-    {
-        Rectangle(hdc, (x + 1) * AsConfig::GLOBAL_SCALE, y * AsConfig::GLOBAL_SCALE,
-            (x + 4) * AsConfig::GLOBAL_SCALE - 1, (y + 4) * AsConfig::GLOBAL_SCALE) - 1;
-    }
-
-    // белая кайма
-    SelectObject(hdc, Border_White_Pen);
-    SelectObject(hdc, Border_White_Brush);
-
-    if (top_border)
-    {
-        Rectangle(hdc, x * AsConfig::GLOBAL_SCALE, y * AsConfig::GLOBAL_SCALE,
-            (x + 4) * AsConfig::GLOBAL_SCALE - 1, (y + 1) * AsConfig::GLOBAL_SCALE - 1);
-    }
-    else
-    {
-        Rectangle(hdc, x * AsConfig::GLOBAL_SCALE, y * AsConfig::GLOBAL_SCALE,
-            (x + 1) * AsConfig::GLOBAL_SCALE - 1, (y + 4) * AsConfig::GLOBAL_SCALE - 1);
-    }
-
-    // перфорация
-    SelectObject(hdc, Border_Black_Pen);
-    SelectObject(hdc, Border_Black_Brush);
-
-    if (top_border)
-    {
-        Rectangle(hdc, (x + 2) * AsConfig::GLOBAL_SCALE, (y + 2) * AsConfig::GLOBAL_SCALE,
-            (x + 3) * AsConfig::GLOBAL_SCALE - 1, (y + 3) * AsConfig::GLOBAL_SCALE - 1);
-    }
-    else
-    {
-        Rectangle(hdc, (x + 2) * AsConfig::GLOBAL_SCALE, (y + 1) * AsConfig::GLOBAL_SCALE,
-            (x + 3) * AsConfig::GLOBAL_SCALE - 1, (y + 2) * AsConfig::GLOBAL_SCALE - 1);
-    }
-
-}
-
-void AsBorder::Draw(HDC hdc)
-{
-    for (int i = 0; i < 50; i++)
-    {
-        Draw_Element(hdc, 2, 1 + i * 4, false);
-    }
-
-    for (int i = 0; i < 50; i++)
-    {
-        Draw_Element(hdc, 202, 1 + i * 4, false);
-    }
-
-    for (int i = 0; i < 50; i++)
-    {
-        Draw_Element(hdc, 3 + i * 4, 0, true);
-    }
-}
-
-bool AsBorder::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball)
+//
+bool AsBorder::Check_Hit(double next_x_pos, double next_y_pos, ABall* ball)
 {
     bool got_hit = false;
 
@@ -122,3 +51,72 @@ bool AsBorder::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball)
 
     return got_hit;
 }
+
+
+//
+void AsBorder::Draw_Element(HDC hdc, int x, int y, bool top_border)
+{
+    // основная линия
+    AsConfig::Blue_Color.Select(hdc);
+
+    if (top_border)
+    {
+        Rectangle(hdc, x * AsConfig::GLOBAL_SCALE, (y + 1) * AsConfig::GLOBAL_SCALE,
+            (x + 4) * AsConfig::GLOBAL_SCALE - 1, (y + 4) * AsConfig::GLOBAL_SCALE - 1);
+    }
+    else
+    {
+        Rectangle(hdc, (x + 1) * AsConfig::GLOBAL_SCALE, y * AsConfig::GLOBAL_SCALE,
+            (x + 4) * AsConfig::GLOBAL_SCALE - 1, (y + 4) * AsConfig::GLOBAL_SCALE - 1);
+    }
+
+    // белая кайма
+    AsConfig::White_Color.Select(hdc);
+
+    if (top_border)
+    {
+        Rectangle(hdc, x * AsConfig::GLOBAL_SCALE, y * AsConfig::GLOBAL_SCALE,
+            (x + 4) * AsConfig::GLOBAL_SCALE - 1, (y + 1) * AsConfig::GLOBAL_SCALE - 1);
+    }
+    else
+    {
+        Rectangle(hdc, x * AsConfig::GLOBAL_SCALE, y * AsConfig::GLOBAL_SCALE,
+            (x + 1) * AsConfig::GLOBAL_SCALE - 1, (y + 4) * AsConfig::GLOBAL_SCALE - 1);
+    }
+
+    // перфорация
+    AsConfig::BG_Color.Select(hdc);
+
+    if (top_border)
+    {
+        Rectangle(hdc, (x + 2) * AsConfig::GLOBAL_SCALE, (y + 2) * AsConfig::GLOBAL_SCALE,
+            (x + 3) * AsConfig::GLOBAL_SCALE - 1, (y + 3) * AsConfig::GLOBAL_SCALE - 1);
+    }
+    else
+    {
+        Rectangle(hdc, (x + 2) * AsConfig::GLOBAL_SCALE, (y + 1) * AsConfig::GLOBAL_SCALE,
+            (x + 3) * AsConfig::GLOBAL_SCALE - 1, (y + 2) * AsConfig::GLOBAL_SCALE - 1);
+    }
+
+}
+
+
+//
+void AsBorder::Draw(HDC hdc)
+{
+    for (int i = 0; i < 50; i++)
+    {
+        Draw_Element(hdc, 2, 1 + i * 4, false);
+    }
+
+    for (int i = 0; i < 50; i++)
+    {
+        Draw_Element(hdc, 202, 1 + i * 4, false);
+    }
+
+    for (int i = 0; i < 50; i++)
+    {
+        Draw_Element(hdc, 3 + i * 4, 0, true);
+    }
+}
+

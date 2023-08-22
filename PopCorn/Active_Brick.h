@@ -36,23 +36,21 @@ public:
 	virtual bool Is_Finished();
 
 	static void Setup_Color();
+	static void Draw_In_Level(HDC hdc, RECT brick_rect, EBrick_Type brick_type);
 
 private:
 	int fade_Step;
-	int level_x, level_y;
+
+	static const int MAX_FADE_STEP = AsConfig::FPS;
+
+	static AColor Fading_Blue_Brick_Colors[MAX_FADE_STEP];
+	static AColor Fading_Pink_Brick_Colors[MAX_FADE_STEP];
 
 
-	static HPEN Fading_Blue_Brick_Pens[AsConfig::MAX_FADE_STEP];
-	static HBRUSH Fading_Blue_Brick_Brushes[AsConfig::MAX_FADE_STEP];
-
-	static HPEN Fading_Pink_Brick_Pens[AsConfig::MAX_FADE_STEP];
-	static HBRUSH Fading_Pink_Brick_Brushes[AsConfig::MAX_FADE_STEP];
-
-
-	static const int MAX_UNBREAKABLE_ANIMATION_STEP = 5;
+	static const int MAX_ANIMATION_STEP = 5;
 	
 
-	static void Get_Fading_Color(const AColor& color, int step, HPEN& pen, HBRUSH& brush);
+	static void Get_Fading_Color(const AColor& origin_color, int step, AColor & result_color);
 
 	static unsigned char Get_Fading_Channel(unsigned char color, unsigned char bg_color, int step);
 };
@@ -67,13 +65,39 @@ public:
 	virtual void Act();
 	virtual bool Is_Finished();
 
+	static void Draw_In_Level(HDC hdc, RECT brick_rect);
+
 private:
-	int level_x, level_y;
-	int Unbreakable_Animation_Step;
+	int Animation_Step;
 
-	EBrick_Type Brick_Type;
-	RECT Brick_Rect;
+	static AColor Blue_Highlight, Pink_Highlight;
+	HRGN Region;
 
-	static const int MAX_UNBREAKABLE_ANIMATION_STEP = 5;
+	static const int MAX_ANIMATION_STEP = 12;
+};
+
+class AActive_Brick_Multihit : public AActive_Brick
+{
+public:
+	AActive_Brick_Multihit(int level_x, int level_y);
+	~AActive_Brick_Multihit();
+
+	virtual void Draw(HDC hdc, RECT& paint_area);
+	virtual void Act();
+	virtual bool Is_Finished();
+
+	static void Draw_In_Level(HDC hdc, RECT brick_rect, EBrick_Type brick_type);
+	
+
+private:
+	int Rotation_Step;
+
+	//static AColor Blue_Highlight, Pink_Highlight;
+	//HRGN Region;
+
+	static const int Steps_Per_Turn = 16;
+	static const int MAX_ROTATION_STEP = Steps_Per_Turn * 4;
+
+	static void Draw_Stage(HDC hdc, RECT brick_rect, int x, int width);
 };
 

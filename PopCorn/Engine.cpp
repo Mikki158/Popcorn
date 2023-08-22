@@ -1,11 +1,15 @@
 ﻿#include "Engine.h"
 
+// AsEngine
+//
 AsEngine::AsEngine()
     :Game_State(EGS_Lost_Ball)
 {
 
 }
 
+
+//
 void AsEngine::Init_Engine(HWND hwnd)// Настройка игры при старте
 {
     SYSTEMTIME sys_time;
@@ -16,16 +20,10 @@ void AsEngine::Init_Engine(HWND hwnd)// Настройка игры при ст�
     srand(file_time.dwLowDateTime);
 
     AsConfig::HWnd = hwnd;
-
-    //AsConfig::Create_Pen_Brush(AsConfig::BG_Color, BG_Pen, BG_Brush);   
-
     AActive_Brick_Pink_Blue::Setup_Color();
 
     
     Level.Init();
-    Platform.Init();
-    Ball.Init();
-    Border.Init();
 
     AFalling_Letter::Init();
      
@@ -36,13 +34,14 @@ void AsEngine::Init_Engine(HWND hwnd)// Настройка игры при ст�
     Level.Set_Current_Level(AsLevel::Level_01);
 
     Ball.Set_State(EBS_Lost, -10);
-    //Platform.Set_State(EPS_Normal);
 
     Platform.Redraw_Platform();
 
     SetTimer(AsConfig::HWnd, TIMER_ID, 1000 / AsConfig::FPS, 0);
 }
 
+
+//
 void AsEngine::Draw_Frame(HDC hdc, RECT& paint_area)// отрисовка экрана игры
 {  
     SetGraphicsMode(hdc, GM_ADVANCED);
@@ -57,6 +56,8 @@ void AsEngine::Draw_Frame(HDC hdc, RECT& paint_area)// отрисовка экр
     Ball.Draw(hdc, paint_area);
 }
 
+
+//
 int AsEngine::On_Key_Down(EKey_Type key_type)
 {
     switch (key_type)
@@ -81,6 +82,8 @@ int AsEngine::On_Key_Down(EKey_Type key_type)
     return 0;
 }
 
+
+//
 int AsEngine::On_Timer()
 {
     AsConfig::Current_Timer_Tick += 1;
@@ -132,6 +135,8 @@ int AsEngine::On_Timer()
     return 0;
 }
 
+
+//
 void AsEngine::Act()
 {
     Level.Act();
@@ -148,6 +153,8 @@ void AsEngine::Act()
     }
 }
 
+
+//
 void AsEngine::On_Falling_Letter(AFalling_Letter* falling_letter)
 {
     falling_letter->Finalize();
