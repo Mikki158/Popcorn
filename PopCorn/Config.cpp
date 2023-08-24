@@ -17,6 +17,13 @@ const AColor AsConfig::Pink_Color(255, 85, 255);
 const AColor AsConfig::Blue_Color(85, 255, 255);
 const AColor AsConfig::White_Color(255, 255, 255);
 const AColor AsConfig::Letter_Color(AsConfig::White_Color, AsConfig::GLOBAL_SCALE);
+const AColor AsConfig::Teleport_Portal_Color(AsConfig::Blue_Color, AsConfig::BG_Color, AsConfig::GLOBAL_SCALE);
+const AColor AsConfig::Blue_Highlight_Unbreakable(AsConfig::Blue_Color, AsConfig::GLOBAL_SCALE);
+const AColor AsConfig::Pink_Highlight_Unbreakable(AsConfig::Pink_Color, 3 * AsConfig::GLOBAL_SCALE);
+const AColor AsConfig::Advertisement_Pink_Table(AsConfig::Pink_Color, 2 * AsConfig::GLOBAL_SCALE);
+const AColor AsConfig::Advertisement_Blue_Table(0, 159, 159, AsConfig::GLOBAL_SCALE);
+
+
 
 
 // AColor
@@ -32,8 +39,8 @@ AColor::AColor()
 AColor::AColor(unsigned char r, unsigned char g, unsigned char b)
     :R(r), G(g), B(b), Pen(0), Brush(0)
 {
-    Pen = CreatePen(PS_SOLID, 0, RGB(r, g, b));
-    Brush = CreateSolidBrush(RGB(r, g, b));
+    Pen = CreatePen(PS_SOLID, 0, RGB(R, G, B));
+    Brush = CreateSolidBrush(RGB(R, G, B));
 
 }
 
@@ -52,6 +59,15 @@ AColor::AColor(const AColor& pen_color, const AColor& brush_color, int pen_size)
 {
     Pen = CreatePen(PS_SOLID, pen_size, pen_color.Get_RGB());
     Brush = CreateSolidBrush(brush_color.Get_RGB());
+}
+
+
+//
+AColor::AColor(unsigned char r, unsigned char g, unsigned char b, int pen_size)
+    :R(r), G(g), B(b), Pen(0), Brush(0)
+{
+    Pen = CreatePen(PS_SOLID, pen_size, RGB(R, G, B));
+    Brush = CreateSolidBrush(RGB(R, G, B));
 }
 
 

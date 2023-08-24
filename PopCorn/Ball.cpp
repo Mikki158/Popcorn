@@ -4,7 +4,7 @@ AHit_Checker* ABall::Hit_checkers[] = {};
 
 int ABall::Hit_Checkers_Count = 0;
 const double ABall::RADIUS = 2.0 - 0.5 / AsConfig::GLOBAL_SCALE;
-const double ABall::START_BALL_Y_POS = 181.0;
+const double ABall::START_BALL_Y_POS = 184.0;
 
 
 
@@ -52,6 +52,9 @@ void ABall::Draw(HDC hdc, RECT& paint_area)
 {
     RECT intersection_rect;
 
+    if ((Ball_State == EBS_Teleporting || Ball_State == EBS_Lost) && Ball_State == Prev_Ball_State)
+        return;
+
     if (IntersectRect(&intersection_rect, &paint_area, &Prev_Ball_Rect))
     {// очищаем фон
         
@@ -71,9 +74,6 @@ void ABall::Draw(HDC hdc, RECT& paint_area)
         return;
         break;
 
-    case EBS_On_Platform:
-        break;
-
     case EBS_On_Parachute:
         Draw_Parachute(hdc, paint_area);
         break;
@@ -82,6 +82,9 @@ void ABall::Draw(HDC hdc, RECT& paint_area)
         Clear_Parachute(hdc);
         Set_State(EBS_Normal, Center_X_Pos, Center_Y_Pos);
         break;
+
+    case EBS_Teleporting:
+        return;
 
     default:
         break;
@@ -99,6 +102,20 @@ void ABall::Draw(HDC hdc, RECT& paint_area)
 
 
 //
+void ABall::Draw_Teleporting(HDC hdc, int step)
+{
+    int top_y = Ball_Rect.top + step / 2;
+    int low_y = Ball_Rect.bottom - step / 2 - 1;
+
+    if (top_y >= low_y)
+        return;
+
+    AsConfig::White_Color.Select(hdc);
+    Ellipse(hdc, Ball_Rect.left, top_y, Ball_Rect.right - 1, low_y);
+}
+
+
+//
 void ABall::Move()
 {
     HWND hwnd = AsConfig::HWnd;
@@ -107,13 +124,15 @@ void ABall::Move()
     double next_x_pos, next_y_pos;
     int max_x_pos = AsConfig::MAX_X_POS;
     int max_y_pos = AsConfig::MAX_Y_POS;
+    
 
-    Result_Distance += Ball_Speed;
-
-    if (Ball_State == EBS_Lost || Ball_State == EBS_On_Platform)
+    if (Ball_State == EBS_Lost || Ball_State == EBS_On_Platform || Ball_State == EBS_Teleporting)
     {
         return;
     }
+
+    Prev_Ball_Rect = Ball_Rect;
+    Result_Distance += Ball_Speed;
 
     while (Result_Distance > AsConfig::STEP_SIZE)
     {
@@ -131,7 +150,7 @@ void ABall::Move()
         if (!got_hit)
         {
             // Мячик продолжает движение, если не взаимодействовал с другими объектами
-            Result_Distance -= AsConfig::STEP_SIZE;
+             Result_Distance -= AsConfig::STEP_SIZE;
 
             Center_X_Pos = next_x_pos;
             Center_Y_Pos = next_y_pos;
@@ -210,7 +229,7 @@ void ABall::Set_State(EBall_State new_state, double x_pos, double y_pos)
             AsConfig::Throw(); // В это состояние можно перейти только из EBS_On_Parachute
 
         Ball_Speed = 0.0;
-        Result_Distance = 0;
+        Result_Distance = 0.0;
         Redraw_Ball();
         Redraw_Parachute();
         break;
@@ -219,9 +238,22 @@ void ABall::Set_State(EBall_State new_state, double x_pos, double y_pos)
         AsConfig::Throw(); // Для постановки на парашют нужно вызвать специальный метод Set_On_parachute()
         break;
 
+    case EBS_Teleporting:
+        if (!(Ball_State == EBS_Normal || Ball_State == EBS_On_Parachute || Ball_State == EBS_Teleporting))
+            AsConfig::Throw(); // Только из этих состояний можно войти в телепорт мячик
 
+        Ball_Speed = 0.0;
+        Result_Distance = 0.0;
+        Center_X_Pos = x_pos;
+        Center_Y_Pos = y_pos;
+        Redraw_Ball();
+
+        if (Ball_State == EBS_On_Parachute)
+            Redraw_Parachute();
+        break;
 
     default:
+        AsConfig::Throw();
         break;
     }
 
@@ -283,6 +315,14 @@ void ABall::Set_On_Parachute(int brick_x, int brick_y)
     Center_Y_Pos = (double)(cell_y + Parachute_Size) - RADIUS * 2;
 
     Redraw_Parachute();
+}
+
+
+//
+void ABall::Get_Center(double& x_pos, double& y_pos)
+{
+    x_pos = Center_X_Pos;
+    y_pos = Center_Y_Pos;
 }
 
 
@@ -356,8 +396,6 @@ void ABall::Add_Hit_Checker(AHit_Checker* hit_checker)
 //
 void ABall::Redraw_Ball()
 {
-    Prev_Ball_Rect = Ball_Rect;
-
     Ball_Rect.left = (int)((Center_X_Pos - RADIUS) * AsConfig::GLOBAL_SCALE);
     Ball_Rect.top = (int)((Center_Y_Pos - RADIUS) * AsConfig::GLOBAL_SCALE);
     Ball_Rect.right = (int)((Center_X_Pos + RADIUS) * AsConfig::GLOBAL_SCALE);

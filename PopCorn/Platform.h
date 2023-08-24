@@ -4,7 +4,6 @@
 #include <math.h>
 #include <Windows.h>
 
-#include "Ball.h"
 #include "Falling_Letter.h"
 
 enum EPlatform_State

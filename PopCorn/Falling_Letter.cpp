@@ -20,17 +20,24 @@ AFalling_Letter::AFalling_Letter(EBrick_Type brick_type, ELetter_Type letter_typ
 
 
 //
+void AFalling_Letter::Clear(HDC hdc, RECT& paint_area)
+{
+    RECT intersection_rect;
+
+    // 1. Стираем предыдущее изображение
+    if (!IntersectRect(&intersection_rect, &paint_area, &Prev_Letter_Cell))
+        return;
+
+    AsConfig::BG_Color.Select(hdc);
+    Rectangle(hdc, Prev_Letter_Cell.left, Prev_Letter_Cell.top, Prev_Letter_Cell.right, Prev_Letter_Cell.bottom);
+}
+
+
+//
 void AFalling_Letter::Draw(HDC hdc, RECT& paint_area)
 {
     RECT intersection_rect;
 
-    if (IntersectRect(&intersection_rect, &paint_area, &Prev_Letter_Cell))
-    {
-        // очищаем фон
-        AsConfig::BG_Color.Select(hdc);
-
-        Rectangle(hdc, Prev_Letter_Cell.left, Prev_Letter_Cell.top, Prev_Letter_Cell.right, Prev_Letter_Cell.bottom);
-    }
 
     if (Falling_Latter_State == EFLS_Finalizing)
     {

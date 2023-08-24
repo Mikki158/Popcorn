@@ -16,19 +16,58 @@ AGraphics_Object::~AGraphics_Object()
  
 // AActive_Brick
 //
+void AActive_Brick::Get_Level_Pos(int& dest_brick_x, int& dest_brick_y)
+{
+    dest_brick_x = Level_X;
+    dest_brick_y = Level_Y;
+}
+
+
+//
+AActive_Brick::AActive_Brick(EBrick_Type brick_type, int level_x, int level_y)
+    :Brick_Rect(), Brick_Type(brick_type), Level_X(level_x), Level_Y(level_y)
+{
+    Brick_Rect.left = (AsConfig::LEVEL_X_OFFSET + level_x * AsConfig::CELL_WIDTH) * AsConfig::GLOBAL_SCALE;
+    Brick_Rect.top = (AsConfig::LEVEL_Y_OFFSET + level_y * AsConfig::CELL_HEIGHT) * AsConfig::GLOBAL_SCALE;
+    Brick_Rect.right = Brick_Rect.left + AsConfig::BRICK_WIDTH * AsConfig::GLOBAL_SCALE;
+    Brick_Rect.bottom = Brick_Rect.top + AsConfig::BRICK_HEIGHT * AsConfig::GLOBAL_SCALE;
+}
+
+
+//
 AActive_Brick::~AActive_Brick()
 {
 }
 
 
 //
-AActive_Brick::AActive_Brick(EBrick_Type brick_type, int level_x, int level_y)
-    :Brick_Rect(), Brick_Type(brick_type)
+void AActive_Brick::Clear(HDC hdc, RECT& paint_area)
 {
-    Brick_Rect.left = (AsConfig::LEVEL_X_OFFSET + level_x * AsConfig::CELL_WIDTH) * AsConfig::GLOBAL_SCALE;
-    Brick_Rect.top = (AsConfig::LEVEL_Y_OFFSET + level_y * AsConfig::CELL_HEIGHT) * AsConfig::GLOBAL_SCALE;
-    Brick_Rect.right = Brick_Rect.left + AsConfig::BRICK_WIDTH * AsConfig::GLOBAL_SCALE;
-    Brick_Rect.bottom = Brick_Rect.top + AsConfig::BRICK_HEIGHT * AsConfig::GLOBAL_SCALE;
+
+}
+
+
+//
+double AActive_Brick::Get_Brick_X_Pos(bool of_center)
+{
+    double pos = (double)(AsConfig::LEVEL_X_OFFSET + Level_X * AsConfig::CELL_WIDTH);
+
+    if (of_center)
+        pos += (double)AsConfig::BRICK_WIDTH / 2;
+
+    return pos;
+}
+
+
+//
+double AActive_Brick::Get_Brick_Y_Pos(bool of_center)
+{
+    double pos = (double)(AsConfig::LEVEL_Y_OFFSET + Level_Y * AsConfig::CELL_HEIGHT);
+
+    if (of_center)
+        pos += (double)AsConfig::BRICK_HEIGHT / 2;
+
+    return pos;
 }
 
 
@@ -159,9 +198,6 @@ void AActive_Brick_Pink_Blue::Get_Fading_Color(const AColor &origin_color, int s
 
 
 // AActive_Brick_Unbreakable
-AColor AActive_Brick_Unbreakable::Blue_Highlight(AsConfig::Blue_Color, AsConfig::GLOBAL_SCALE);
-AColor AActive_Brick_Unbreakable::Pink_Highlight(AsConfig::Pink_Color, 3 * AsConfig::GLOBAL_SCALE);
-
 //
 AActive_Brick_Unbreakable::AActive_Brick_Unbreakable(int level_x, int level_y)
     :AActive_Brick(EBT_Unbreakable, level_x, level_y), Animation_Step(0), Region(0)
@@ -193,17 +229,16 @@ void AActive_Brick_Unbreakable::Draw(HDC hdc, RECT& paint_area)
 
     offset = 2 * Animation_Step * scale - AsConfig::BRICK_WIDTH * scale;
 
-    Blue_Highlight.Select_Pen(hdc);
+    AsConfig::Blue_Highlight_Unbreakable.Select_Pen(hdc);
     MoveToEx(hdc, Brick_Rect.left + 4 * scale + offset, Brick_Rect.bottom + scale, 0);
     LineTo(hdc, Brick_Rect.left + 13 * scale - 1 + offset, Brick_Rect.top - 1 * scale);
 
     
-    Pink_Highlight.Select_Pen(hdc);
+    AsConfig::Pink_Highlight_Unbreakable.Select_Pen(hdc);
     MoveToEx(hdc, Brick_Rect.left + 6 * scale + offset, Brick_Rect.bottom + scale, 0);
     LineTo(hdc, Brick_Rect.left + 15 * scale - 1 + offset, Brick_Rect.top - 1 * scale);
 
     SelectClipRgn(hdc, 0);
-
 }
 
 
@@ -239,8 +274,6 @@ void AActive_Brick_Unbreakable::Draw_In_Level(HDC hdc, RECT brick_rect)
 
 
 // AActive_Brick_Multihit
-//AColor AActive_Brick_Multihit::Blue_Highlight(AsConfig::Blue_Color, AsConfig::GLOBAL_SCALE);
-//AColor AActive_Brick_Multihit::Pink_Highlight(AsConfig::Pink_Color, 3 * AsConfig::GLOBAL_SCALE);
 //
 AActive_Brick_Multihit::AActive_Brick_Multihit(int level_x, int level_y)
     :AActive_Brick(EBT_Multihit_1, level_x, level_y), Rotation_Step(0)
@@ -392,4 +425,345 @@ void AActive_Brick_Multihit::Draw_Stage(HDC hdc, RECT brick_rect, int x, int wid
     AsConfig::Blue_Color.Select(hdc);
     Rectangle(hdc, stage_rect.left, stage_rect.top, stage_rect.right - 1, stage_rect.bottom - 1);
 
+}
+
+
+
+// AActive_Brick_Teleport
+//
+AActive_Brick_Teleport::AActive_Brick_Teleport(int level_x, int level_y, ABall *ball, AActive_Brick_Teleport *destination_teleport)
+    :AActive_Brick(EBT_Teleport, level_x, level_y), Animation_Step(0), Ball(0), Destination_Teleport(destination_teleport),
+    Teleport_State(ETS_Starting)
+{
+    Set_Ball(ball);
+}
+
+
+//
+AActive_Brick_Teleport::~AActive_Brick_Teleport()
+{
+    //DeleteObject(Region);
+}
+
+
+//
+void AActive_Brick_Teleport::Draw(HDC hdc, RECT& paint_area)
+{
+    int step;
+
+
+    switch (Teleport_State)
+    {
+    case ETS_Starting:
+        step = Animation_Step;
+        break;
+
+    case ETS_Finishing:
+        step = Max_Animation_Step - Animation_Step;
+        break;
+
+    default:
+        step = 0;
+    }
+
+    Draw_In_Level(hdc, Brick_Rect, step);
+
+
+    if(Ball != nullptr)
+        Ball->Draw_Teleporting(hdc, step);
+}
+
+
+//
+void AActive_Brick_Teleport::Act()
+{
+    double ball_x, ball_y;
+    double direction;
+
+    //if (AsConfig::Current_Timer_Tick % 5 != 0)
+    //    return; 
+
+    if (Animation_Step <= Max_Animation_Step)
+    {
+        Animation_Step++;
+        InvalidateRect(AsConfig::HWnd, &Brick_Rect, FALSE);
+    }
+    else
+    {
+        switch (Teleport_State)
+        {
+        case ETS_Starting:
+            Animation_Step = 0;
+            Teleport_State = ETS_Finishing;
+            if (Destination_Teleport != nullptr)
+            {
+                Destination_Teleport->Set_Ball(Ball);
+                Ball = nullptr;
+            }
+            break;
+
+        case ETS_Finishing:
+            Teleport_State = ETS_Done;
+
+            if (Ball != nullptr)
+            {
+                switch (Relese_Direction)
+                {
+                case EDT_Left:
+                    ball_x = Get_Brick_X_Pos(false) - ABall::RADIUS;
+                    ball_y = Get_Brick_Y_Pos(true);
+                    break;
+
+                case EDT_Up:
+                    ball_x = Get_Brick_X_Pos(true);
+                    ball_y = Get_Brick_Y_Pos(false) - ABall::RADIUS;
+                    break;
+
+                case EDT_Right:
+                    ball_x = Get_Brick_X_Pos(false) + (double)AsConfig::BRICK_WIDTH + ABall::RADIUS;
+                    ball_y = Get_Brick_Y_Pos(true);
+                    break;
+
+                case EDT_Down:
+                    ball_x = Get_Brick_X_Pos(true);
+                    ball_y = Get_Brick_Y_Pos(false) + (double)AsConfig::BRICK_HEIGHT + ABall::RADIUS;
+                    break;
+
+                default:
+                    AsConfig::Throw();
+                    break;
+                }
+
+                direction = Ball->Get_Direction();
+                Ball->Set_State(EBS_Normal, ball_x, ball_y);
+                Ball->Set_Direction(direction);
+
+                Ball = nullptr; // Отмечаем мячик как отсутствующий в телепорте
+                InvalidateRect(AsConfig::HWnd, &Brick_Rect, FALSE);
+            }
+            break;
+        }
+    }
+}
+
+
+//
+bool AActive_Brick_Teleport::Is_Finished()
+{
+    if(Teleport_State == ETS_Done)
+        return true;
+    else
+        return false;
+}
+
+
+//
+void AActive_Brick_Teleport::Draw_In_Level(HDC hdc, RECT brick_rect, int step)
+{// Вывод неактивного кирпича на уровень
+
+    const int scale = AsConfig::GLOBAL_SCALE;
+    int left_x = brick_rect.left + 3 * scale + 1;
+    int top_y = brick_rect.top + step / 2 + 1;
+    int right_x = brick_rect.left + 11 * scale + 1;
+    int bottom_y = brick_rect.top + 6 * scale - step / 2 + 1;
+
+    // 1. Фон
+    AsConfig::Pink_Color.Select(hdc);
+    AsConfig::Round_Rect(hdc, brick_rect);
+
+    // 2. Тень
+    AsConfig::BG_Color.Select(hdc);
+    Ellipse(hdc, brick_rect.left + (double)AsConfig::BRICK_WIDTH / 2 * scale, top_y, right_x + scale, bottom_y);
+
+    // 2. Портал
+    AsConfig::Teleport_Portal_Color.Select(hdc);
+    Ellipse(hdc, left_x, top_y, right_x, bottom_y);
+}
+
+
+//
+void AActive_Brick_Teleport::Set_Ball(ABall* ball)
+{
+    double ball_x, ball_y;
+
+    // Ставим мячик в центр кирпича
+    ball_x = Get_Brick_X_Pos(true);
+    ball_y = Get_Brick_Y_Pos(true);
+
+    if (ball != nullptr)
+    {
+        ball->Set_State(EBS_Teleporting, ball_x, ball_y);
+    }
+    Ball = ball;
+    
+}
+
+
+
+// AAdvertisement
+//
+AAdvertisement::AAdvertisement(int level_x, int level_y, int width, int height)
+    :Level_X(level_x), Level_Y(level_y), Width(width), Height(height)
+{
+    Ad_Rect.left = (AsConfig::LEVEL_X_OFFSET + Level_X * AsConfig::CELL_WIDTH) * AsConfig::GLOBAL_SCALE;
+    Ad_Rect.top = (AsConfig::LEVEL_Y_OFFSET + Level_Y * AsConfig::CELL_HEIGHT) * AsConfig::GLOBAL_SCALE;
+    Ad_Rect.right = Ad_Rect.left + width * AsConfig::CELL_WIDTH * AsConfig::GLOBAL_SCALE;
+    Ad_Rect.bottom = Ad_Rect.left + height * AsConfig::CELL_HEIGHT * AsConfig::GLOBAL_SCALE;
+}
+
+
+//
+void AAdvertisement::Clear(HDC hdc, RECT& paint_area)
+{
+
+}
+
+
+//
+void AAdvertisement::Draw(HDC hdc, RECT& paint_area)
+{
+    const int scale = AsConfig::GLOBAL_SCALE;
+    RECT intersection_rect;
+
+    if (!IntersectRect(&intersection_rect, &paint_area, &Ad_Rect))
+        return;
+
+
+    // 1. Стол
+    // 1.1 Белая поверхность
+
+    AsConfig::White_Color.Select(hdc);
+
+    MoveToEx(hdc, Ad_Rect.left + 1, Ad_Rect.top + 15 * scale, 0);
+    LineTo(hdc, Ad_Rect.left + 15 * scale + 1, Ad_Rect.top + 10 * scale);
+    LineTo(hdc, Ad_Rect.left + 30 * scale + 1, Ad_Rect.top + 15 * scale);
+    LineTo(hdc, Ad_Rect.left + 15 * scale + 1, Ad_Rect.top + 20 * scale);
+    LineTo(hdc, Ad_Rect.left + 1, Ad_Rect.top + 15 * scale);
+
+    FloodFill(hdc, Ad_Rect.left + 15 * scale, Ad_Rect.top + 15 * scale, AsConfig::White_Color.Get_RGB());
+
+    // 2. Тень под шариком
+    // 2.1 Синий элипс размер 8x6, пока шарик полностью над "столом"
+    
+    AsConfig::Blue_Color.Select(hdc);
+
+    Ellipse(hdc, Ad_Rect.left + 11 * scale + 1, Ad_Rect.top + 14 * scale,
+        Ad_Rect.left + 20 * scale, Ad_Rect.top + 18 * scale - 1);
+
+    // 2.2 Уезжает вниз, когда шарик в верхней точке
+    // 2.3 Увеличивается, когда шарик плющится
+
+    // 3. Борта
+    // 3.2 Синяя кайма толщиной в 1 игровой пиксель
+    
+    AsConfig::Advertisement_Blue_Table.Select(hdc);
+
+    MoveToEx(hdc, Ad_Rect.left + 1, Ad_Rect.top + 15 * scale, 0);
+    LineTo(hdc, Ad_Rect.left + 15 * scale + 1, Ad_Rect.top + 10 * scale);
+    LineTo(hdc, Ad_Rect.left + 30 * scale + 1, Ad_Rect.top + 15 * scale);
+    LineTo(hdc, Ad_Rect.left + 15 * scale + 1, Ad_Rect.top + 20 * scale);
+    LineTo(hdc, Ad_Rect.left + 1, Ad_Rect.top + 15 * scale);
+
+
+    // 3.3 Красный борт толщиной в 1 игровой пиксель
+
+    AsConfig::Advertisement_Pink_Table.Select(hdc);
+    MoveToEx(hdc, Ad_Rect.left + scale - 1, Ad_Rect.top + 16 * scale, 0);
+    LineTo(hdc, Ad_Rect.left + 15 * scale + 1, Ad_Rect.top + 21 * scale);
+    LineTo(hdc, Ad_Rect.left + 30 * scale, Ad_Rect.top + 16 * scale);
+
+    // 4. Шарик
+    // 4.1 Красный элипс 12x12
+    
+    AsConfig::Pink_Color.Select(hdc);
+
+    Ellipse(hdc, Ad_Rect.left + 9 * scale + 1, Ad_Rect.top + 2 * scale, 
+        Ad_Rect.left + 21 * scale + 1, Ad_Rect.top + 14 * scale);
+
+    // 4.2 Блик сверху
+    // 4.3 Летает вверх/вниз (по затухающей траектории)
+    // 4.4 Сплющивается внизу до 16x9
+    
+    // 5. Рамка
+    // 5.1 Тонкая синяя рамка со скругленными углами
+
+}
+
+
+//
+void AAdvertisement::Act()
+{
+
+}
+
+
+//
+bool AAdvertisement::Is_Finished()
+{
+    return false; // Реклама не заканчивается никогда
+}
+
+
+
+// AActive_Brick_Ad
+//
+AActive_Brick_Ad::AActive_Brick_Ad(int level_x, int level_y)
+    :AActive_Brick(EBT_Unbreakable, level_x, level_y)
+{
+}
+
+
+//
+AActive_Brick_Ad::~AActive_Brick_Ad()
+{
+}
+
+
+//
+void AActive_Brick_Ad::Draw(HDC hdc, RECT& paint_area)
+{
+}
+
+
+//
+void AActive_Brick_Ad::Act()
+{
+    //if (Animation_Step <= MAX_ANIMATION_STEP)
+    //{
+    //    Animation_Step++;
+        InvalidateRect(AsConfig::HWnd, &Brick_Rect, FALSE);
+    //}
+}
+
+
+//
+bool AActive_Brick_Ad::Is_Finished()
+{
+    //if (Animation_Step >= MAX_ANIMATION_STEP - 1)
+    //    return true;
+    //else
+        return false;
+}
+
+
+//
+void AActive_Brick_Ad::Draw_In_Level(HDC hdc, RECT brick_rect)
+{
+    const int scale = AsConfig::GLOBAL_SCALE;
+    int x = brick_rect.left;
+    int y = brick_rect.top;
+    int size = (Circle_Size - 1) * scale - 1;
+
+    for (int i = 0; i < 2; i++)
+    {
+        // 1. Рисуем шарик
+        AsConfig::Pink_Color.Select(hdc);
+        Ellipse(hdc, x, y, x + 7 * scale - 1, brick_rect.bottom - 1);
+
+        // 2. Рисуем блик
+        AsConfig::Letter_Color.Select(hdc);
+        Arc(hdc, x + scale, y + scale, x + size, y + size, x + 2 * scale, y + scale, x + scale, y + 3 * scale);
+
+        x += 8 * scale;
+    }    
 }

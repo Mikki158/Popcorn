@@ -12,7 +12,8 @@ enum EBall_State
     EBS_Lost,
     EBS_On_Platform,
     EBS_On_Parachute,
-    EBS_Off_Parachute
+    EBS_Off_Parachute,
+    EBS_Teleporting
 };
 
 class AHit_Checker;
@@ -36,12 +37,14 @@ public:
 
     
     void Draw(HDC hdc, RECT& paint_area);
+    void Draw_Teleporting(HDC hdc, int step);
     void Move();
     void Set_For_Test();
     void Set_State(EBall_State new_state, double x_pos, double y_pos = START_BALL_Y_POS);
     void Set_Direction(double new_direction);
     void Reflect(bool from_horizontal);
     void Set_On_Parachute(int brick_x, int brick_y);
+    void Get_Center(double& x_pos, double& y_pos);
 
     bool Is_Test_Finished();
     bool Is_Moving_Up();

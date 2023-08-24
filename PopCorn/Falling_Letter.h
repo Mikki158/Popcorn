@@ -34,6 +34,7 @@ public:
     AFalling_Letter(EBrick_Type brick_type, ELetter_Type letter_type, int x, int y);
 
 
+    virtual void Clear(HDC hdc, RECT& paint_area);
     virtual void Draw(HDC hdc, RECT& paint_area);
     virtual void Act();
     virtual bool Is_Finished();

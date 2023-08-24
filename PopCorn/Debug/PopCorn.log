@@ -1,15 +1,3 @@
 ﻿  Active_Brick.cpp
-  Ball.cpp
-  Border.cpp
-  Config.cpp
-  Engine.cpp
-D:\Work\PopCornProject\PopCorn\Popcorn\PopCorn\Engine.cpp(147,29): warning C4101: 'platform_rect': unreferenced local variable
-D:\Work\PopCornProject\PopCorn\Popcorn\PopCorn\Engine.cpp(147,10): warning C4101: 'intersection_rect': unreferenced local variable
-D:\Work\PopCornProject\PopCorn\Popcorn\PopCorn\Engine.cpp(147,44): warning C4101: 'falling_letter_rect': unreferenced local variable
-  Falling_Letter.cpp
-  Level.cpp
-D:\Work\PopCornProject\PopCorn\Popcorn\PopCorn\Level.cpp(296,10): warning C4101: 'rect': unreferenced local variable
-  Mian.cpp
-  Platform.cpp
-  Generating Code...
+D:\Work\PopCornProject\PopCorn\Popcorn\PopCorn\Active_Brick.cpp(576,34): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
   PopCorn.vcxproj -> D:\Work\PopCornProject\PopCorn\Popcorn\Debug\PopCorn.exe
