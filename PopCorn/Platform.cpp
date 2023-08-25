@@ -270,13 +270,16 @@ void AsPlatform::Draw_Normal_State(HDC hdc, RECT& paint_area)
     int offset = 0;
     int x = X_Pos;
     int y = AsConfig::Platform_Y_POS;
+    const int scale = AsConfig::GLOBAL_SCALE;
+    int size = (CIRCLE_SIZE - 1) * scale - 1;
+    
 
     RECT inner_rect;
     
 
     Clear_BG(hdc);
 
-    // Рисуем боковые шарики
+    // 1. Рисуем боковые шарики
     Platform_Circle_Color.Select(hdc);
 
     Ellipse(hdc, x * AsConfig::GLOBAL_SCALE, y * AsConfig::GLOBAL_SCALE, (x + CIRCLE_SIZE) * AsConfig::GLOBAL_SCALE - 1,
@@ -284,9 +287,9 @@ void AsPlatform::Draw_Normal_State(HDC hdc, RECT& paint_area)
     Ellipse(hdc, (x + Inner_width) * AsConfig::GLOBAL_SCALE, y * AsConfig::GLOBAL_SCALE,
         (x + Inner_width + CIRCLE_SIZE) * AsConfig::GLOBAL_SCALE - 1, (y + CIRCLE_SIZE) * AsConfig::GLOBAL_SCALE - 1);
 
-    // Рисуем среднюю платформу
-    Platform_Inner_Color.Select(hdc);
 
+    // 2. Рисуем среднюю платформу
+    Platform_Inner_Color.Select(hdc);
 
     inner_rect.left = (x + 4) * AsConfig::GLOBAL_SCALE;
     inner_rect.top = (y + 1) * AsConfig::GLOBAL_SCALE;

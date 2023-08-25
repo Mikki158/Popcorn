@@ -17,7 +17,8 @@ enum EBrick_Type
     EBT_Multihit_4,
     EBT_Parachute,
     EBT_Teleport,
-    EBT_Ad
+    EBT_Ad,
+    EBT_Invisible
 };
 
 class AColor;
@@ -73,6 +74,7 @@ public:
     static const int BORDER_Y_OFFSET = 4;
 
     // Ball
+    static const int Max_Balls_Count = 10;
     static const double STEP_SIZE;
 
     // Brick
@@ -80,7 +82,7 @@ public:
     static const int BRICK_HEIGHT = 7;
     static const int Max_Active_Bricks_Count = 10;
     static const int Max_Falling_Letters_Count = 10;
-    static const int Hits_Per_Letter = 1; // Вероятность выбить букву = 1.0 / Hits_Per_Letter
+    static const int Hits_Per_Letter = 10; // Вероятность выбить букву = 1.0 / Hits_Per_Letter
     
     static const AColor Pink_Color, Blue_Color, White_Color, Letter_Color, Teleport_Portal_Color, Blue_Highlight_Unbreakable, 
         Pink_Highlight_Unbreakable, Advertisement_Pink_Table, Advertisement_Blue_Table;

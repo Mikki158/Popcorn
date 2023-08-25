@@ -45,11 +45,13 @@ public:
 private:
     EGame_State Game_State;
 
-    ABall Ball;
+    //ABall Ball;
     AsLevel Level;
     AsPlatform Platform;
     AsBorder Border;
     //AActive_Brick_Pink_Blue Active_Brick;
+
+    ABall Balls[AsConfig::Max_Balls_Count];
 
     void Act();
     void On_Falling_Letter(AFalling_Letter* falling_letter);

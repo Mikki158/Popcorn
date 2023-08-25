@@ -1,3 +1,5 @@
-﻿  Active_Brick.cpp
-D:\Work\PopCornProject\PopCorn\Popcorn\PopCorn\Active_Brick.cpp(576,34): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+﻿  Level.cpp
+D:\Work\PopCornProject\PopCorn\Popcorn\PopCorn\Level.cpp(404,10): warning C4101: 'rect': unreferenced local variable
+D:\Work\PopCornProject\PopCorn\Popcorn\PopCorn\Level.cpp(594,9): warning C4101: 'another_brick_x': unreferenced local variable
+D:\Work\PopCornProject\PopCorn\Popcorn\PopCorn\Level.cpp(594,26): warning C4101: 'another_brick_y': unreferenced local variable
   PopCorn.vcxproj -> D:\Work\PopCornProject\PopCorn\Popcorn\Debug\PopCorn.exe

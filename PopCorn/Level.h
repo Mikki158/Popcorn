@@ -56,7 +56,7 @@ private:
     void Act_Objects(AGraphics_Object** object_array, int objects_max_count, int& count);
     void Clear_Objects(HDC hdc, RECT& paint_area, AGraphics_Object** object_array, int objects_max_count);
     void Draw_Objects(HDC hdc, RECT& paint_area, AGraphics_Object** object_array, int max_count);
-    void Draw_Brick(HDC hdc, RECT Brick_Rect, EBrick_Type brick_type);
+    void Draw_Brick(HDC hdc, RECT Brick_Rect, int level_x, int level_y);
     void Draw_Parachute_in_Level(HDC hdc, RECT brick_rect);
     void Draw_Parachute_Part(HDC hdc, RECT brick_rect, int offset, int width);
     void Redraw_Brick(int brick_x, int brick_y);

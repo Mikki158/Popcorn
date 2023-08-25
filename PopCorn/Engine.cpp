@@ -33,7 +33,8 @@ void AsEngine::Init_Engine(HWND hwnd)// Настройка игры при ст�
 
     Level.Set_Current_Level(AsLevel::Level_01);
 
-    Ball.Set_State(EBS_Lost, -10);
+    for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
+        Balls[i].Set_State(EBS_Lost, -10);
 
     Platform.Redraw_Platform();
 
@@ -48,12 +49,13 @@ void AsEngine::Draw_Frame(HDC hdc, RECT& paint_area)// отрисовка экр
 
 
     Level.Draw(hdc, paint_area); 
-    
     Border.Draw(hdc);
-    
     Platform.Draw(hdc, paint_area);
     
-    Ball.Draw(hdc, paint_area);
+    for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
+        Balls[i].Draw(hdc, paint_area);
+
+    //Ball.Draw(hdc, paint_area);
 }
 
 
@@ -73,8 +75,11 @@ int AsEngine::On_Key_Down(EKey_Type key_type)
     case EKT_Space:
         if (Platform.Get_State() == EPS_Ready)
         {
+            for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
+                if(Balls[i].Get_State() == EBS_On_Platform)
+                    Balls[i].Set_State(EBS_Normal, Platform.X_Pos + Platform.Width / 2);
+
             Platform.Set_State(EPS_Normal);
-            Ball.Set_State(EBS_Normal, Platform.X_Pos + Platform.Width / 2);
         }
         break;
 
@@ -91,23 +96,25 @@ int AsEngine::On_Timer()
     switch (Game_State)
     {
     case EGS_Test_Ball:
-        Ball.Set_For_Test();
+        Balls[0].Set_For_Test(); // В повторяющихся тестах участвует только 0-й мячик
         Game_State = EGS_Play_Level;
         break;
 
     case EGS_Play_Level:
-        Ball.Move();
-
-        if (Ball.Get_State() == EBS_Lost)
+        for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
         {
-            Game_State = EGS_Lost_Ball;
-            Platform.Set_State(EPS_Meltdown);
+            Balls[i].Move();
+
+            if (Balls[i].Get_State() == EBS_Lost)
+            {
+                Game_State = EGS_Lost_Ball;
+                Platform.Set_State(EPS_Meltdown);
+            }
         }
 
-        if (Ball.Is_Test_Finished())
-        {
-            Game_State = EGS_Test_Ball;
-        }
+        if (Balls[0].Is_Test_Finished())
+            Game_State = EGS_Test_Ball; // В повторяющихся тестах участвует только 0-й мячик
+
         break;
 
     case EGS_Lost_Ball:
@@ -122,7 +129,8 @@ int AsEngine::On_Timer()
         if (Platform.Get_State() == EPS_Ready)
         {
             Game_State = EGS_Play_Level;
-            Ball.Set_State(EBS_On_Platform, Platform.X_Pos + Platform.Width / 2);
+            for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
+                Balls[i].Set_State(EBS_On_Platform, Platform.X_Pos + Platform.Width / 2);
         }
         break;
 

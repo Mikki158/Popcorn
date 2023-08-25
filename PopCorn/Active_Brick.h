@@ -161,24 +161,40 @@ class AAdvertisement : public AGraphics_Object
 {
 public:
 	AAdvertisement(int level_x, int level_y, int width, int height);
+	~AAdvertisement();
 
 	virtual void Clear(HDC hdc, RECT& paint_area);
 	virtual void Draw(HDC hdc, RECT& paint_area);
 	virtual void Act();
 	virtual bool Is_Finished();
 
+	void Show_Under_Brick(int Level_X, int Level_Y);
+	bool Has_Brick_At(int level_x, int level_y);
+
 private:
 	int Level_X, Level_Y;
 	int Width, Height;
+	int Ball_X, Ball_Y;
+	int Ball_Width, Ball_Height;
+	int Ball_Y_Offset;
+	double Falling_Speed, Acceleration_Step;
+	double Deformation_Ratio;
+	HRGN *Brick_Regions;
 
+	HRGN Empt_Region;
 	RECT Ad_Rect;
+
+	static const int Ball_Size = 12;
+	static const int High_Ball_Threshold = 12 * AsConfig::GLOBAL_SCALE;
+	static const int Low_Ball_Threshold = -3 * AsConfig::GLOBAL_SCALE;
+	static const int Deformation_Height = 2 * AsConfig::GLOBAL_SCALE;
 };
 
 
 class AActive_Brick_Ad : public AActive_Brick
 {
 public:
-	AActive_Brick_Ad(int level_x, int level_y);
+	AActive_Brick_Ad(int level_x, int level_y, AAdvertisement* advertisement);
 	~AActive_Brick_Ad();
 
 	virtual void Draw(HDC hdc, RECT& paint_area);
@@ -190,6 +206,8 @@ public:
 
 private:
 	static const int Circle_Size = 7;
+
+	AAdvertisement* Advertisement;
 };
 
 
