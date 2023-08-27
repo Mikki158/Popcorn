@@ -33,8 +33,8 @@ void AsEngine::Init_Engine(HWND hwnd)// Настройка игры при ст�
 
     Level.Set_Current_Level(AsLevel::Level_01);
 
-    for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
-        Balls[i].Set_State(EBS_Lost, -10);
+   //for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
+   //    Balls[i].Set_State(EBS_Disabled, -10);
 
     Platform.Redraw_Platform();
 
@@ -60,27 +60,28 @@ void AsEngine::Draw_Frame(HDC hdc, RECT& paint_area)// отрисовка экр
 
 
 //
-int AsEngine::On_Key_Down(EKey_Type key_type)
+int AsEngine::On_Key(EKey_Type key_type, bool key_down)
 {
     switch (key_type)
     {
     case EKT_Left:
-        Platform.Move(true);
+        Platform.Move(true, key_down);
         break;
 
     case EKT_Right:
-        Platform.Move(false);
+        Platform.Move(false, key_down);
         break;
 
     case EKT_Space:
-        if (Platform.Get_State() == EPS_Ready)
-        {
-            for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
-                if(Balls[i].Get_State() == EBS_On_Platform)
-                    Balls[i].Set_State(EBS_Normal, Platform.X_Pos + Platform.Width / 2);
+        if(key_down)
+            if (Platform.Get_State() == EPS_Ready)
+            {
+                for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
+                    if(Balls[i].Get_State() == EBS_On_Platform)
+                        Balls[i].Set_State(EBS_Normal, Platform.Get_Middle_Pos(), AsConfig::START_BALL_Y_POS);
 
-            Platform.Set_State(EPS_Normal);
-        }
+                Platform.Set_State(EPS_Normal);
+            }
         break;
 
     }
@@ -101,20 +102,7 @@ int AsEngine::On_Timer()
         break;
 
     case EGS_Play_Level:
-        for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
-        {
-            Balls[i].Move();
-
-            if (Balls[i].Get_State() == EBS_Lost)
-            {
-                Game_State = EGS_Lost_Ball;
-                Platform.Set_State(EPS_Meltdown);
-            }
-        }
-
-        if (Balls[0].Is_Test_Finished())
-            Game_State = EGS_Test_Ball; // В повторяющихся тестах участвует только 0-й мячик
-
+        Play_Level();
         break;
 
     case EGS_Lost_Ball:
@@ -128,9 +116,7 @@ int AsEngine::On_Timer()
     case EGS_Restart_Level:
         if (Platform.Get_State() == EPS_Ready)
         {
-            Game_State = EGS_Play_Level;
-            for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
-                Balls[i].Set_State(EBS_On_Platform, Platform.X_Pos + Platform.Width / 2);
+            Restart_Level();
         }
         break;
 
@@ -141,6 +127,72 @@ int AsEngine::On_Timer()
     Act();
 
     return 0;
+}
+
+
+//
+void AsEngine::Play_Level()
+{
+    int lost_balls_count = 0;
+    int active_balls_count = 0;
+    double rest_distance;
+    double max_speed;
+
+    // 1. Смещаем платформу
+    max_speed = fabs(Platform.Speed);
+    rest_distance = max_speed;
+
+    while (rest_distance > 0.0)
+    {
+        Platform.Advance(max_speed);
+        rest_distance -= AsConfig::STEP_SIZE;
+    }
+
+    Platform.Redraw_Platform();
+
+
+    // 2. Смещаем мячики
+    for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
+    {
+        if (Balls[i].Get_State() == EBS_Disabled)
+            continue;
+
+        active_balls_count++;
+
+        if (Balls[i].Get_State() == EBS_Lost)
+        {
+            lost_balls_count++;
+
+            continue;
+        }
+
+        Balls[i].Move();
+    }
+
+    if (active_balls_count == lost_balls_count)
+    {// Потеряли все мячики
+
+        Game_State = EGS_Lost_Ball;
+        Level.Stop();
+        Platform.Set_State(EPS_Meltdown);
+    }
+
+    if(active_balls_count == 1)
+        if (Balls[0].Is_Test_Finished())
+            Game_State = EGS_Test_Ball; // В повторяющихся тестах участвует только 0-й мячик
+}
+
+
+//
+void AsEngine::Restart_Level()
+{
+    Game_State = EGS_Play_Level;
+
+    for (int i = 0; i < 3; i++)
+        Balls[i].Set_State(EBS_On_Platform, Platform.Get_Middle_Pos(), AsConfig::START_BALL_Y_POS);
+
+    for (int i = 3; i < AsConfig::Max_Balls_Count; i++)
+        Balls[i].Set_State(EBS_Disabled);
 }
 
 
@@ -165,6 +217,46 @@ void AsEngine::Act()
 //
 void AsEngine::On_Falling_Letter(AFalling_Letter* falling_letter)
 {
+    switch (falling_letter->letter_type)
+    {
+    case ELT_O:
+        break;
+
+    case ELT_I:
+        break;
+
+    case ELT_C:
+        break;
+
+    case ELT_M:
+        break;
+
+    case ELT_G:
+        break;
+
+    case ELT_K:
+        break;
+
+    case ELT_W:
+        break;
+
+    case ELT_P:
+        break;
+
+    case ELT_L:
+        break;
+
+    case ELT_T:
+        break;
+
+    case ELT_PLUS:
+        break;
+
+    default:
+        AsConfig::Throw();
+        break;
+    }
+
     falling_letter->Finalize();
 }
 

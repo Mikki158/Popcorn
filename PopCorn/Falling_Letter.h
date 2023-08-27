@@ -31,6 +31,8 @@ enum EFalling_Letter_State
 class AFalling_Letter : public AGraphics_Object
 {
 public:
+    const ELetter_Type letter_type;
+
     AFalling_Letter(EBrick_Type brick_type, ELetter_Type letter_type, int x, int y);
 
 
@@ -54,7 +56,6 @@ private:
     EFalling_Letter_State Falling_Latter_State;
     RECT Letter_Cell, Prev_Letter_Cell;
 
-    const ELetter_Type letter_type;
     const EBrick_Type brick_type;
 
     static int All_Letters_Popularity;

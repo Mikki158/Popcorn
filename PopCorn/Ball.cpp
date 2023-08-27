@@ -4,7 +4,6 @@ AHit_Checker* ABall::Hit_checkers[] = {};
 
 int ABall::Hit_Checkers_Count = 0;
 const double ABall::RADIUS = 2.0 - 0.5 / AsConfig::GLOBAL_SCALE;
-const double ABall::START_BALL_Y_POS = 184.0;
 
 
 
@@ -40,10 +39,11 @@ bool AHit_Checker::Hit_Circle_On_Line(double y, double next_x_pos, double left_x
 // ABall
 //
 ABall::ABall()
-    :Ball_State(EBS_Normal), Prev_Ball_State(EBS_Normal), Ball_Direction(0), Result_Distance(0.0), Testing_Is_Active(false),
-    Center_X_Pos(0.0), Center_Y_Pos(START_BALL_Y_POS), Ball_Speed(0.0), Ball_Rect(), Prev_Ball_Rect(), Test_Iteration(0)
+    :Ball_State(EBS_Disabled), Prev_Ball_State(EBS_Disabled), Ball_Direction(0), Result_Distance(0.0), Testing_Is_Active(false),
+    Center_X_Pos(-10.0), Center_Y_Pos(0.0), Ball_Speed(0.0), Ball_Rect(), Prev_Ball_Rect(), Test_Iteration(0), 
+    Parachute_Rect(), Prev_Parachute_Rect(), Rest_Test_Distance()
 {
-    Set_State(EBS_Normal, 0);
+    //Set_State(EBS_Normal, -10);
 }
 
 
@@ -51,6 +51,9 @@ ABall::ABall()
 void ABall::Draw(HDC hdc, RECT& paint_area)
 {
     RECT intersection_rect;
+
+    if (Ball_State == EBS_Disabled)
+        return;
 
     if ((Ball_State == EBS_Teleporting || Ball_State == EBS_Lost) && Ball_State == Prev_Ball_State)
         return;
@@ -126,7 +129,7 @@ void ABall::Move()
     int max_y_pos = AsConfig::MAX_Y_POS;
     
 
-    if (Ball_State == EBS_Lost || Ball_State == EBS_On_Platform || Ball_State == EBS_Teleporting)
+    if (Ball_State == EBS_Disabled || Ball_State == EBS_Lost || Ball_State == EBS_On_Platform || Ball_State == EBS_Teleporting)
     {
         return;
     }
@@ -195,6 +198,11 @@ void ABall::Set_State(EBall_State new_state, double x_pos, double y_pos)
 {
     switch (new_state)
     {
+    case EBS_Disabled:
+        Result_Distance = 0.0;
+        Ball_Speed = 0.0;
+        break;
+
     case EBS_Normal:
         Center_X_Pos = x_pos;
         Center_Y_Pos = y_pos;
@@ -311,7 +319,7 @@ void ABall::Set_On_Parachute(int brick_x, int brick_y)
 
     Prev_Parachute_Rect = Parachute_Rect;
 
-    Center_X_Pos = (double)(cell_x + AsConfig::CELL_WIDTH / 2) - 1.0 / (double)AsConfig::GLOBAL_SCALE;
+    Center_X_Pos = (double)(cell_x + AsConfig::CELL_WIDTH / 2) - 1.0 / AsConfig::D_GLOBAL_SCALE;
     Center_Y_Pos = (double)(cell_y + Parachute_Size) - RADIUS * 2;
 
     Redraw_Parachute();
@@ -334,7 +342,7 @@ bool ABall::Is_Test_Finished()
         if (Rest_Test_Distance <= 0)
         {
             Testing_Is_Active = false;
-            Set_State(EBS_Lost, 0);
+            Set_State(EBS_Lost);
             return true;
         }
         else
@@ -396,10 +404,10 @@ void ABall::Add_Hit_Checker(AHit_Checker* hit_checker)
 //
 void ABall::Redraw_Ball()
 {
-    Ball_Rect.left = (int)((Center_X_Pos - RADIUS) * AsConfig::GLOBAL_SCALE);
-    Ball_Rect.top = (int)((Center_Y_Pos - RADIUS) * AsConfig::GLOBAL_SCALE);
-    Ball_Rect.right = (int)((Center_X_Pos + RADIUS) * AsConfig::GLOBAL_SCALE);
-    Ball_Rect.bottom = (int)((Center_Y_Pos + RADIUS) * AsConfig::GLOBAL_SCALE);
+    Ball_Rect.left = (int)((Center_X_Pos - RADIUS) * AsConfig::D_GLOBAL_SCALE);
+    Ball_Rect.top = (int)((Center_Y_Pos - RADIUS) * AsConfig::D_GLOBAL_SCALE);
+    Ball_Rect.right = (int)((Center_X_Pos + RADIUS) * AsConfig::D_GLOBAL_SCALE);
+    Ball_Rect.bottom = (int)((Center_Y_Pos + RADIUS) * AsConfig::D_GLOBAL_SCALE);
 
     InvalidateRect(AsConfig::HWnd, &Prev_Ball_Rect, FALSE);
     InvalidateRect(AsConfig::HWnd, &Ball_Rect, FALSE);

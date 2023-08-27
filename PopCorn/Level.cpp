@@ -43,7 +43,7 @@ AsLevel::AsLevel()
     :Level_Rect(), Active_Bricks_Count(0), Falling_Letters_Count(0), Falling_Letters(), Current_Level(), Current_Brick_Top_Y(),
     Current_Brick_Right_X(), Current_Brick_Low_Y(), Current_Brick_Left_X(), Active_Briks(), 
     Parachute_Color(AsConfig::Pink_Color, AsConfig::Blue_Color, AsConfig::GLOBAL_SCALE), Teleport_Bricks_Count(0),
-    Teleport_Bricks_Pos(0), Advertisement(nullptr)
+    Teleport_Bricks_Pos(0), Advertisement(nullptr), Need_To_Cancel_All(false)
 {
 
 }
@@ -52,6 +52,8 @@ AsLevel::AsLevel()
 //
 AsLevel::~AsLevel()
 {
+    Cancel_All_Activity();
+
     delete[] Teleport_Bricks_Pos;
 }
 
@@ -248,6 +250,11 @@ void AsLevel::Draw(HDC hdc, RECT& paint_area)// вывод всех кирпич
     if (Advertisement != nullptr)
         Advertisement->Clear(hdc, paint_area);
 
+    if (Need_To_Cancel_All)
+    {
+        Cancel_All_Activity();
+        Need_To_Cancel_All = false;
+    }
 
     // 2. Рисуем все объекты
     if (Advertisement != nullptr)
@@ -276,6 +283,13 @@ void AsLevel::Draw(HDC hdc, RECT& paint_area)// вывод всех кирпич
     Draw_Objects(hdc, paint_area, (AGraphics_Object**)&Falling_Letters, AsConfig::Max_Falling_Letters_Count);
 
     
+}
+
+
+//
+void AsLevel::Stop()
+{
+    Need_To_Cancel_All = true;
 }
 
 
@@ -332,6 +346,22 @@ void AsLevel::Clear_Objects(HDC hdc, RECT& paint_area, AGraphics_Object** object
         if (object_array[i] != 0)
             object_array[i]->Clear(hdc, paint_area);
     }
+}
+
+
+//
+void AsLevel::Delete_Objects(AGraphics_Object** object_array, int &objects_count, int objects_max_count)
+{
+    for (int i = 0; i < objects_max_count; i++)
+    {
+        if (object_array[i] != 0)
+        {
+            delete object_array[i];
+            object_array[i] = nullptr;
+        }
+    }
+
+    objects_count = 0;
 }
 
 
@@ -559,6 +589,14 @@ void AsLevel::Add_Active_Brick(AActive_Brick* active_brick)
 
 
 //
+void AsLevel::Cancel_All_Activity()
+{
+    Delete_Objects((AGraphics_Object**)&Active_Briks, Active_Bricks_Count, AsConfig::Max_Active_Bricks_Count);
+    Delete_Objects((AGraphics_Object**)&Falling_Letters, Falling_Letters_Count, AsConfig::Max_Falling_Letters_Count);
+}
+
+
+//
 bool AsLevel::On_Hit(int brick_x, int brick_y, ABall* ball, bool vertical_hit)
 {
     bool can_reflect = true;
@@ -769,8 +807,8 @@ bool AsLevel::Add_Falling_Letter(int brick_x, int brick_y, EBrick_Type brick_typ
             letter_x = (brick_x * AsConfig::CELL_WIDTH + AsConfig::LEVEL_X_OFFSET) * AsConfig::GLOBAL_SCALE;
             letter_y = (brick_y * AsConfig::CELL_HEIGHT + AsConfig::LEVEL_Y_OFFSET) * AsConfig::GLOBAL_SCALE;
 
-            //letter_type = (ELetter_Type)AsConfig::Rand(ELT_MAX - 1);
-            letter_type = AFalling_Letter::Get_Random_Letter_Type();
+            letter_type = ELT_T;
+            //letter_type = AFalling_Letter::Get_Random_Letter_Type();
 
             falling_letter = new AFalling_Letter(brick_type, letter_type, letter_x, letter_y);
             Falling_Letters[i] = falling_letter;

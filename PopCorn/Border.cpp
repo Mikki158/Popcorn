@@ -43,7 +43,7 @@ bool AsBorder::Check_Hit(double next_x_pos, double next_y_pos, ABall* ball)
         {
             if (next_y_pos + ball->RADIUS > AsConfig::MAX_Y_POS + ball->RADIUS * 4.0)
             {
-                ball->Set_State(EBS_Lost, next_x_pos);
+                ball->Set_State(EBS_Lost);
             }
         }
 

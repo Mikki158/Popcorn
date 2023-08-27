@@ -63,6 +63,7 @@ public:
 
     // Engine
     static const int GLOBAL_SCALE = 3;
+    static const double D_GLOBAL_SCALE;
     static const int FPS = 20;
     static const int MAX_X_POS = LEVEL_X_OFFSET + CELL_WIDTH * LEVEL_WIDTH;
     static const int MAX_Y_POS = 199;
@@ -76,13 +77,14 @@ public:
     // Ball
     static const int Max_Balls_Count = 10;
     static const double STEP_SIZE;
+    static const double START_BALL_Y_POS;
 
     // Brick
     static const int BRICK_WIDTH = 15;
     static const int BRICK_HEIGHT = 7;
     static const int Max_Active_Bricks_Count = 10;
     static const int Max_Falling_Letters_Count = 10;
-    static const int Hits_Per_Letter = 10; // Вероятность выбить букву = 1.0 / Hits_Per_Letter
+    static const int Hits_Per_Letter = 1; // Вероятность выбить букву = 1.0 / Hits_Per_Letter
     
     static const AColor Pink_Color, Blue_Color, White_Color, Letter_Color, Teleport_Portal_Color, Blue_Highlight_Unbreakable, 
         Pink_Highlight_Unbreakable, Advertisement_Pink_Table, Advertisement_Blue_Table;

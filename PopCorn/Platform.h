@@ -17,11 +17,20 @@ enum EPlatform_State
 
 };
 
+
+enum EPlatform_Moving_State
+{
+    EPMS_Stop,
+    EPMS_Moving_Left,
+    EPMS_Moving_Right
+};
+
 class AsPlatform: public AHit_Checker
 {
 public:
-    int X_Pos;
     int Width;
+    double Speed;
+
 
     AsPlatform();
     ~AsPlatform();
@@ -32,24 +41,28 @@ public:
     void Draw(HDC hdc, RECT& paint_area);
     void Set_State(EPlatform_State new_state);
     void Act();
-    void Move(bool to_left);
+    void Move(bool to_left, bool key_down);
+    void Advance(double max_speed);
 
     bool Hit_by(AFalling_Letter* falling_letter);
+
+    double Get_Middle_Pos();
 
     EPlatform_State Get_State();
 
 private:
-    int X_Step;
     int Rolling_Step;
     int Inner_width;
     int Meltdown_Y_Pos;
     int Normal_Platform_Image_Width, Normal_Platform_Image_Height;
     int* Normal_Platform_Image;// Пиксели изображения платформы на фоне
+    double X_Pos;
 
     static const int NORMAL_WIDTH = 28; 
     int Meltdown_Platform_Y_Pos[NORMAL_WIDTH * AsConfig::GLOBAL_SCALE];
 
     EPlatform_State Platform_State;
+    EPlatform_Moving_State Platform_Moving_State;
 
     RECT Platform_Rect, Prev_Platform_Rect;
 
@@ -61,9 +74,11 @@ private:
     static const int MAX_ROLLING_STEP = 16;
     static const int ROLL_IN_PLATFORM_END_X_POS = 99;
     static const int ROLLING_PLATFORM_SPEED = 2;
+    static const int X_Step = AsConfig::GLOBAL_SCALE;
 
     void Clear_BG(HDC hdc);
     void Draw_Normal_State(HDC hdc, RECT& paint_area);
+    void Get_Normal_Platform_Image(HDC hdc);
     void Draw_Meltdown_State(HDC hdc, RECT& paint_area);    
     void Draw_Roll_In_State(HDC hdc, RECT paint_area);
     void Draw_Expanding_Roll_In_State(HDC hdc, RECT paint_area);

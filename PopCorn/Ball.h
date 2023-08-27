@@ -8,6 +8,8 @@
 
 enum EBall_State
 {
+    EBS_Disabled, // Отключён (не рисуется, не перемещается и не взаимодействует)
+
     EBS_Normal,
     EBS_Lost,
     EBS_On_Platform,
@@ -40,7 +42,7 @@ public:
     void Draw_Teleporting(HDC hdc, int step);
     void Move();
     void Set_For_Test();
-    void Set_State(EBall_State new_state, double x_pos, double y_pos = START_BALL_Y_POS);
+    void Set_State(EBall_State new_state, double x_pos = 0, double y_pos = 0);
     void Set_Direction(double new_direction);
     void Reflect(bool from_horizontal);
     void Set_On_Parachute(int brick_x, int brick_y);
@@ -78,7 +80,6 @@ private:
     static AHit_Checker* Hit_checkers[3];
 
     static const int Parachute_Size = 15;
-    static const double START_BALL_Y_POS;
 
     void Redraw_Ball();
     void Draw_Parachute(HDC hdc, RECT &paint_area);

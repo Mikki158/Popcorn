@@ -226,7 +226,7 @@ void AFalling_Letter::Draw_Brick_Letter(HDC hdc)
         SetWorldTransform(hdc, &xForm);
 
 
-        offSet = 3.0 * (1.0 - fabs(xForm.eM22)) * (double)AsConfig::GLOBAL_SCALE;
+        offSet = 3.0 * (1.0 - fabs(xForm.eM22)) * AsConfig::D_GLOBAL_SCALE;
         back_part_offset = (int)round(offSet);
 
         // выводим фон

@@ -7,7 +7,6 @@ HWND AsConfig::HWnd;
 //HPEN AsConfig::BG_Pen;
 //HBRUSH AsConfig::BG_Brush;
 
-const double AsConfig::STEP_SIZE = 1.0 / GLOBAL_SCALE;
 
 //HPEN AsConfig::Brick_Pink_Pen, AsConfig::Brick_Blue_Pen, AsConfig::Letter_Pen, AsConfig::Brick_White_Pen;
 //HBRUSH AsConfig::Brick_Pink_Brush, AsConfig::Brick_Blue_Brush, AsConfig::Brick_White_Brush;
@@ -102,6 +101,11 @@ HBRUSH AColor::Get_Brush() const
 
 
 // AsConfig
+const double AsConfig::D_GLOBAL_SCALE = (double)GLOBAL_SCALE;
+const double AsConfig::STEP_SIZE = 1.0 / GLOBAL_SCALE;
+const double AsConfig::START_BALL_Y_POS = 184.0;
+
+ 
 //
 void AsConfig::Round_Rect(HDC hdc, RECT& rect, int corner_radius)
 {

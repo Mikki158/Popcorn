@@ -17,6 +17,7 @@ struct SPoint
 class AsLevel: public AHit_Checker
 {
 public:
+
     static char Level_01[AsConfig::LEVEL_HEIGHT][AsConfig::LEVEL_WIDTH];
     static char Test_Level[AsConfig::LEVEL_HEIGHT][AsConfig::LEVEL_WIDTH];
 
@@ -29,6 +30,7 @@ public:
     void Act();
     void Set_Current_Level(char Level[AsConfig::LEVEL_HEIGHT][AsConfig::LEVEL_WIDTH]);
     void Draw(HDC hdc, RECT& paint_area);
+    void Stop();
 
     bool Get_Next_Falling_Leter(AFalling_Letter **falling_letter, int &index);
 
@@ -37,6 +39,8 @@ private:
     int Teleport_Bricks_Count;
     double Current_Brick_Left_X, Current_Brick_Right_X;
     double Current_Brick_Top_Y, Current_Brick_Low_Y;
+    bool Need_To_Cancel_All;
+
 
     AColor Parachute_Color;
 
@@ -55,6 +59,7 @@ private:
 
     void Act_Objects(AGraphics_Object** object_array, int objects_max_count, int& count);
     void Clear_Objects(HDC hdc, RECT& paint_area, AGraphics_Object** object_array, int objects_max_count);
+    void Delete_Objects(AGraphics_Object** object_array, int& objects_count, int objects_max_count);
     void Draw_Objects(HDC hdc, RECT& paint_area, AGraphics_Object** object_array, int max_count);
     void Draw_Brick(HDC hdc, RECT Brick_Rect, int level_x, int level_y);
     void Draw_Parachute_in_Level(HDC hdc, RECT brick_rect);
@@ -62,6 +67,7 @@ private:
     void Redraw_Brick(int brick_x, int brick_y);
     void Add_Active_Brick_Teleport(int brick_x, int brick_y, ABall* ball, bool vertical_hit);
     void Add_Active_Brick(AActive_Brick* active_brick);
+    void Cancel_All_Activity();
     
     bool On_Hit(int brick_x, int brick_y, ABall* ball, bool vertical_hit);
     bool Create_Active_Brick(int brick_x, int brick_y, EBrick_Type brick_type, ABall* ball, bool vertical_hit);
