@@ -102,8 +102,10 @@ HBRUSH AColor::Get_Brush() const
 
 // AsConfig
 const double AsConfig::D_GLOBAL_SCALE = (double)GLOBAL_SCALE;
-const double AsConfig::STEP_SIZE = 1.0 / GLOBAL_SCALE;
+const double AsConfig::Normal_Ball_Speed = 3.0;
+const double AsConfig::Moving_STEP_SIZE = 1.0 / GLOBAL_SCALE;
 const double AsConfig::START_BALL_Y_POS = 184.0;
+const double AsConfig::Ball_Accelerate = 1.001;
 
  
 //

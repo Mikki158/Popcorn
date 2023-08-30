@@ -63,10 +63,13 @@ public:
 
     // Engine
     static const int GLOBAL_SCALE = 3;
-    static const double D_GLOBAL_SCALE;
     static const int FPS = 20;
     static const int MAX_X_POS = LEVEL_X_OFFSET + CELL_WIDTH * LEVEL_WIDTH;
     static const int MAX_Y_POS = 199;
+    static const int Max_Movers_Count = 10;
+    static const int Initial_Life_Count = 5;
+    static const int Max_Life_Count = 12;
+    static const double D_GLOBAL_SCALE;
     static int Current_Timer_Tick;
     static HWND HWnd;
 
@@ -76,8 +79,10 @@ public:
 
     // Ball
     static const int Max_Balls_Count = 10;
-    static const double STEP_SIZE;
+    static const double Normal_Ball_Speed;
+    static const double Moving_STEP_SIZE;
     static const double START_BALL_Y_POS;
+    static const double Ball_Accelerate;
 
     // Brick
     static const int BRICK_WIDTH = 15;

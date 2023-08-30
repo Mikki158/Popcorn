@@ -8,6 +8,7 @@
 #include "Level.h"
 #include "Platform.h"
 #include "Active_Brick.h"
+#include "Ball_Set.h"
 
 // таймер
 const int TIMER_ID = WM_USER + 1;
@@ -18,7 +19,9 @@ enum EKey_Type
 
     EKT_Left,
     EKT_Right,
-    EKT_Space
+    EKT_Space,
+
+    EKT_F
 };
 
 enum EGame_State
@@ -29,6 +32,7 @@ enum EGame_State
     EGS_Lost_Ball,
     EGS_Restart_Level
 };
+
 
 class AsEngine
 {
@@ -43,18 +47,21 @@ public:
 
 
 private:
+    int Life_Count;
+    double Rest_Distance;
+
     EGame_State Game_State;
 
     //ABall Ball;
     AsLevel Level;
     AsPlatform Platform;
     AsBorder Border;
-    //AActive_Brick_Pink_Blue Active_Brick;
+    AsBall_Set Ball_Set;
 
-    ABall Balls[AsConfig::Max_Balls_Count];
+    AMover* Movers[AsConfig::Max_Movers_Count];
 
     void Play_Level();
-    void Restart_Level();
+    void Advance_Movers();
     void Act();
     void On_Falling_Letter(AFalling_Letter* falling_letter);
 };

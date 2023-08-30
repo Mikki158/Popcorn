@@ -431,7 +431,6 @@ void AsLevel::Draw_Brick(HDC hdc, RECT brick_rect, int level_x, int level_y)
 void AsLevel::Draw_Parachute_in_Level(HDC hdc, RECT brick_rect)
 {
     int scale = AsConfig::GLOBAL_SCALE;
-    RECT rect;
 
     Draw_Parachute_Part(hdc, brick_rect, 0, 4);
     Draw_Parachute_Part(hdc, brick_rect, 4, 6);
@@ -541,12 +540,12 @@ void AsLevel::Add_Active_Brick_Teleport(int brick_x, int brick_y, ABall *ball, b
             break;
 
         case EDT_Right:
-            if ((dest_brick_x < AsConfig::LEVEL_WIDTH - 1 && Current_Level[dest_brick_y][dest_brick_x + 1] == EBT_None))
+            if ((dest_brick_x < AsConfig::LEVEL_WIDTH - 1) && (Current_Level[dest_brick_y][dest_brick_x + 1] == EBT_None))
                 got_direction = true;
             break;
 
         case EDT_Down:
-            if ((dest_brick_y < AsConfig::LEVEL_HEIGHT && Current_Level[dest_brick_y + 1][dest_brick_x] == EBT_None))
+            if ((dest_brick_y < AsConfig::LEVEL_HEIGHT) && (Current_Level[dest_brick_y + 1][dest_brick_x] == EBT_None))
                 got_direction = true;
             break;
 
@@ -629,7 +628,6 @@ bool AsLevel::On_Hit(int brick_x, int brick_y, ABall* ball, bool vertical_hit)
 //
 bool AsLevel::Create_Active_Brick(int brick_x, int brick_y, EBrick_Type brick_type, ABall* ball, bool vertical_hit)
 {// Создаем активный кирпич, если можем
-    int another_brick_x, another_brick_y;
 
     AActive_Brick* active_brick = nullptr;
 
@@ -807,7 +805,7 @@ bool AsLevel::Add_Falling_Letter(int brick_x, int brick_y, EBrick_Type brick_typ
             letter_x = (brick_x * AsConfig::CELL_WIDTH + AsConfig::LEVEL_X_OFFSET) * AsConfig::GLOBAL_SCALE;
             letter_y = (brick_y * AsConfig::CELL_HEIGHT + AsConfig::LEVEL_Y_OFFSET) * AsConfig::GLOBAL_SCALE;
 
-            letter_type = ELT_T;
+            letter_type = ELT_G;
             //letter_type = AFalling_Letter::Get_Random_Letter_Type();
 
             falling_letter = new AFalling_Letter(brick_type, letter_type, letter_x, letter_y);

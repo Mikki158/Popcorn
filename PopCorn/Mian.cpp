@@ -194,6 +194,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		case VK_SPACE:
 			return Engine.On_Key(EKT_Space, false);
+
+		case VK_F2:
+			return Engine.On_Key(EKT_F, false);
 		}
 		break;
 
@@ -278,8 +281,8 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 Действия букв
 1. Простые:
 1.1 О ("Отмена") — отмена действия символов К, Ш, П, Л и М
-1.2 И ("Инверсия")
-1.3 С ("Скорость")
++ 1.2 И ("Инверсия")
++ 1.3 С ("Скорость")
 1.4 М ("Монстры")
 1.5 Ж ("Жизнь")
 

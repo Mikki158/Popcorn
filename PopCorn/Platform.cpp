@@ -21,6 +21,41 @@ AsPlatform::~AsPlatform()
 
 
 //
+void AsPlatform::Advance(double max_speed)
+{
+    double max_platform_x = AsConfig::MAX_X_POS - Width + 1;
+    double next_step = Speed / max_speed * AsConfig::Moving_STEP_SIZE;
+
+    X_Pos += next_step;
+
+    if (X_Pos <= AsConfig::BORDER_X_OFFSET)
+    {
+        X_Pos = AsConfig::BORDER_X_OFFSET;
+    }
+
+    if (X_Pos >= max_platform_x)
+    {
+        X_Pos = max_platform_x;
+    }
+}
+
+
+//
+void AsPlatform::Begin_Movement()
+{
+
+}
+
+
+//
+void AsPlatform::Finish_Movement()
+{
+    Redraw_Platform();
+}
+
+
+
+//
 bool AsPlatform::Check_Hit(double next_x_pos, double next_y_pos, ABall* ball)
 {
     double inner_top_y, inner_low_y;;
@@ -65,6 +100,13 @@ _on_hit:
         ball->Set_State(EBS_Off_Parachute);
 
     return true;
+}
+
+
+//
+double AsPlatform::Get_Speed()
+{
+    return Speed;
 }
 
 
@@ -118,6 +160,11 @@ void AsPlatform::Draw(HDC hdc, RECT& paint_area)
         Draw_Normal_State(hdc, paint_area);
         break;
 
+    case EPS_Pre_Meltdown:
+        Draw_Normal_State(hdc, paint_area);
+        Set_State(EPS_Meltdown);
+        break;
+
     case EPS_Meltdown:
         Draw_Meltdown_State(hdc, paint_area);
         break;
@@ -151,10 +198,10 @@ void AsPlatform::Set_State(EPlatform_State new_state)
 
     switch (new_state)
     {
-    case EPS_Missing:
+    case EPS_Pre_Meltdown:
+        Speed = 0.0;
         break;
-    case EPS_Normal:
-        break;
+
     case EPS_Meltdown:
         Platform_State = EPS_Meltdown;
 
@@ -241,25 +288,6 @@ void AsPlatform::Move(bool to_left, bool key_down)
             Platform_Moving_State = EPMS_Moving_Right;
 
         Speed = X_Step;
-    }
-}
-
-
-//
-void AsPlatform::Advance(double max_speed)
-{
-    double max_platform_x = AsConfig::MAX_X_POS - Width + 1;
-
-    X_Pos += Speed / max_speed * AsConfig::STEP_SIZE;
-
-    if (X_Pos <= AsConfig::BORDER_X_OFFSET)
-    {
-        X_Pos = AsConfig::BORDER_X_OFFSET;
-    }
-
-    if (X_Pos >= max_platform_x)
-    {
-        X_Pos = max_platform_x;
     }
 }
 
@@ -372,8 +400,6 @@ void AsPlatform::Get_Normal_Platform_Image(HDC hdc)
             Normal_Platform_Image[offset++] = GetPixel(hdc, x + j, y + i);
         }
     }
-    
-
 }
 
 
@@ -528,7 +554,8 @@ bool AsPlatform::Reflect_On_Circle(double next_x_pos, double next_y_pos, double 
     distance = sqrt((dx * dx) + (dy * dy));
     two_radius = platform_ball_radius + ball->RADIUS;
 
-    if (fabs(distance - two_radius) < AsConfig::STEP_SIZE)
+    //if (fabs(distance - two_radius) < AsConfig::Moving_STEP_SIZE)
+    if (distance - AsConfig::Moving_STEP_SIZE < two_radius)
     {// Мячик коснулся бокового шарика
         beta = atan2(-dy, dx);
 

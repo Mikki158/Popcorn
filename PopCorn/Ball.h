@@ -21,6 +21,17 @@ enum EBall_State
 class AHit_Checker;
 class ABall;
 
+class AMover
+{
+public:
+    virtual ~AMover();
+
+    virtual void Advance(double max_speed) = 0;
+    virtual void Begin_Movement() = 0;
+    virtual void Finish_Movement() = 0;
+    virtual double Get_Speed() = 0;
+};
+
 class AHit_Checker
 {
 public:
@@ -29,7 +40,7 @@ public:
     bool Hit_Circle_On_Line(double y, double next_x_pos, double left_x, double right_x, double radius, double& x);    
 };
 
-class ABall
+class ABall: public AMover
 {
 public:
     static const double RADIUS;
@@ -37,16 +48,20 @@ public:
 
     ABall();
 
+    virtual void Advance(double max_speed);
+    virtual void Begin_Movement();
+    virtual void Finish_Movement();
+    virtual double Get_Speed();
     
     void Draw(HDC hdc, RECT& paint_area);
     void Draw_Teleporting(HDC hdc, int step);
-    void Move();
     void Set_For_Test();
     void Set_State(EBall_State new_state, double x_pos = 0, double y_pos = 0);
     void Set_Direction(double new_direction);
     void Reflect(bool from_horizontal);
     void Set_On_Parachute(int brick_x, int brick_y);
     void Get_Center(double& x_pos, double& y_pos);
+    void Set_Speed(double new_speed);
 
     bool Is_Test_Finished();
     bool Is_Moving_Up();
@@ -63,8 +78,8 @@ private:
     double Ball_Direction;
     double Center_X_Pos;
     double Center_Y_Pos;
-    double Result_Distance;
     double Ball_Speed;
+    //double Result_Distance;
 
     int Test_Iteration;
     double Rest_Test_Distance;

@@ -1,11 +1,11 @@
 ﻿#include "Ball.h"
 
-AHit_Checker* ABall::Hit_checkers[] = {};
+// AMover
+//
+AMover::~AMover()
+{
 
-int ABall::Hit_Checkers_Count = 0;
-const double ABall::RADIUS = 2.0 - 0.5 / AsConfig::GLOBAL_SCALE;
-
-
+}
 
 // AHit_Checker
 //
@@ -37,13 +37,96 @@ bool AHit_Checker::Hit_Circle_On_Line(double y, double next_x_pos, double left_x
 
 
 // ABall
+AHit_Checker* ABall::Hit_checkers[] = {};
+
+int ABall::Hit_Checkers_Count = 0;
+const double ABall::RADIUS = 2.0 - 0.5 / AsConfig::GLOBAL_SCALE;
+
 //
 ABall::ABall()
-    :Ball_State(EBS_Disabled), Prev_Ball_State(EBS_Disabled), Ball_Direction(0), Result_Distance(0.0), Testing_Is_Active(false),
+    :Ball_State(EBS_Disabled), Prev_Ball_State(EBS_Disabled), Ball_Direction(0), Testing_Is_Active(false),
     Center_X_Pos(-10.0), Center_Y_Pos(0.0), Ball_Speed(0.0), Ball_Rect(), Prev_Ball_Rect(), Test_Iteration(0), 
     Parachute_Rect(), Prev_Parachute_Rect(), Rest_Test_Distance()
 {
     //Set_State(EBS_Normal, -10);
+}
+
+
+//
+void ABall::Advance(double max_speed)
+{
+    HWND hwnd = AsConfig::HWnd;
+
+    bool got_hit = true;
+    double next_x_pos, next_y_pos;
+    int max_x_pos = AsConfig::MAX_X_POS;
+    int max_y_pos = AsConfig::MAX_Y_POS;
+    double next_step;
+
+
+    if (Ball_State == EBS_Disabled || Ball_State == EBS_Lost || Ball_State == EBS_On_Platform || Ball_State == EBS_Teleporting)
+    {
+        return;
+    }
+
+    next_step = Ball_Speed / max_speed * AsConfig::Moving_STEP_SIZE;
+
+    while (got_hit)
+    {
+        got_hit = false;
+
+        next_x_pos = Center_X_Pos + next_step * cos(Ball_Direction);
+        next_y_pos = Center_Y_Pos - next_step * sin(Ball_Direction);
+
+        // корректируем позицию при отражении:
+        for (int i = 0; i < Hit_Checkers_Count; i++)
+        {
+            got_hit |= Hit_checkers[i]->Check_Hit(next_x_pos, next_y_pos, this); // от рамки
+        }
+
+        if (!got_hit)
+        {
+            // Мячик продолжает движение, если не взаимодействовал с другими объектами
+            Center_X_Pos = next_x_pos;
+            Center_Y_Pos = next_y_pos;
+
+            if (Testing_Is_Active)
+                Rest_Test_Distance -= next_step;
+        }
+    }
+
+    
+}
+
+
+//
+void ABall::Begin_Movement()
+{
+    Prev_Ball_Rect = Ball_Rect;
+}
+
+
+//
+void ABall::Finish_Movement()
+{
+    Redraw_Ball();
+    
+    if (Ball_State == EBS_On_Parachute)
+    {
+        Prev_Parachute_Rect = Parachute_Rect;
+    
+        Parachute_Rect.bottom = Ball_Rect.bottom;
+        Parachute_Rect.top = Parachute_Rect.bottom - Parachute_Size * AsConfig::GLOBAL_SCALE;
+    
+        Redraw_Parachute();
+    }
+}
+
+
+//
+double ABall::Get_Speed()
+{
+    return Ball_Speed;
 }
 
 
@@ -119,68 +202,6 @@ void ABall::Draw_Teleporting(HDC hdc, int step)
 
 
 //
-void ABall::Move()
-{
-    HWND hwnd = AsConfig::HWnd;
-
-    bool got_hit;
-    double next_x_pos, next_y_pos;
-    int max_x_pos = AsConfig::MAX_X_POS;
-    int max_y_pos = AsConfig::MAX_Y_POS;
-    
-
-    if (Ball_State == EBS_Disabled || Ball_State == EBS_Lost || Ball_State == EBS_On_Platform || Ball_State == EBS_Teleporting)
-    {
-        return;
-    }
-
-    Prev_Ball_Rect = Ball_Rect;
-    Result_Distance += Ball_Speed;
-
-    while (Result_Distance > AsConfig::STEP_SIZE)
-    {
-        got_hit = false;
-
-        next_x_pos = Center_X_Pos + AsConfig::STEP_SIZE * cos(Ball_Direction);
-        next_y_pos = Center_Y_Pos - AsConfig::STEP_SIZE * sin(Ball_Direction);
-
-        // корректируем позицию при отражении:
-        for (int i = 0; i < Hit_Checkers_Count; i++)
-        {
-            got_hit |= Hit_checkers[i]->Check_Hit(next_x_pos, next_y_pos, this); // от рамки
-        }
-
-        if (!got_hit)
-        {
-            // Мячик продолжает движение, если не взаимодействовал с другими объектами
-             Result_Distance -= AsConfig::STEP_SIZE;
-
-            Center_X_Pos = next_x_pos;
-            Center_Y_Pos = next_y_pos;
-
-            if(Testing_Is_Active)
-                Rest_Test_Distance -= AsConfig::STEP_SIZE;
-        }    
-
-        if (Ball_State == EBS_Lost)
-            break;
-    }    
-
-    Redraw_Ball();
-
-    if (Ball_State == EBS_On_Parachute)
-    {
-        Prev_Parachute_Rect = Parachute_Rect;
-
-        Parachute_Rect.bottom = Ball_Rect.bottom;
-        Parachute_Rect.top = Parachute_Rect.bottom - Parachute_Size * AsConfig::GLOBAL_SCALE;
-
-        Redraw_Parachute();
-    }
-}
-
-
-//
 void ABall::Set_For_Test()
 {
     Testing_Is_Active = true;
@@ -199,15 +220,15 @@ void ABall::Set_State(EBall_State new_state, double x_pos, double y_pos)
     switch (new_state)
     {
     case EBS_Disabled:
-        Result_Distance = 0.0;
+        //Result_Distance = 0.0;
         Ball_Speed = 0.0;
         break;
 
     case EBS_Normal:
         Center_X_Pos = x_pos;
         Center_Y_Pos = y_pos;
-        Ball_Speed = 3.0; 
-        Result_Distance = 0.0;
+        Ball_Speed = AsConfig::Normal_Ball_Speed;
+        //Result_Distance = 0.0;
         Ball_Direction = M_PI_4;
         Redraw_Ball();
         break;
@@ -227,7 +248,7 @@ void ABall::Set_State(EBall_State new_state, double x_pos, double y_pos)
         Center_X_Pos = x_pos;
         Center_Y_Pos = y_pos;
         Ball_Speed = 0.0;
-        Result_Distance = 0.0;
+        //Result_Distance = 0.0;
         Ball_Direction = M_PI_4;
         Redraw_Ball();
         break;
@@ -237,7 +258,7 @@ void ABall::Set_State(EBall_State new_state, double x_pos, double y_pos)
             AsConfig::Throw(); // В это состояние можно перейти только из EBS_On_Parachute
 
         Ball_Speed = 0.0;
-        Result_Distance = 0.0;
+        //Result_Distance = 0.0;
         Redraw_Ball();
         Redraw_Parachute();
         break;
@@ -251,7 +272,7 @@ void ABall::Set_State(EBall_State new_state, double x_pos, double y_pos)
             AsConfig::Throw(); // Только из этих состояний можно войти в телепорт мячик
 
         Ball_Speed = 0.0;
-        Result_Distance = 0.0;
+        //Result_Distance = 0.0;
         Center_X_Pos = x_pos;
         Center_Y_Pos = y_pos;
         Redraw_Ball();
@@ -331,6 +352,13 @@ void ABall::Get_Center(double& x_pos, double& y_pos)
 {
     x_pos = Center_X_Pos;
     y_pos = Center_Y_Pos;
+}
+
+
+//
+void ABall::Set_Speed(double new_speed)
+{
+    Ball_Speed = new_speed;
 }
 
 
