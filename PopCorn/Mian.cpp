@@ -284,7 +284,7 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 + 1.2 И ("Инверсия")
 + 1.3 С ("Скорость")
 1.4 М ("Монстры")
-1.5 Ж ("Жизнь")
++ 1.5 Ж ("Жизнь")
 
 2. Сложные:
 2.1 К ("Клей")

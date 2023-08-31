@@ -76,6 +76,7 @@ public:
     // Border
     static const int BORDER_X_OFFSET = 6;
     static const int BORDER_Y_OFFSET = 4;
+    static const int Floor_Y_Pos = MAX_Y_POS - 1;
 
     // Ball
     static const int Max_Balls_Count = 10;
@@ -89,7 +90,7 @@ public:
     static const int BRICK_HEIGHT = 7;
     static const int Max_Active_Bricks_Count = 10;
     static const int Max_Falling_Letters_Count = 10;
-    static const int Hits_Per_Letter = 1; // Вероятность выбить букву = 1.0 / Hits_Per_Letter
+    static const int Hits_Per_Letter = 10; // Вероятность выбить букву = 1.0 / Hits_Per_Letter
     
     static const AColor Pink_Color, Blue_Color, White_Color, Letter_Color, Teleport_Portal_Color, Blue_Highlight_Unbreakable, 
         Pink_Highlight_Unbreakable, Advertisement_Pink_Table, Advertisement_Blue_Table;

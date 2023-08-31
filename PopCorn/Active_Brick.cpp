@@ -118,7 +118,7 @@ void AActive_Brick_Pink_Blue::Draw(HDC hdc, RECT& paint_area)
 //
 void AActive_Brick_Pink_Blue::Act()
 {    
-    if (fade_Step < MAX_FADE_STEP - 1)
+    if (fade_Step <= MAX_FADE_STEP - 1)
     {
         fade_Step += 1;
         InvalidateRect(AsConfig::HWnd, &Brick_Rect, FALSE);

@@ -57,7 +57,7 @@ void AsEngine::Draw_Frame(HDC hdc, RECT& paint_area)// отрисовка экр
     SetGraphicsMode(hdc, GM_ADVANCED);
 
     Level.Draw(hdc, paint_area); 
-    Border.Draw(hdc);
+    Border.Draw(hdc, paint_area);
     Platform.Draw(hdc, paint_area);
     Ball_Set.Draw(hdc, paint_area);
 }
@@ -244,6 +244,9 @@ void AsEngine::On_Falling_Letter(AFalling_Letter* falling_letter)
         break;
 
     case ELT_P:
+        AsConfig::Level_Has_Floor = true;
+        Border.Redraw_Floor();
+        // !!! Отобразить на индикаторе
         break;
 
     case ELT_L:

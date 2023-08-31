@@ -1,7 +1,5 @@
 ﻿#include "Config.h"
 
-bool AsConfig::Level_Has_Floor = false;
-int AsConfig::Current_Timer_Tick = 0;
 
 HWND AsConfig::HWnd;
 //HPEN AsConfig::BG_Pen;
@@ -101,6 +99,9 @@ HBRUSH AColor::Get_Brush() const
 
 
 // AsConfig
+bool AsConfig::Level_Has_Floor = false;
+int AsConfig::Current_Timer_Tick = 0;
+
 const double AsConfig::D_GLOBAL_SCALE = (double)GLOBAL_SCALE;
 const double AsConfig::Normal_Ball_Speed = 3.0;
 const double AsConfig::Moving_STEP_SIZE = 1.0 / GLOBAL_SCALE;
