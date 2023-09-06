@@ -21,13 +21,14 @@ enum EPlatform_State
 
 enum EPlatform_Moving_State
 {
+    EPMS_Stoping,
     EPMS_Stop,
     EPMS_Moving_Left,
     EPMS_Moving_Right
 };
 
 
-class AsPlatform: public AHit_Checker, public AMover
+class AsPlatform: public AHit_Checker, public AMover, public AGraphics_Object
 {
 public:
     int Width;
@@ -42,10 +43,13 @@ public:
     virtual bool Check_Hit(double next_x_pos, double next_y_pos, ABall* ball);
     virtual double Get_Speed();
 
+    virtual void Clear(HDC hdc, RECT& paint_area);
+    virtual void Draw(HDC hdc, RECT& paint_area);
+    virtual void Act();
+    virtual bool Is_Finished();
+
     void Redraw_Platform();
-    void Draw(HDC hdc, RECT& paint_area);
     void Set_State(EPlatform_State new_state);
-    void Act();
     void Move(bool to_left, bool key_down);
 
     bool Hit_by(AFalling_Letter* falling_letter);
@@ -62,6 +66,7 @@ private:
     int* Normal_Platform_Image;// Пиксели изображения платформы на фоне
     double X_Pos;
     double Speed;
+    bool Left_Key_Down, Right_Key_Down;
 
 
     static const int NORMAL_WIDTH = 28; 
@@ -82,7 +87,6 @@ private:
     static const int ROLLING_PLATFORM_SPEED = 2;
     static const int X_Step = 6;
 
-    void Clear_BG(HDC hdc);
     void Draw_Normal_State(HDC hdc, RECT& paint_area);
     void Get_Normal_Platform_Image(HDC hdc);
     void Draw_Meltdown_State(HDC hdc, RECT& paint_area);    

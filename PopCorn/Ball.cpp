@@ -1,11 +1,22 @@
 ﻿#include "Ball.h"
 
+// AGraphics_Object
+//
+AGraphics_Object::~AGraphics_Object()
+{
+
+}
+
+
+
 // AMover
 //
 AMover::~AMover()
 {
 
 }
+
+
 
 // AHit_Checker
 //
@@ -109,6 +120,10 @@ void ABall::Begin_Movement()
 //
 void ABall::Finish_Movement()
 {
+    if (Ball_State == EBS_Disabled || Ball_State == EBS_Lost)
+        return;
+
+
     Redraw_Ball();
     
     if (Ball_State == EBS_On_Parachute)
@@ -131,8 +146,15 @@ double ABall::Get_Speed()
 
 
 //
-void ABall::Draw(HDC hdc, RECT& paint_area)
+void ABall::Act()
 {
+    // Заглушка, Не используется, т.к. мячик сам ничего не делает (не анимируется)
+}
+
+
+//
+void ABall::Clear(HDC hdc, RECT& paint_area)
+{// Очищаем фон
     RECT intersection_rect;
 
     if (Ball_State == EBS_Disabled)
@@ -142,12 +164,24 @@ void ABall::Draw(HDC hdc, RECT& paint_area)
         return;
 
     if (IntersectRect(&intersection_rect, &paint_area, &Prev_Ball_Rect))
-    {// очищаем фон
-        
+    {
         AsConfig::BG_Color.Select(hdc);
 
         Ellipse(hdc, Prev_Ball_Rect.left, Prev_Ball_Rect.top, Prev_Ball_Rect.right - 1, Prev_Ball_Rect.bottom - 1);
-    }   
+    }
+}
+
+
+//
+void ABall::Draw(HDC hdc, RECT& paint_area)
+{
+    RECT intersection_rect;
+
+    if (Ball_State == EBS_Disabled)
+        return;
+
+    if ((Ball_State == EBS_Teleporting || Ball_State == EBS_Lost) && Ball_State == Prev_Ball_State)
+        return;
 
     switch (Ball_State)
     {
@@ -175,15 +209,22 @@ void ABall::Draw(HDC hdc, RECT& paint_area)
     default:
         break;
     }
-    
+
 
     if (IntersectRect(&intersection_rect, &paint_area, &Ball_Rect))
     {// рисуем шарик
-        
+
         AsConfig::White_Color.Select(hdc);
 
         Ellipse(hdc, Ball_Rect.left, Ball_Rect.top, Ball_Rect.right - 1, Ball_Rect.bottom - 1);
     }
+}
+
+
+//
+bool ABall::Is_Finished()
+{
+    return false; // Заглушка, Не используется, т.к. мячик сам ничего не делает (не анимируется)
 }
 
 

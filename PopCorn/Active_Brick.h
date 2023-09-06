@@ -3,19 +3,8 @@
 #include <Windows.h>
 
 #include "Ball.h"
-// Бинго 3 = 26000 1 стр
-// Диван Лайт, категория ткани 2 = 17000 8 стр
-// диван нео 16000 9 стр
-class AGraphics_Object
-{
-public:
-	virtual ~AGraphics_Object();
 
-	virtual void Clear(HDC hdc, RECT& paint_area) = 0;
-	virtual void Draw(HDC hdc, RECT& paint_area) = 0;
-	virtual void Act() = 0;
-	virtual bool Is_Finished() = 0;
-};
+
 
 class AActive_Brick: public AGraphics_Object
 {
@@ -45,8 +34,8 @@ public:
 	AActive_Brick_Pink_Blue(EBrick_Type brick_type, int level_x, int level_y);
 	~AActive_Brick_Pink_Blue();	
 
-	virtual void Draw(HDC hdc, RECT& paint_area);
 	virtual void Act();
+	virtual void Draw(HDC hdc, RECT& paint_area);
 	virtual bool Is_Finished();
 
 	static void Setup_Color();
@@ -75,8 +64,8 @@ public:
 	AActive_Brick_Unbreakable(int level_x, int level_y);
 	~AActive_Brick_Unbreakable();	
 
-	virtual void Draw(HDC hdc, RECT& paint_area);
 	virtual void Act();
+	virtual void Draw(HDC hdc, RECT& paint_area);
 	virtual bool Is_Finished();
 
 	static void Draw_In_Level(HDC hdc, RECT brick_rect);
@@ -95,8 +84,8 @@ public:
 	AActive_Brick_Multihit(int level_x, int level_y);
 	~AActive_Brick_Multihit();
 
-	virtual void Draw(HDC hdc, RECT& paint_area);
 	virtual void Act();
+	virtual void Draw(HDC hdc, RECT& paint_area);
 	virtual bool Is_Finished();
 
 	static void Draw_In_Level(HDC hdc, RECT brick_rect, EBrick_Type brick_type);
@@ -136,8 +125,8 @@ public:
 	AActive_Brick_Teleport(int level_x, int level_y, ABall* ball, AActive_Brick_Teleport* destination_teleport);
 	~AActive_Brick_Teleport();
 
-	virtual void Draw(HDC hdc, RECT& paint_area);
 	virtual void Act();
+	virtual void Draw(HDC hdc, RECT& paint_area);
 	virtual bool Is_Finished();
 
 	static void Draw_In_Level(HDC hdc, RECT brick_rect, int step = 0);
@@ -163,9 +152,9 @@ public:
 	AAdvertisement(int level_x, int level_y, int width, int height);
 	~AAdvertisement();
 
+	virtual void Act();
 	virtual void Clear(HDC hdc, RECT& paint_area);
 	virtual void Draw(HDC hdc, RECT& paint_area);
-	virtual void Act();
 	virtual bool Is_Finished();
 
 	void Show_Under_Brick(int Level_X, int Level_Y);
@@ -197,8 +186,8 @@ public:
 	AActive_Brick_Ad(int level_x, int level_y, AAdvertisement* advertisement);
 	~AActive_Brick_Ad();
 
-	virtual void Draw(HDC hdc, RECT& paint_area);
 	virtual void Act();
+	virtual void Draw(HDC hdc, RECT& paint_area);
 	virtual bool Is_Finished();
 
 	static void Draw_In_Level(HDC hdc, RECT brick_rect);

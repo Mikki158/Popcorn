@@ -5,12 +5,7 @@ AColor AActive_Brick_Pink_Blue::Fading_Blue_Brick_Colors[MAX_FADE_STEP];
 AColor AActive_Brick_Pink_Blue::Fading_Pink_Brick_Colors[MAX_FADE_STEP];
 
 
-// AGraphics_Object
-//
-AGraphics_Object::~AGraphics_Object()
-{
 
-}
 
 
  
@@ -85,6 +80,18 @@ AActive_Brick_Pink_Blue::AActive_Brick_Pink_Blue(EBrick_Type brick_type, int lev
 //
 AActive_Brick_Pink_Blue::~AActive_Brick_Pink_Blue()
 {
+
+}
+
+
+//
+void AActive_Brick_Pink_Blue::Act()
+{
+    if (fade_Step <= MAX_FADE_STEP - 1)
+    {
+        fade_Step += 1;
+        InvalidateRect(AsConfig::HWnd, &Brick_Rect, FALSE);
+    }
 }
 
 
@@ -116,15 +123,6 @@ void AActive_Brick_Pink_Blue::Draw(HDC hdc, RECT& paint_area)
 
 
 //
-void AActive_Brick_Pink_Blue::Act()
-{    
-    if (fade_Step <= MAX_FADE_STEP - 1)
-    {
-        fade_Step += 1;
-        InvalidateRect(AsConfig::HWnd, &Brick_Rect, FALSE);
-    }
-}
-
 bool AActive_Brick_Pink_Blue::Is_Finished()
 {
     if (fade_Step >= MAX_FADE_STEP - 1)
@@ -215,6 +213,17 @@ AActive_Brick_Unbreakable::~AActive_Brick_Unbreakable()
 
 
 //
+void AActive_Brick_Unbreakable::Act()
+{
+    if (Animation_Step <= MAX_ANIMATION_STEP)
+    {
+        Animation_Step++;
+        InvalidateRect(AsConfig::HWnd, &Brick_Rect, FALSE);
+    }
+}
+
+
+//
 void AActive_Brick_Unbreakable::Draw(HDC hdc, RECT& paint_area)
 {
     int scale = AsConfig::GLOBAL_SCALE;
@@ -237,17 +246,6 @@ void AActive_Brick_Unbreakable::Draw(HDC hdc, RECT& paint_area)
     LineTo(hdc, Brick_Rect.left + 15 * scale - 1 + offset, Brick_Rect.top - 1 * scale);
 
     SelectClipRgn(hdc, 0);
-}
-
-
-//
-void AActive_Brick_Unbreakable::Act()
-{
-    if (Animation_Step <= MAX_ANIMATION_STEP)
-    {
-        Animation_Step++;
-        InvalidateRect(AsConfig::HWnd, &Brick_Rect, FALSE);
-    }
 }
 
 
@@ -284,6 +282,17 @@ AActive_Brick_Multihit::AActive_Brick_Multihit(int level_x, int level_y)
 AActive_Brick_Multihit::~AActive_Brick_Multihit()
 {
     //DeleteObject(Region);
+}
+
+
+//
+void AActive_Brick_Multihit::Act()
+{
+    if (Rotation_Step <= MAX_ROTATION_STEP)
+    {
+        Rotation_Step++;
+        InvalidateRect(AsConfig::HWnd, &Brick_Rect, FALSE);
+    }
 }
 
 
@@ -335,17 +344,6 @@ void AActive_Brick_Multihit::Draw(HDC hdc, RECT& paint_area)
     AsConfig::Round_Rect(hdc, zero_rect);
 
     SetWorldTransform(hdc, &old_xForm);
-}
-
-
-//
-void AActive_Brick_Multihit::Act()
-{
-    if (Rotation_Step <= MAX_ROTATION_STEP)
-    {
-        Rotation_Step++;
-      InvalidateRect(AsConfig::HWnd, &Brick_Rect, FALSE);
-    }
 }
 
 
@@ -445,34 +443,6 @@ AActive_Brick_Teleport::~AActive_Brick_Teleport()
 
 
 //
-void AActive_Brick_Teleport::Draw(HDC hdc, RECT& paint_area)
-{
-    int step;
-
-
-    switch (Teleport_State)
-    {
-    case ETS_Starting:
-        step = Animation_Step;
-        break;
-
-    case ETS_Finishing:
-        step = Max_Animation_Step - Animation_Step;
-        break;
-
-    default:
-        step = 0;
-    }
-
-    Draw_In_Level(hdc, Brick_Rect, step);
-
-
-    if(Ball != nullptr)
-        Ball->Draw_Teleporting(hdc, step);
-}
-
-
-//
 void AActive_Brick_Teleport::Act()
 {
     double ball_x, ball_y;
@@ -542,6 +512,34 @@ void AActive_Brick_Teleport::Act()
             break;
         }
     }
+}
+
+
+//
+void AActive_Brick_Teleport::Draw(HDC hdc, RECT& paint_area)
+{
+    int step;
+
+
+    switch (Teleport_State)
+    {
+    case ETS_Starting:
+        step = Animation_Step;
+        break;
+
+    case ETS_Finishing:
+        step = Max_Animation_Step - Animation_Step;
+        break;
+
+    default:
+        step = 0;
+    }
+
+    Draw_In_Level(hdc, Brick_Rect, step);
+
+
+    if(Ball != nullptr)
+        Ball->Draw_Teleporting(hdc, step);
 }
 
 
@@ -648,6 +646,43 @@ AAdvertisement::~AAdvertisement()
 void AAdvertisement::Clear(HDC hdc, RECT& paint_area)
 {
 
+}
+
+
+//
+void AAdvertisement::Act()
+{
+    int cell_width = AsConfig::CELL_WIDTH * AsConfig::GLOBAL_SCALE;
+    int cell_height = AsConfig::CELL_HEIGHT * AsConfig::GLOBAL_SCALE;
+    RECT rect;
+
+    //if (AsConfig::Current_Timer_Tick % 3 != 0)
+    //    return;
+
+    // 1. Заказываем перерисовкуфрагментов, надкоторыми пропали кирпичи
+    for (int i = 0; i < Height; i++)
+        for (int j = 0; j < Width; j++)
+            if (Brick_Regions[i * Width + j] != 0)
+            {
+                rect.left = Ad_Rect.left + j * cell_width;
+                rect.top = Ad_Rect.top + i * cell_height;
+                rect.right = rect.left + cell_width;
+                rect.bottom = rect.top + cell_height;
+
+                InvalidateRect(AsConfig::HWnd, &rect, FALSE);
+            }
+
+    // 2. Смещаем шарик
+    Falling_Speed += Acceleration_Step;
+    Ball_Y_Offset = High_Ball_Threshold - (int)(Falling_Speed * Falling_Speed);
+
+    if (Ball_Y_Offset <= Low_Ball_Threshold + Deformation_Height)
+        Deformation_Ratio = (double)(Ball_Y_Offset - Low_Ball_Threshold) / (double)Deformation_Height;
+    else
+        Deformation_Ratio = 1.0;
+
+    if (Ball_Y_Offset > High_Ball_Threshold || Ball_Y_Offset < Low_Ball_Threshold)
+        Acceleration_Step = -Acceleration_Step;
 }
 
 
@@ -771,43 +806,6 @@ void AAdvertisement::Draw(HDC hdc, RECT& paint_area)
 
 
 //
-void AAdvertisement::Act()
-{
-    int cell_width = AsConfig::CELL_WIDTH * AsConfig::GLOBAL_SCALE;
-    int cell_height = AsConfig::CELL_HEIGHT * AsConfig::GLOBAL_SCALE;
-    RECT rect;
-
-    //if (AsConfig::Current_Timer_Tick % 3 != 0)
-    //    return;
-
-    // 1. Заказываем перерисовкуфрагментов, надкоторыми пропали кирпичи
-    for (int i = 0; i < Height; i++)
-        for(int j = 0; j < Width; j++)
-            if (Brick_Regions[i * Width + j] != 0)
-            {
-                rect.left = Ad_Rect.left + j * cell_width;
-                rect.top = Ad_Rect.top + i * cell_height;
-                rect.right = rect.left + cell_width;
-                rect.bottom = rect.top + cell_height;
-
-                InvalidateRect(AsConfig::HWnd, &rect, FALSE);
-            }
-
-    // 2. Смещаем шарик
-    Falling_Speed += Acceleration_Step;
-    Ball_Y_Offset = High_Ball_Threshold - (int)(Falling_Speed * Falling_Speed);
-
-    if (Ball_Y_Offset <= Low_Ball_Threshold + Deformation_Height)
-        Deformation_Ratio = (double)(Ball_Y_Offset - Low_Ball_Threshold) / (double)Deformation_Height;
-    else
-        Deformation_Ratio = 1.0;
-
-    if (Ball_Y_Offset > High_Ball_Threshold || Ball_Y_Offset < Low_Ball_Threshold)
-        Acceleration_Step = -Acceleration_Step;
-}
-
-
-//
 bool AAdvertisement::Is_Finished()
 {
     return false; // Реклама не заканчивается никогда
@@ -869,20 +867,20 @@ AActive_Brick_Ad::~AActive_Brick_Ad()
 
 
 //
-void AActive_Brick_Ad::Draw(HDC hdc, RECT& paint_area)
-{
-
-}
-
-
-//
 void AActive_Brick_Ad::Act()
 {
     //if (Animation_Step <= MAX_ANIMATION_STEP)
     //{
     //    Animation_Step++;
-        InvalidateRect(AsConfig::HWnd, &Brick_Rect, FALSE);
+    InvalidateRect(AsConfig::HWnd, &Brick_Rect, FALSE);
     //}
+}
+
+
+//
+void AActive_Brick_Ad::Draw(HDC hdc, RECT& paint_area)
+{
+
 }
 
 

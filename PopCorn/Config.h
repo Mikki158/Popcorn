@@ -67,6 +67,7 @@ public:
     static const int MAX_X_POS = LEVEL_X_OFFSET + CELL_WIDTH * LEVEL_WIDTH;
     static const int MAX_Y_POS = 199;
     static const int Max_Movers_Count = 10;
+    static const int Max_Modules_Count = 10;
     static const int Initial_Life_Count = 5;
     static const int Max_Life_Count = 12;
     static const double D_GLOBAL_SCALE;

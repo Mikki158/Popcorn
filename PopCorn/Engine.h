@@ -52,13 +52,13 @@ private:
 
     EGame_State Game_State;
 
-    //ABall Ball;
     AsLevel Level;
     AsPlatform Platform;
     AsBorder Border;
     AsBall_Set Ball_Set;
 
-    AMover* Movers[AsConfig::Max_Movers_Count];
+    AMover* Movers[AsConfig::Max_Movers_Count]; // Движущиеся в данный момент объекты
+    AGraphics_Object* Modules[AsConfig::Max_Modules_Count]; // Главные графические объекты (модули) игры
 
     void Play_Level();
     void Advance_Movers();

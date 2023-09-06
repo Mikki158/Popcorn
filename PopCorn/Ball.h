@@ -6,6 +6,7 @@
 
 #include "Config.h"
 
+
 enum EBall_State
 {
     EBS_Disabled, // Отключён (не рисуется, не перемещается и не взаимодействует)
@@ -18,9 +19,23 @@ enum EBall_State
     EBS_Teleporting
 };
 
-class AHit_Checker;
 class ABall;
 
+//
+class AGraphics_Object
+{
+public:
+    virtual ~AGraphics_Object();
+
+    virtual void Act() = 0;
+    virtual void Clear(HDC hdc, RECT& paint_area) = 0;
+    virtual void Draw(HDC hdc, RECT& paint_area) = 0;
+    virtual bool Is_Finished() = 0;
+};
+
+
+
+//
 class AMover
 {
 public:
@@ -32,6 +47,9 @@ public:
     virtual double Get_Speed() = 0;
 };
 
+
+
+//
 class AHit_Checker
 {
 public:
@@ -40,7 +58,10 @@ public:
     bool Hit_Circle_On_Line(double y, double next_x_pos, double left_x, double right_x, double radius, double& x);    
 };
 
-class ABall: public AMover
+
+
+//
+class ABall: public AMover, public AGraphics_Object
 {
 public:
     static const double RADIUS;
@@ -52,8 +73,12 @@ public:
     virtual void Begin_Movement();
     virtual void Finish_Movement();
     virtual double Get_Speed();
+
+    virtual void Act();
+    virtual void Clear(HDC hdc, RECT& paint_area);
+    virtual void Draw(HDC hdc, RECT& paint_area);
+    virtual bool Is_Finished();
     
-    void Draw(HDC hdc, RECT& paint_area);
     void Draw_Teleporting(HDC hdc, int step);
     void Set_For_Test();
     void Set_State(EBall_State new_state, double x_pos = 0, double y_pos = 0);

@@ -56,7 +56,31 @@ bool AsBorder::Check_Hit(double next_x_pos, double next_y_pos, ABall* ball)
 
 
 //
-void AsBorder::Draw(HDC hdc, RECT &paint_area)
+void AsBorder::Act()
+{
+
+}
+
+
+//
+void AsBorder::Clear(HDC hdc, RECT& paint_area)
+{
+    RECT intersection_rect;
+
+    if (!AsConfig::Level_Has_Floor)
+        return;
+
+    if (!IntersectRect(&intersection_rect, &paint_area, &Floor_Rect))
+        return;
+
+    AsConfig::BG_Color.Select(hdc);
+
+    Rectangle(hdc, Floor_Rect.left, Floor_Rect.top, Floor_Rect.right - 1, Floor_Rect.bottom - 1);
+}
+
+
+//
+void AsBorder::Draw(HDC hdc, RECT& paint_area)
 {
     // 1. Линия слева
     for (int i = 0; i < 50; i++)
@@ -79,6 +103,13 @@ void AsBorder::Draw(HDC hdc, RECT &paint_area)
     // 4. Пол (если есть)
     if (AsConfig::Level_Has_Floor)
         Draw_Floor(hdc, paint_area);
+}
+
+
+//
+bool AsBorder::Is_Finished()
+{
+    return false; // Заглушка, т.к. этот метод не используется
 }
 
 
