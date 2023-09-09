@@ -99,7 +99,7 @@ HBRUSH AColor::Get_Brush() const
 
 
 // AsConfig
-bool AsConfig::Level_Has_Floor = false;
+bool AsConfig::Level_Has_Floor = true;
 int AsConfig::Current_Timer_Tick = 0;
 
 const double AsConfig::D_GLOBAL_SCALE = (double)GLOBAL_SCALE;

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DEFECTS>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>D:\Work\PopCornProject\PopCorn\Popcorn\PopCorn\</FILEPATH>
+      <FILENAME>Border.cpp</FILENAME>
+      <LINE>34</LINE>
+      <COLUMN>56</COLUMN>
+    </SFA>
+    <DEFECTCODE>26451</DEFECTCODE>
+    <DESCRIPTION>Arithmetic overflow: Using operator '+' on a 4 byte value and then casting the result to a 8 byte value. Cast the value to the wider type before calling operator '+' to avoid overflow (io.2).</DESCRIPTION>
+    <FUNCTION>AsBorder::Check_Hit</FUNCTION>
+    <DECORATED>?Check_Hit@AsBorder@@UAE_NNNPAVABall@@@Z</DECORATED>
+    <FUNCLINE>15</FUNCLINE>
+    <PATH></PATH>
+  </DEFECT>
+</DEFECTS>

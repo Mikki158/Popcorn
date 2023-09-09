@@ -91,7 +91,7 @@ public:
     static const int BRICK_HEIGHT = 7;
     static const int Max_Active_Bricks_Count = 10;
     static const int Max_Falling_Letters_Count = 10;
-    static const int Hits_Per_Letter = 10; // Вероятность выбить букву = 1.0 / Hits_Per_Letter
+    static const int Hits_Per_Letter = 1; // Вероятность выбить букву = 1.0 / Hits_Per_Letter
     
     static const AColor Pink_Color, Blue_Color, White_Color, Letter_Color, Teleport_Portal_Color, Blue_Highlight_Unbreakable, 
         Pink_Highlight_Unbreakable, Advertisement_Pink_Table, Advertisement_Blue_Table;

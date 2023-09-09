@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DEFECTS>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>D:\Work\PopCornProject\PopCorn\Popcorn\PopCorn\</FILEPATH>
+      <FILENAME>Ball_Set.cpp</FILENAME>
+      <LINE>79</LINE>
+      <COLUMN>30</COLUMN>
+    </SFA>
+    <DEFECTCODE>26812</DEFECTCODE>
+    <DESCRIPTION>The enum type 'EBall_State' is unscoped. Prefer 'enum class' over 'enum' (Enum.3).</DESCRIPTION>
+    <FUNCTION>AsBall_Set::Release_From_Platform</FUNCTION>
+    <DECORATED>?Release_From_Platform@AsBall_Set@@QAEXN@Z</DECORATED>
+    <FUNCLINE>76</FUNCLINE>
+    <PATH></PATH>
+  </DEFECT>
+</DEFECTS>

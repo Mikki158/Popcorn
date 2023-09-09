@@ -1,0 +1,284 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.5.json",
+  "runs": [
+    {
+      "results": [
+        {
+          "ruleId": "C26812",
+          "message": {
+            "text": "The enum type 'EBall_State' is unscoped. Prefer 'enum class' over 'enum' (Enum.3)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///D:/Work/PopCornProject/PopCorn/Popcorn/PopCorn/Ball.cpp"
+                },
+                "region": {
+                  "startLine": 58,
+                  "startColumn": 16,
+                  "endLine": 58,
+                  "endColumn": 17
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "ABall::{ctor}",
+                  "decoratedName": "??0ABall@@QAE@XZ",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C26451",
+          "message": {
+            "text": "Arithmetic overflow: Using operator '+' on a 4 byte value and then casting the result to a 8 byte value. Cast the value to the wider type before calling operator '+' to avoid overflow (io.2)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///D:/Work/PopCornProject/PopCorn/Popcorn/PopCorn/Ball.cpp"
+                },
+                "region": {
+                  "startLine": 251,
+                  "startColumn": 27,
+                  "endLine": 251,
+                  "endColumn": 33
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "ABall::Set_For_Test",
+                  "decoratedName": "?Set_For_Test@ABall@@QAEXXZ",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C26451",
+          "message": {
+            "text": "Arithmetic overflow: Using operator '+' on a 4 byte value and then casting the result to a 8 byte value. Cast the value to the wider type before calling operator '+' to avoid overflow (io.2)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///D:/Work/PopCornProject/PopCorn/Popcorn/PopCorn/Ball.cpp"
+                },
+                "region": {
+                  "startLine": 385,
+                  "startColumn": 29,
+                  "endLine": 385,
+                  "endColumn": 61
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "ABall::Set_On_Parachute",
+                  "decoratedName": "?Set_On_Parachute@ABall@@QAEXHH@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C26451",
+          "message": {
+            "text": "Arithmetic overflow: Using operator '+' on a 4 byte value and then casting the result to a 8 byte value. Cast the value to the wider type before calling operator '+' to avoid overflow (io.2)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///D:/Work/PopCornProject/PopCorn/Popcorn/PopCorn/Ball.cpp"
+                },
+                "region": {
+                  "startLine": 386,
+                  "startColumn": 29,
+                  "endLine": 386,
+                  "endColumn": 38
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "ABall::Set_On_Parachute",
+                  "decoratedName": "?Set_On_Parachute@ABall@@QAEXHH@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "tool": {
+        "driver": {
+          "name": "PREfast",
+          "fullName": "PREfast Code Analysis",
+          "version": "14.30.30705.0",
+          "informationUri": "https://aka.ms/cpp/ca"
+        }
+      },
+      "invocations": [
+        {
+          "commandLine": "\"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.30.30705\\bin\\HostX86\\x86\\c1xx.dll\" -ACf{1F7B090C-16DB-4822-966A-A93D26ED4681} -ACpmspft140.dll -Alint -D_PREFAST_ -D_AST_FE_ -Analyze -zm0x0053E1C0 -il C:\\Users\\8FEE~1\\AppData\\Local\\Temp\\_CL_ed5ed7b5ast -typedil -f Ball.cpp -Ze -D_MSC_EXTENSIONS -Zp8 -Gs -pc \\:/ -D_MSC_VER=1930 -D_MSC_FULL_VER=193030705 -D_MSC_BUILD=0 -D_WIN32 -D_M_IX86=600 -D_M_IX86_FP=2 -GR -D_CPPRTTI -nologo -W 3 -diagnostics:column -D_GUARDOVERFLOW_CRT_ALLOCATORS=1 -Ot -DCODE_ANALYSIS -DWIN32 -D_DEBUG -D_WINDOWS -D_UNICODE -DUNICODE -EHs -D_CPPUNWIND -EHc -D__MSVC_RUNTIME_CHECKS -RTCs -RTCu -MDd -D_DEBUG -D_MT -D_DLL -GS -D_M_FP_PRECISE -Zc:wchar_t -Zc:forScope -permissive- -FoDebug\\Ball.obj -FdDebug\\vc143.pdb -external:W 3 -Gd -analyze:projectdirectory D:\\Work\\PopCornProject\\PopCorn\\Popcorn\\PopCorn -analyze:rulesetdirectory ;C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Team Tools\\Static Analysis Tools\\\\Rule Sets; -analyze:ruleset C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Team Tools\\Static Analysis Tools\\Rule Sets\\NativeRecommendedRules.ruleset -analyze:quiet -analyze:plugin C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.30.30705\\bin\\HostX86\\x86\\EspXEngine.dll -FC -errorreport:prompt -I C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.30.30705\\include -I C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.30.30705\\atlmfc\\include -I C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\VS\\include -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\ucrt -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\um -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\shared -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\winrt -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\cppwinrt -I C:\\Program Files (x86)\\Windows Kits\\NETFXSDK\\4.8\\Include\\um -external:I C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.30.30705\\include -I C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.30.30705\\include -external:I C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.30.30705\\atlmfc\\include -I C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.30.30705\\atlmfc\\include -external:I C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\VS\\include -I C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\VS\\include -external:I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\ucrt -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\ucrt -external:I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\um -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\um -external:I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\shared -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\shared -external:I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\winrt -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\winrt -external:I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\cppwinrt -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\cppwinrt -external:I C:\\Program Files (x86)\\Windows Kits\\NETFXSDK\\4.8\\Include\\um -I C:\\Program Files (x86)\\Windows Kits\\NETFXSDK\\4.8\\Include\\um",
+          "executionSuccessful": true
+        }
+      ],
+      "artifacts": [
+        {
+          "location": {
+            "uri": "file:///D:/Work/PopCornProject/PopCorn/Popcorn/PopCorn/Level.cpp"
+          },
+          "roles": [
+            "analysisTarget",
+            "resultFile"
+          ],
+          "hashes": {
+            "sha-256": "0ece90d3020474a31a2ea5ed23520208fbde352d48f430e327ac96b5a4f1d0a8"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///d:/work/popcornproject/popcorn/popcorn/popcorn/level.h"
+          },
+          "hashes": {
+            "sha-256": "d2178b2f6c8fbaa25362b275e2ea93dd27a9bead73ed6962ffb3cbfe462039be"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///d:/work/popcornproject/popcorn/popcorn/popcorn/active_brick.h"
+          },
+          "hashes": {
+            "sha-256": "341d29f6c1e2873a0795733e5bb7f6757105b75a97065c4da628da1ec540437e"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///d:/work/popcornproject/popcorn/popcorn/popcorn/ball.h"
+          },
+          "hashes": {
+            "sha-256": "3c402222d60bd4ee07f1b659da3389cbfdb836b5d18d008a8714aef1c26fb911"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///d:/work/popcornproject/popcorn/popcorn/popcorn/config.h"
+          },
+          "hashes": {
+            "sha-256": "067f403d0d289f73a0344cf71d16898d02c808ad9f37ec1f9279d4b67e6aa109"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///d:/work/popcornproject/popcorn/popcorn/popcorn/falling_letter.h"
+          },
+          "hashes": {
+            "sha-256": "fc4ba3a963bf73b024e79f5054bb79e0f166e35d8b09c9136c437e526472a5f0"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///D:/Work/PopCornProject/PopCorn/Popcorn/PopCorn/Falling_Letter.cpp"
+          },
+          "roles": [
+            "analysisTarget",
+            "resultFile"
+          ],
+          "hashes": {
+            "sha-256": "21683bf6501eff2cfe288e71c633d200559aaf265bb60861456a0bb24b77ea72"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///d:/work/popcornproject/popcorn/popcorn/popcorn/config.cpp"
+          },
+          "roles": [
+            "analysisTarget"
+          ],
+          "hashes": {
+            "sha-256": "2276ea1c17d7a3c0449b0f19c123615917d326a19b3fa5e6a0a83eeaaec78b76"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///d:/work/popcornproject/popcorn/popcorn/popcorn/codestyle.cpp"
+          },
+          "roles": [
+            "analysisTarget"
+          ],
+          "hashes": {
+            "sha-256": "70314200540dfa99843b6574d553308b53a71e1345ff921bd636003ede62f4e9"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///d:/work/popcornproject/popcorn/popcorn/popcorn/codestyle.h"
+          },
+          "hashes": {
+            "sha-256": "f07e34313b78d331e740fba99415cc6b0c15ce33dd0c3de9cdc7240292259540"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///D:/Work/PopCornProject/PopCorn/Popcorn/PopCorn/Border.cpp"
+          },
+          "roles": [
+            "analysisTarget",
+            "resultFile"
+          ],
+          "hashes": {
+            "sha-256": "c3868600687b84340af6ec757f2e416db77c8b84429b6bba498e32f10eeae686"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///d:/work/popcornproject/popcorn/popcorn/popcorn/border.h"
+          },
+          "hashes": {
+            "sha-256": "501ea6ddc2e4dad6395647ad4d3fbde047f2c1e03958ee5b7ef482bb3823a916"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///D:/Work/PopCornProject/PopCorn/Popcorn/PopCorn/Ball_Set.cpp"
+          },
+          "roles": [
+            "analysisTarget",
+            "resultFile"
+          ],
+          "hashes": {
+            "sha-256": "26f3f37fb285a9290c64668b1b8f0a3fcbbd02cc9dc98fa22591ef0f5f6b8f12"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///d:/work/popcornproject/popcorn/popcorn/popcorn/ball_set.h"
+          },
+          "hashes": {
+            "sha-256": "be077ba8ef09e2056b4ef398bd8c4741c7e13e82ef4767caab9037c11ffddf5c"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///D:/Work/PopCornProject/PopCorn/Popcorn/PopCorn/Ball.cpp"
+          },
+          "roles": [
+            "analysisTarget",
+            "resultFile"
+          ],
+          "hashes": {
+            "sha-256": "8c8b559c34e9cd1c5b952eacf274e8317afd8336d01a9418a15fdeaf0e562d33"
+          }
+        }
+      ]
+    }
+  ]
+}

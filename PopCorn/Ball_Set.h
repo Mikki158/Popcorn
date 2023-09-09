@@ -21,9 +21,13 @@ public:
     void Inverse_Balls();
     void Accelerate();
     void Reset_Speed();
+    void On_Platform_Advance(double direction, double platform_speed, double max_speed);
     bool Is_Test_Finished();
     bool All_Balls_Are_Lost();
+    bool Release_Next_Ball();
 
 private:
     ABall Balls[AsConfig::Max_Balls_Count];
+
+    void Forced_Advance(double direction, double max_speed);
 };

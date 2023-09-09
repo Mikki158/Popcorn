@@ -64,6 +64,8 @@ public:
 class ABall: public AMover, public AGraphics_Object
 {
 public:
+    int Release_Timer_Tick;// Значение счетчика времени, после которого надо отпускать прикрепленный мячик 
+
     static const double RADIUS;
 
 
@@ -87,6 +89,8 @@ public:
     void Set_On_Parachute(int brick_x, int brick_y);
     void Get_Center(double& x_pos, double& y_pos);
     void Set_Speed(double new_speed);
+    void Forced_Advance(double direction, double speed, double max_speed);
+    void Release();
 
     bool Is_Test_Finished();
     bool Is_Moving_Up();
@@ -100,10 +104,10 @@ public:
 
 
 private:
-    double Ball_Direction;
+    double Ball_Direction, Prev_Ball_Direction;
     double Center_X_Pos;
     double Center_Y_Pos;
-    double Ball_Speed;
+    double Ball_Speed, Prev_Ball_Speed;
     //double Result_Distance;
 
     int Test_Iteration;
@@ -119,6 +123,7 @@ private:
 
     static AHit_Checker* Hit_checkers[3];
 
+    static const int On_Platform_Timeout = 10 * AsConfig::FPS;// Время нахождения на платформе
     static const int Parachute_Size = 15;
 
     void Redraw_Ball();

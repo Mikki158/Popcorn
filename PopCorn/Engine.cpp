@@ -28,6 +28,7 @@ void AsEngine::Init_Engine(HWND hwnd)// Настройка игры при ст�
 
     
     Level.Init();
+    Platform.Init(&Ball_Set);
 
     AFalling_Letter::Init();
      
@@ -39,6 +40,8 @@ void AsEngine::Init_Engine(HWND hwnd)// Настройка игры при ст�
 
    //for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
    //    Balls[i].Set_State(EBS_Disabled, -10);
+
+    //Platform.Set_State(EPS_Glue_Init);
 
     Platform.Redraw_Platform();
 
@@ -87,12 +90,7 @@ int AsEngine::On_Key(EKey_Type key_type, bool key_down)
         break;
 
     case EKT_Space:
-        if(key_down)
-            if (Platform.Get_State() == EPS_Ready)
-            {
-                Ball_Set.Release_From_Platform(Platform.Get_Middle_Pos());
-                Platform.Set_State(EPS_Normal);
-            }
+        Platform.On_Space_Key(key_down);
         break;
 
     case EKT_F:
@@ -212,6 +210,9 @@ void AsEngine::Act()
     Level.Act();
     Platform.Act();
 
+    if(Platform.Get_State() != EPS_Ready)
+        Ball_Set.Act();
+
     AFalling_Letter *falling_letter;
     int index = 0;
 
@@ -229,7 +230,8 @@ void AsEngine::On_Falling_Letter(AFalling_Letter* falling_letter)
     switch (falling_letter->letter_type)
     {
     case ELT_O:
-        break;
+        Platform.Set_State(EPS_Glue_Finalize);
+        break;// !!! Пока отменился только клей
 
     case ELT_I:
         Ball_Set.Inverse_Balls();
@@ -248,6 +250,7 @@ void AsEngine::On_Falling_Letter(AFalling_Letter* falling_letter)
         break;
 
     case ELT_K:
+        Platform.Set_State(EPS_Glue_Init);
         break;
 
     case ELT_W:

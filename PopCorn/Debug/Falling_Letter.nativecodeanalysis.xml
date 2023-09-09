@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DEFECTS>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>D:\Work\PopCornProject\PopCorn\Popcorn\PopCorn\</FILEPATH>
+      <FILENAME>Falling_Letter.cpp</FILENAME>
+      <LINE>9</LINE>
+      <COLUMN>17</COLUMN>
+    </SFA>
+    <DEFECTCODE>26812</DEFECTCODE>
+    <DESCRIPTION>The enum type 'EBrick_Type' is unscoped. Prefer 'enum class' over 'enum' (Enum.3).</DESCRIPTION>
+    <FUNCTION>AFalling_Letter::{ctor}</FUNCTION>
+    <DECORATED>??0AFalling_Letter@@QAE@W4EBrick_Type@@W4ELetter_Type@@HH@Z</DECORATED>
+    <FUNCLINE>9</FUNCLINE>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>D:\Work\PopCornProject\PopCorn\Popcorn\PopCorn\</FILEPATH>
+      <FILENAME>Falling_Letter.cpp</FILENAME>
+      <LINE>9</LINE>
+      <COLUMN>17</COLUMN>
+    </SFA>
+    <DEFECTCODE>26812</DEFECTCODE>
+    <DESCRIPTION>The enum type 'ELetter_Type' is unscoped. Prefer 'enum class' over 'enum' (Enum.3).</DESCRIPTION>
+    <FUNCTION>AFalling_Letter::{ctor}</FUNCTION>
+    <DECORATED>??0AFalling_Letter@@QAE@W4EBrick_Type@@W4ELetter_Type@@HH@Z</DECORATED>
+    <FUNCLINE>9</FUNCLINE>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>D:\Work\PopCornProject\PopCorn\Popcorn\PopCorn\</FILEPATH>
+      <FILENAME>Falling_Letter.cpp</FILENAME>
+      <LINE>11</LINE>
+      <COLUMN>91</COLUMN>
+    </SFA>
+    <DEFECTCODE>26812</DEFECTCODE>
+    <DESCRIPTION>The enum type 'EFalling_Letter_State' is unscoped. Prefer 'enum class' over 'enum' (Enum.3).</DESCRIPTION>
+    <FUNCTION>AFalling_Letter::{ctor}</FUNCTION>
+    <DECORATED>??0AFalling_Letter@@QAE@W4EBrick_Type@@W4ELetter_Type@@HH@Z</DECORATED>
+    <FUNCLINE>9</FUNCLINE>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>D:\Work\PopCornProject\PopCorn\Popcorn\PopCorn\</FILEPATH>
+      <FILENAME>Falling_Letter.cpp</FILENAME>
+      <LINE>182</LINE>
+      <COLUMN>77</COLUMN>
+    </SFA>
+    <DEFECTCODE>26451</DEFECTCODE>
+    <DESCRIPTION>Arithmetic overflow: Using operator '-' on a 4 byte value and then casting the result to a 8 byte value. Cast the value to the wider type before calling operator '-' to avoid overflow (io.2).</DESCRIPTION>
+    <FUNCTION>AFalling_Letter::Draw_Brick_Letter</FUNCTION>
+    <DECORATED>?Draw_Brick_Letter@AFalling_Letter@@AAEXPAUHDC__@@@Z</DECORATED>
+    <FUNCLINE>159</FUNCLINE>
+    <PATH></PATH>
+  </DEFECT>
+</DEFECTS>
