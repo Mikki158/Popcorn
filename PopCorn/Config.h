@@ -85,6 +85,7 @@ public:
     static const double Moving_STEP_SIZE;
     static const double START_BALL_Y_POS;
     static const double Ball_Accelerate;
+    static const double Min_Ball_Angle;
 
     // Brick
     static const int BRICK_WIDTH = 15;
@@ -102,7 +103,9 @@ public:
     static const int Meltdown_Speed = 3;
 
     static void Round_Rect(HDC hdc, RECT& rect, int corner_radius = 2);
+    static void Invalidate_Rect(RECT &rect);
     static void Throw();
+
 
     static int Rand(int range);
 };

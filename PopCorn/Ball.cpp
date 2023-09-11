@@ -53,6 +53,7 @@ AHit_Checker* ABall::Hit_checkers[] = {};
 int ABall::Hit_Checkers_Count = 0;
 const double ABall::RADIUS = 2.0 - 0.5 / AsConfig::GLOBAL_SCALE;
 
+
 //
 ABall::ABall()
     :Ball_State(EBS_Disabled), Prev_Ball_State(EBS_Disabled), Ball_Direction(0.0), Testing_Is_Active(false),
@@ -104,7 +105,7 @@ void ABall::Advance(double max_speed)
 
             if (prev_hits_count > max_hits_count)
             {
-                Ball_Direction += M_PI / 8.0;
+                Ball_Direction += AsConfig::Min_Ball_Angle;
 
                 prev_hits_count = 0;
             }
@@ -357,6 +358,8 @@ void ABall::Set_State(EBall_State new_state, double x_pos, double y_pos)
 void ABall::Set_Direction(double new_direction)
 {
     const double pi_2 = 2.0 * M_PI;
+
+    // 1. Переводим угол в диапазон [0 .. pi_2]
     while (new_direction > 2.0 * pi_2)
     {
         new_direction -= 2.0 * pi_2;
@@ -366,6 +369,26 @@ void ABall::Set_Direction(double new_direction)
     {
         new_direction += pi_2;
     }
+
+    // 2. Не позволим приближаться к горизонтальной оси ближе, чем на угол AsConfig::Min_Ball_Angle
+    // 2.1 Слева
+    // 2.1.1 Сверху
+    if (new_direction < AsConfig::Min_Ball_Angle)
+        new_direction = AsConfig::Min_Ball_Angle;
+
+    // 2.1.2 Снизу
+    if (new_direction > pi_2 - AsConfig::Min_Ball_Angle)
+        new_direction = pi_2 - AsConfig::Min_Ball_Angle;
+
+
+    // 2.2 Справа
+    // 2.2.1 Сверху
+    if (new_direction > M_PI + AsConfig::Min_Ball_Angle && new_direction < M_PI)
+        new_direction = M_PI - AsConfig::Min_Ball_Angle;
+
+    // 2.2.2 Снизу
+    if (new_direction > M_PI && new_direction < M_PI + AsConfig::Min_Ball_Angle)
+        new_direction = M_PI + AsConfig::Min_Ball_Angle;
 
     Ball_Direction = new_direction;
 }
@@ -535,8 +558,8 @@ void ABall::Redraw_Ball()
     Ball_Rect.right = (int)((Center_X_Pos + RADIUS) * AsConfig::D_GLOBAL_SCALE);
     Ball_Rect.bottom = (int)((Center_Y_Pos + RADIUS) * AsConfig::D_GLOBAL_SCALE);
 
-    InvalidateRect(AsConfig::HWnd, &Prev_Ball_Rect, FALSE);
-    InvalidateRect(AsConfig::HWnd, &Ball_Rect, FALSE);
+    AsConfig::Invalidate_Rect(Prev_Ball_Rect);
+    AsConfig::Invalidate_Rect(Ball_Rect);
 }
 
 
@@ -617,8 +640,8 @@ void ABall::Draw_Parachute(HDC hdc, RECT& paint_area)
 //
 void ABall::Redraw_Parachute()
 {
-    InvalidateRect(AsConfig::HWnd, &Prev_Parachute_Rect, FALSE);
-    InvalidateRect(AsConfig::HWnd, &Parachute_Rect, FALSE);
+    AsConfig::Invalidate_Rect(Prev_Parachute_Rect);
+    AsConfig::Invalidate_Rect(Parachute_Rect);
 }
 
 

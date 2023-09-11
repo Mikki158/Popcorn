@@ -76,8 +76,8 @@ void AFalling_Letter::Act()
         Next_Rotation_Tick += Ticks_Per_Step;
     }
 
-    InvalidateRect(AsConfig::HWnd, &Prev_Letter_Cell, FALSE);
-    InvalidateRect(AsConfig::HWnd, &Letter_Cell, FALSE);
+    AsConfig::Invalidate_Rect(Prev_Letter_Cell);
+    AsConfig::Invalidate_Rect(Letter_Cell);
 }
 
 
@@ -102,8 +102,8 @@ void AFalling_Letter::Get_Letter_Cell(RECT& rect)
 void AFalling_Letter::Finalize()
 {
     Falling_Latter_State = EFLS_Finalizing;
-    InvalidateRect(AsConfig::HWnd, &Prev_Letter_Cell, FALSE);
-    InvalidateRect(AsConfig::HWnd, &Letter_Cell, FALSE);
+    AsConfig::Invalidate_Rect(Prev_Letter_Cell);
+    AsConfig::Invalidate_Rect(Letter_Cell);
 }
 
 

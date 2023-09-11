@@ -41,7 +41,7 @@ void AsEngine::Init_Engine(HWND hwnd)// Настройка игры при ст�
    //for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
    //    Balls[i].Set_State(EBS_Disabled, -10);
 
-    //Platform.Set_State(EPS_Glue_Init);
+    //Platform.Set_State(EPlatform_State::Glue_Init);
 
     Platform.Redraw_Platform();
 
@@ -119,15 +119,15 @@ int AsEngine::On_Timer()
         break;
 
     case EGS_Lost_Ball:
-        if (Platform.Get_State() == EPS_Missing)
+        if (Platform.Has_State(EPlatform_Substate_Regular::Missing))
         {
             Game_State = EGS_Restart_Level;
-            Platform.Set_State(EPS_Roll_In);
+            Platform.Set_State(EPlatform_State::Rolling);
         }
         break;
 
     case EGS_Restart_Level:
-        if (Platform.Get_State() == EPS_Ready)
+        if (Platform.Has_State(EPlatform_Substate_Regular::Ready))
         {
             Game_State = EGS_Play_Level;
             Ball_Set.Set_On_Platform(Platform.Get_Middle_Pos());
@@ -153,7 +153,7 @@ void AsEngine::Play_Level()
     {
         Game_State = EGS_Lost_Ball;
         Level.Stop();
-        Platform.Set_State(EPS_Pre_Meltdown);
+        Platform.Set_State(EPlatform_State::Meltdown);
     }
     else
         Ball_Set.Accelerate();
@@ -210,7 +210,7 @@ void AsEngine::Act()
     Level.Act();
     Platform.Act();
 
-    if(Platform.Get_State() != EPS_Ready)
+    if(! Platform.Has_State(EPlatform_Substate_Regular::Ready))
         Ball_Set.Act();
 
     AFalling_Letter *falling_letter;
@@ -230,15 +230,17 @@ void AsEngine::On_Falling_Letter(AFalling_Letter* falling_letter)
     switch (falling_letter->letter_type)
     {
     case ELT_O:
-        Platform.Set_State(EPS_Glue_Finalize);
+        Platform.Set_State(EPlatform_Substate_Regular::Normal);
         break;// !!! Пока отменился только клей
 
     case ELT_I:
         Ball_Set.Inverse_Balls();
+        Platform.Set_State(EPlatform_Substate_Regular::Normal);
         break;
 
     case ELT_C:
         Ball_Set.Reset_Speed();
+        Platform.Set_State(EPlatform_Substate_Regular::Normal);
         break;
 
     case ELT_M:
@@ -247,10 +249,11 @@ void AsEngine::On_Falling_Letter(AFalling_Letter* falling_letter)
     case ELT_G:
         if (Life_Count < AsConfig::Max_Life_Count)
             Life_Count++; // !!! Отобразить на индикаторе!
+        Platform.Set_State(EPlatform_Substate_Regular::Normal);
         break;
 
     case ELT_K:
-        Platform.Set_State(EPS_Glue_Init);
+        Platform.Set_State(EPlatform_State::Glue);
         break;
 
     case ELT_W:
@@ -260,12 +263,14 @@ void AsEngine::On_Falling_Letter(AFalling_Letter* falling_letter)
         AsConfig::Level_Has_Floor = true;
         Border.Redraw_Floor();
         // !!! Отобразить на индикаторе
+        Platform.Set_State(EPlatform_Substate_Regular::Normal);
         break;
 
     case ELT_L:
         break;
 
     case ELT_T:
+        Platform.Set_State(EPlatform_Substate_Regular::Normal);
         Ball_Set.Tripple_Balls();
         break;
 

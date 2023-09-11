@@ -116,7 +116,7 @@ bool AsBorder::Is_Finished()
 //
 void AsBorder::Redraw_Floor()
 {
-    InvalidateRect(AsConfig::HWnd, &Floor_Rect, FALSE);
+    AsConfig::Invalidate_Rect(Floor_Rect);
 }
 
 

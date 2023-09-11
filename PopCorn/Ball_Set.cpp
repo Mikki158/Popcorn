@@ -171,7 +171,7 @@ void AsBall_Set::Tripple_Balls()
     if (left_candidate != nullptr)
     {
         *left_candidate = *further_ball;
-        left_candidate->Set_Direction(left_candidate->Get_Direction() + M_PI / 8.0);
+        left_candidate->Set_Direction(left_candidate->Get_Direction() + AsConfig::Min_Ball_Angle);
     }
 
     if (right_candidate != nullptr)

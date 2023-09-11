@@ -99,7 +99,7 @@ HBRUSH AColor::Get_Brush() const
 
 
 // AsConfig
-bool AsConfig::Level_Has_Floor = true;
+bool AsConfig::Level_Has_Floor = false;
 int AsConfig::Current_Timer_Tick = 0;
 
 const double AsConfig::D_GLOBAL_SCALE = (double)GLOBAL_SCALE;
@@ -107,6 +107,8 @@ const double AsConfig::Normal_Ball_Speed = 3.0;
 const double AsConfig::Moving_STEP_SIZE = 1.0 / GLOBAL_SCALE;
 const double AsConfig::START_BALL_Y_POS = 184.0;
 const double AsConfig::Ball_Accelerate = 1.001;
+const double AsConfig::Min_Ball_Angle = M_PI / 8.0;
+
 
  
 //
@@ -115,6 +117,13 @@ void AsConfig::Round_Rect(HDC hdc, RECT& rect, int corner_radius)
     int radius = corner_radius * AsConfig::GLOBAL_SCALE;
 
     RoundRect(hdc, rect.left, rect.top, rect.right - 1, rect.bottom - 1, radius, radius);
+}
+
+
+//
+void AsConfig::Invalidate_Rect(RECT& rect)
+{
+    InvalidateRect(HWnd, &rect, FALSE);
 }
 
 

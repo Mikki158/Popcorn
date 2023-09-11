@@ -90,7 +90,7 @@ void AActive_Brick_Pink_Blue::Act()
     if (fade_Step <= MAX_FADE_STEP - 1)
     {
         fade_Step += 1;
-        InvalidateRect(AsConfig::HWnd, &Brick_Rect, FALSE);
+        AsConfig::Invalidate_Rect(Brick_Rect);
     }
 }
 
@@ -218,7 +218,7 @@ void AActive_Brick_Unbreakable::Act()
     if (Animation_Step <= MAX_ANIMATION_STEP)
     {
         Animation_Step++;
-        InvalidateRect(AsConfig::HWnd, &Brick_Rect, FALSE);
+        AsConfig::Invalidate_Rect(Brick_Rect);
     }
 }
 
@@ -291,7 +291,7 @@ void AActive_Brick_Multihit::Act()
     if (Rotation_Step <= MAX_ROTATION_STEP)
     {
         Rotation_Step++;
-        InvalidateRect(AsConfig::HWnd, &Brick_Rect, FALSE);
+        AsConfig::Invalidate_Rect(Brick_Rect);
     }
 }
 
@@ -454,7 +454,7 @@ void AActive_Brick_Teleport::Act()
     if (Animation_Step <= Max_Animation_Step)
     {
         Animation_Step++;
-        InvalidateRect(AsConfig::HWnd, &Brick_Rect, FALSE);
+        AsConfig::Invalidate_Rect(Brick_Rect);
     }
     else
     {
@@ -507,7 +507,7 @@ void AActive_Brick_Teleport::Act()
                 Ball->Set_Direction(direction);
 
                 Ball = nullptr; // ќтмечаем м€чик как отсутствующий в телепорте
-                InvalidateRect(AsConfig::HWnd, &Brick_Rect, FALSE);
+                AsConfig::Invalidate_Rect(Brick_Rect);
             }
             break;
         }
@@ -669,7 +669,7 @@ void AAdvertisement::Act()
                 rect.right = rect.left + cell_width;
                 rect.bottom = rect.top + cell_height;
 
-                InvalidateRect(AsConfig::HWnd, &rect, FALSE);
+                AsConfig::Invalidate_Rect(rect);
             }
 
     // 2. —мещаем шарик
@@ -872,7 +872,7 @@ void AActive_Brick_Ad::Act()
     //if (Animation_Step <= MAX_ANIMATION_STEP)
     //{
     //    Animation_Step++;
-    InvalidateRect(AsConfig::HWnd, &Brick_Rect, FALSE);
+    AsConfig::Invalidate_Rect(Brick_Rect);
     //}
 }
 

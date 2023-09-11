@@ -68,7 +68,6 @@ public:
 
     static const double RADIUS;
 
-
     ABall();
 
     virtual void Advance(double max_speed);
