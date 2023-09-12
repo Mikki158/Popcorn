@@ -817,12 +817,12 @@ bool AsLevel::Add_Falling_Letter(int brick_x, int brick_y, EBrick_Type brick_typ
             letter_x = (brick_x * AsConfig::CELL_WIDTH + AsConfig::LEVEL_X_OFFSET) * AsConfig::GLOBAL_SCALE;
             letter_y = (brick_y * AsConfig::CELL_HEIGHT + AsConfig::LEVEL_Y_OFFSET) * AsConfig::GLOBAL_SCALE;
 
-            letter_type = ELT_K;
-            //letter_type = AFalling_Letter::Get_Random_Letter_Type();
-            if (AsConfig::Rand(2) == 0)
-                letter_type = ELT_K;
-            else
-                letter_type = ELT_T;
+            //letter_type = ELT_W;
+            letter_type = AFalling_Letter::Get_Random_Letter_Type();
+            //if (AsConfig::Rand(2) == 0)
+            //    letter_type = ELT_K;
+            //else
+            //    letter_type = ELT_W;
 
             falling_letter = new AFalling_Letter(brick_type, letter_type, letter_x, letter_y);
             Falling_Letters[i] = falling_letter;

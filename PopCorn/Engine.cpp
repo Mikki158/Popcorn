@@ -41,7 +41,7 @@ void AsEngine::Init_Engine(HWND hwnd)// Настройка игры при ст�
    //for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
    //    Balls[i].Set_State(EBS_Disabled, -10);
 
-    //Platform.Set_State(EPlatform_State::Glue_Init);
+    //Platform.Set_State(EPlatform_State::Expanding);
 
     Platform.Redraw_Platform();
 
@@ -257,6 +257,7 @@ void AsEngine::On_Falling_Letter(AFalling_Letter* falling_letter)
         break;
 
     case ELT_W:
+        Platform.Set_State(EPlatform_State::Expanding);
         break;
 
     case ELT_P:
