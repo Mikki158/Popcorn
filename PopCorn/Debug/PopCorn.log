@@ -1,2 +1,10 @@
-﻿  Level.cpp
+﻿  Platform.cpp
+D:\Work\PopCornProject\PopCorn\Popcorn\PopCorn\Platform.cpp(1023,35): warning C4244: 'initializing': conversion from 'const double' to 'int', possible loss of data
+D:\Work\PopCornProject\PopCorn\Popcorn\PopCorn\Platform.cpp(1023,23): warning C4244: 'initializing': conversion from 'const double' to 'const int', possible loss of data
+D:\Work\PopCornProject\PopCorn\Popcorn\PopCorn\Platform.cpp(1106,25): warning C4838: conversion from 'double' to 'LONG' requires a narrowing conversion
+D:\Work\PopCornProject\PopCorn\Popcorn\PopCorn\Platform.cpp(1106,25): warning C4244: 'initializing': conversion from 'double' to 'LONG', possible loss of data
+D:\Work\PopCornProject\PopCorn\Popcorn\PopCorn\Platform.cpp(1151,28): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+D:\Work\PopCornProject\PopCorn\Popcorn\PopCorn\Platform.cpp(1152,28): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+D:\Work\PopCornProject\PopCorn\Popcorn\PopCorn\Platform.cpp(1153,32): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+D:\Work\PopCornProject\PopCorn\Popcorn\PopCorn\Platform.cpp(1154,33): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
   PopCorn.vcxproj -> D:\Work\PopCornProject\PopCorn\Popcorn\Debug\PopCorn.exe
