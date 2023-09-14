@@ -95,7 +95,7 @@ public:
     static const int Hits_Per_Letter = 1; // Вероятность выбить букву = 1.0 / Hits_Per_Letter
     
     static const AColor Pink_Color, Blue_Color, White_Color, Letter_Color, Teleport_Portal_Color, Blue_Highlight_Unbreakable, 
-        Pink_Highlight_Unbreakable, Advertisement_Pink_Table, Advertisement_Blue_Table;
+        Pink_Highlight_Unbreakable, Advertisement_Pink_Table, Advertisement_Blue_Table, Laser_Color;
 
 
     // Platform

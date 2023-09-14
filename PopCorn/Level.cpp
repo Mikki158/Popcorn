@@ -60,7 +60,8 @@ AsLevel::~AsLevel()
 
 //
 bool AsLevel::Check_Hit(double next_x_pos, double next_y_pos, ABall* ball)
-{
+{// Корректируем позицию при отражении от кирпичей
+
     double direction = ball->Get_Direction();
 
     double min_ball_x, max_ball_x;
@@ -156,6 +157,32 @@ bool AsLevel::Check_Hit(double next_x_pos, double next_y_pos, ABall* ball)
     }
 
     return false;
+}
+
+
+//
+bool AsLevel::Check_Hit(double next_x_pos, double next_y_pos)
+{// Возвра: true, если в позиции (next_x_pos, next_y_pos) луч коснется кирпича
+
+    int level_x_index, level_y_index;
+
+    level_x_index = (int)((next_x_pos - AsConfig::LEVEL_X_OFFSET) / (double)AsConfig::CELL_WIDTH);
+    level_y_index = (int)((next_y_pos - AsConfig::LEVEL_Y_OFFSET) / (double)AsConfig::CELL_HEIGHT);
+
+    if(level_x_index < 0 || level_x_index >= AsConfig::LEVEL_WIDTH)
+        return false;
+
+    if (level_y_index < 0 || level_y_index >= AsConfig::LEVEL_HEIGHT)
+        return false;
+
+    if (Current_Level[level_y_index][level_x_index] == 0)
+        return false;
+
+
+    On_Hit(level_x_index, level_y_index, 0, true);
+
+    return true;
+
 }
 
 
@@ -620,6 +647,12 @@ bool AsLevel::On_Hit(int brick_x, int brick_y, ABall* ball, bool vertical_hit)
 
     brick_type = (EBrick_Type)Current_Level[brick_y][brick_x];
 
+    if (ball == nullptr && brick_type == EBT_Parachute)
+    {
+        brick_type = EBT_Pink;
+        Current_Level[brick_y][brick_x] = brick_type;
+    }
+
     if (brick_type == EBT_Parachute)
     {
         ball->Set_On_Parachute(brick_x, brick_y);
@@ -677,7 +710,8 @@ bool AsLevel::Create_Active_Brick(int brick_x, int brick_y, EBrick_Type brick_ty
         break;
 
     case EBT_Teleport:
-        Add_Active_Brick_Teleport(brick_x, brick_y, ball, vertical_hit);
+        if(ball != nullptr)
+            Add_Active_Brick_Teleport(brick_x, brick_y, ball, vertical_hit);
         return false;
         break;
 
@@ -824,14 +858,14 @@ bool AsLevel::Add_Falling_Letter(int brick_x, int brick_y, EBrick_Type brick_typ
             case 0:
                 letter_type = ELT_L;
                 break;
-
+            
             case 1:
                 letter_type = ELT_W;
                 break;
-
+            
             case 2:
                 letter_type = ELT_K;
-
+            
             default:
                 break;
             }

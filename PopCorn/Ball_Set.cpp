@@ -55,7 +55,6 @@ void AsBall_Set::Act()
             if (curr_ball->Release_Timer_Tick != 0 && AsConfig::Current_Timer_Tick >= curr_ball->Release_Timer_Tick)
                 curr_ball->Release();
     }
-
 }
 
 

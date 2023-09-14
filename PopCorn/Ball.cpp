@@ -19,6 +19,12 @@ AMover::~AMover()
 
 
 // AHit_Checker
+bool AHit_Checker::Check_Hit(double next_x_pos, double next_y_pos)
+{
+    return false;
+}
+
+
 //
 bool AHit_Checker::Hit_Circle_On_Line(double y, double next_x_pos, double left_x, double right_x, double radius, double& x)
 {// Проверяет пересечение горизонтального отрезка (проходящего от left_x до right_x через y) с окружностью радиусом ridius
