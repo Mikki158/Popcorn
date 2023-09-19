@@ -20,82 +20,7 @@ const AColor AsConfig::Blue_Highlight_Unbreakable(AsConfig::Blue_Color, AsConfig
 const AColor AsConfig::Pink_Highlight_Unbreakable(AsConfig::Pink_Color, 3 * AsConfig::GLOBAL_SCALE);
 const AColor AsConfig::Advertisement_Pink_Table(AsConfig::Pink_Color, 2 * AsConfig::GLOBAL_SCALE);
 const AColor AsConfig::Advertisement_Blue_Table(0, 159, 159, AsConfig::GLOBAL_SCALE);
-
-
-
-
-// AColor
-//
-AColor::AColor()
-    :R(0), G(0), B(0), Pen(), Brush()
-{
-    
-}
-
-
-//
-AColor::AColor(unsigned char r, unsigned char g, unsigned char b)
-    :R(r), G(g), B(b), Pen(0), Brush(0)
-{
-    Pen = CreatePen(PS_SOLID, 0, RGB(R, G, B));
-    Brush = CreateSolidBrush(RGB(R, G, B));
-
-}
-
-
-//
-AColor::AColor(const AColor& color, int pen_size)
-    :R(color.R), G(color.G), B(color.B), Pen(0), Brush(0)
-{
-    Pen = CreatePen(PS_SOLID, pen_size, color.Get_RGB());
-}
-
-
-//
-AColor::AColor(const AColor& pen_color, const AColor& brush_color, int pen_size)
-    :R(0), G(0), B(0), Pen(0), Brush(0)
-{
-    Pen = CreatePen(PS_SOLID, pen_size, pen_color.Get_RGB());
-    Brush = CreateSolidBrush(brush_color.Get_RGB());
-}
-
-
-//
-AColor::AColor(unsigned char r, unsigned char g, unsigned char b, int pen_size)
-    :R(r), G(g), B(b), Pen(0), Brush(0)
-{
-    Pen = CreatePen(PS_SOLID, pen_size, RGB(R, G, B));
-    Brush = CreateSolidBrush(RGB(R, G, B));
-}
-
-
-//
-void AColor::Select(HDC hdc) const
-{
-    SelectObject(hdc, Pen);
-    SelectObject(hdc, Brush);
-}
-
-
-//
-void AColor::Select_Pen(HDC hdc) const
-{
-    SelectObject(hdc, Pen);
-}
-
-
-//
-int AColor::Get_RGB() const
-{
-    return RGB(R, G, B);
-}
-
-
-//
-HBRUSH AColor::Get_Brush() const
-{
-    return Brush;
-}
+const AColor AsConfig::Gate_Color(AsConfig::White_Color, AsConfig::GLOBAL_SCALE);
 
 
 
@@ -110,6 +35,22 @@ const double AsConfig::START_BALL_Y_POS = 184.0;
 const double AsConfig::Ball_Accelerate = 1.001;
 const double AsConfig::Min_Ball_Angle = M_PI / 8.0;
 
+
+
+//
+void AsConfig::Rect(HDC hdc, RECT& rect, const AColor &color)
+{
+    color.Select(hdc);
+    Rectangle(hdc, rect.left, rect.top, rect.right - 1, rect.bottom - 1);
+}
+
+
+//
+void AsConfig::Rect(HDC hdc, int x, int y, int width, int height, const AColor& color)
+{
+    color.Select(hdc);
+    Rectangle(hdc, x * GLOBAL_SCALE, y * GLOBAL_SCALE, (x + width) * GLOBAL_SCALE - 1, (y + height) * GLOBAL_SCALE - 1);
+}
 
  
 //

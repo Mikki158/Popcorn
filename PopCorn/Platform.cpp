@@ -1,1108 +1,9 @@
 ﻿#include "Platform.h"
 
-
-//AsPlatform_State
-//
-AsPlatform_State::AsPlatform_State()
-    :Current_State(EPlatform_State::Regular), Next_State(EPlatform_State::Unknow), Regular(EPlatform_Substate_Regular::Missing),
-    Meltdown(EPlatform_Substate_Meltdown::Unknow), Rolling(EPlatform_Substate_Rolling::Unknow),
-    Glue(EPlatform_Transformation::Unknow), Expanding(EPlatform_Transformation::Unknow),
-    Laser(EPlatform_Transformation::Unknow), Moving(EPlatform_Moving_State::Stop)
-{
-}
-
-
-//
-AsPlatform_State::operator EPlatform_State() const
-{
-    return Current_State;
-}
-
-
-//
-void AsPlatform_State::operator = (EPlatform_State new_state)
-{
-    Current_State = new_state;
-}
-
-
-//
-void AsPlatform_State::Set_Next_State(EPlatform_State nex_state)
-{
-    if (nex_state == Next_State)
-        return;
-
-    switch (Current_State)
-    {
-    case EPlatform_State::Regular:
-        AsConfig::Throw(); // Обычное состояние "само" не заканчивается, переключение в другое состояние должно быть явным
-        break;
-
-    case EPlatform_State::Meltdown:
-        return; // Игнорируем любое следующее состояние после Meltdown, т.к. после него должен рестартиться игровой процесс
-
-    case EPlatform_State::Rolling:
-        AsConfig::Throw(); // Состояние Rolling "само" должно переключиться в следующее 
-        break;
-
-    case EPlatform_State::Glue:
-        Glue = EPlatform_Transformation::Finalize;
-        break;
-
-    case EPlatform_State::Expanding:
-        Expanding = EPlatform_Transformation::Finalize;
-        break;
-
-    case EPlatform_State::Laser:
-        Laser = EPlatform_Transformation::Finalize;
-        break;
-
-    default:
-        AsConfig::Throw();
-        break;
-    }
-
-    Next_State = nex_state;
-}
-
-
-//
-EPlatform_State AsPlatform_State::Set_State(EPlatform_Substate_Regular new_regular_state)
-{
-    EPlatform_Transformation* transformation_state = nullptr;
-
-    if (Current_State == EPlatform_State::Regular && Regular == new_regular_state)
-        return EPlatform_State::Unknow;
-
-    if (new_regular_state == EPlatform_Substate_Regular::Normal)
-    {
-        switch (Current_State)
-        {
-        case EPlatform_State::Glue:
-            transformation_state = &Glue;
-            break;
-
-        case EPlatform_State::Expanding:
-            transformation_state = &Expanding;
-            break;
-
-        case EPlatform_State::Laser:
-            transformation_state = &Laser;
-            break;
-
-        default:
-            break;
-        }
-
-        if (transformation_state != nullptr)
-        {
-            if (*transformation_state == EPlatform_Transformation::Unknow) // Финализация состояния 
-                return Set_Next_Or_Regular_State(new_regular_state);
-            else // Запускаем финализацию состояния
-                *transformation_state = EPlatform_Transformation::Finalize;
-
-            return EPlatform_State::Unknow;            
-        }
-    }
-    Current_State = EPlatform_State::Regular;
-    Regular = new_regular_state;
-
-    return EPlatform_State::Unknow;
-}
-
-
-//
-EPlatform_State AsPlatform_State::Get_Next_State()
-{
-    return Next_State;
-}
-
-
-//
-EPlatform_State AsPlatform_State::Set_Next_Or_Regular_State(EPlatform_Substate_Regular new_regular_state)
-{// Возврат: если Ubrnow, то надо перейти в жто новое состояние
-
-    EPlatform_State next_state;
-
-    Current_State = EPlatform_State::Regular;
-
-    next_state = Get_Next_State();
-
-    // Если есть отложенное состояние, то переводим в него, а не в Regular
-    if (next_state == EPlatform_State::Unknow)
-        Regular = new_regular_state;
-
-    return next_state;
-}
-
-
-
-// AsPlatform_Glue
-//
-const double AsPlatform_Glue::Max_Glue_Spot_Height_Ratio = 1.0;
-const double AsPlatform_Glue::Min_Glue_Spot_Height_Ratio = 0.2;
-const double AsPlatform_Glue::Glue_Spot_Height_Ratio_Step = 0.05;
-
-//
-AsPlatform_Glue::AsPlatform_Glue(AsPlatform_State& platform_state)
-    :Glue_Spot_Height_Ratio(0.0), Platform_State(&platform_state)
-{
-}
-
-//
-bool AsPlatform_Glue::Act(AsBall_Set *ball_set, EPlatform_State &next_state)
-{
-    next_state = EPlatform_State::Unknow;
-
-    switch (Platform_State->Glue)
-    {
-    case EPlatform_Transformation::Init:
-        if (Glue_Spot_Height_Ratio < Max_Glue_Spot_Height_Ratio)
-            Glue_Spot_Height_Ratio += Glue_Spot_Height_Ratio_Step;
-        else
-            Platform_State->Glue = EPlatform_Transformation::Active;
-
-        return true;
-
-    case EPlatform_Transformation::Active:
-        break;
-
-    case EPlatform_Transformation::Finalize:
-        if (Glue_Spot_Height_Ratio > Min_Glue_Spot_Height_Ratio)
-        {
-            Glue_Spot_Height_Ratio -= Glue_Spot_Height_Ratio_Step;
-
-            while (ball_set->Release_Next_Ball())
-            {
-            }
-        }
-        else
-        {
-            Platform_State->Glue = EPlatform_Transformation::Unknow;
-            next_state = Platform_State->Set_State(EPlatform_Substate_Regular::Normal);
-        }
-
-        return true;
-
-    default:
-        AsConfig::Throw();
-        break;
-    }
-
-    return false;
-}
-
-
-//
-void AsPlatform_Glue::Draw_State(HDC hdc, double x_pos)
-{// Рисуем платформу с растикающим клеем
-
-    HRGN region;
-    RECT glue_rect;
-
-    glue_rect.left = (int)((x_pos + 5.0) * AsConfig::D_GLOBAL_SCALE);
-    glue_rect.top = (AsConfig::Platform_Y_POS + 1) * AsConfig::GLOBAL_SCALE;
-    glue_rect.right = glue_rect.left + AsPlatform::NORMAL_PLATFORM_INNER_WIDTH * AsConfig::GLOBAL_SCALE;
-    glue_rect.bottom = glue_rect.top + (AsPlatform::Height - 2) * AsConfig::GLOBAL_SCALE;
-
-    region = CreateRectRgnIndirect(&glue_rect);
-    SelectClipRgn(hdc, region);
-
-    AsConfig::BG_Color.Select(hdc);
-
-    Draw_Glue_Spot(hdc, 0, 9, 5, x_pos);
-    Draw_Glue_Spot(hdc, 6, 6, 5, x_pos);
-    Draw_Glue_Spot(hdc, 9, 9, 6, x_pos);
-
-    AsConfig::White_Color.Select(hdc);
-
-    Draw_Glue_Spot(hdc, 0, 9, 4, x_pos);
-    Draw_Glue_Spot(hdc, 6, 6, 4, x_pos);
-    Draw_Glue_Spot(hdc, 9, 9, 5, x_pos);
-
-    SelectClipRgn(hdc, 0);
-    DeleteObject(region);
-}
-
-
-//
-void AsPlatform_Glue::Reset()
-{
-    Glue_Spot_Height_Ratio = Min_Glue_Spot_Height_Ratio;
-}
-
-
-//
-void AsPlatform_Glue::Draw_Glue_Spot(HDC hdc, int x_offset, int width, int height, double x_pos)
-{// Рисуем полуэлипс как "пятно" клея
-
-    int platform_top = (AsConfig::Platform_Y_POS + 1) * AsConfig::GLOBAL_SCALE;
-    int spot_height = (int)((double)height * AsConfig::D_GLOBAL_SCALE * Glue_Spot_Height_Ratio);
-    RECT spot_rect;
-
-
-    spot_rect.left = (int)((x_pos + 5.0 + (double)x_offset) * AsConfig::D_GLOBAL_SCALE);
-    spot_rect.top = platform_top - spot_height;
-    spot_rect.right = spot_rect.left + width * AsConfig::GLOBAL_SCALE;
-    spot_rect.bottom = platform_top + spot_height - AsConfig::GLOBAL_SCALE;
-
-
-    Chord(hdc, spot_rect.left, spot_rect.top, spot_rect.right - 1, spot_rect.bottom - 1,
-        spot_rect.left, platform_top - 1, spot_rect.right - 1, platform_top - 1);
-}
-
-
-
-// AsPlatform_Expanding
-//
-const double AsPlatform_Expanding::Min_Expanding_Platform_Width = (double)AsPlatform::NORMAL_WIDTH;
-const double AsPlatform_Expanding::Max_Expanding_Platform_Width = 40.0;
-const double AsPlatform_Expanding::Expanding_Platform_Width_Step = 1.0;
-//
-AsPlatform_Expanding::AsPlatform_Expanding(AsPlatform_State& platform_state)
-    :Expanding_Platform_Width(0.0), Platform_State(&platform_state), Truss_Color(nullptr), Inner_Color(nullptr), 
-    Circle_Color(nullptr)
-{
-    
-}
-
-
-//
-AsPlatform_Expanding::~AsPlatform_Expanding()
-{
-    delete Truss_Color;
-}
-
-
-//
-void AsPlatform_Expanding::Init(AColor& inner_color, AColor& circle_color)
-{
-    Truss_Color = new AColor(inner_color, AsConfig::GLOBAL_SCALE);
-
-    Inner_Color = &inner_color;
-    Circle_Color = &circle_color;
-}
-
-
-//
-void AsPlatform_Expanding::Draw_State(HDC hdc, double x)
-{// Рисуем расширяющуюся платформу
-
-    int y = AsConfig::Platform_Y_POS;
-    const int scale = AsConfig::GLOBAL_SCALE;
-    const double d_scale = AsConfig::D_GLOBAL_SCALE;
-
-    RECT inner_rect;
-
-    inner_rect.left = (int)((x + (Expanding_Platform_Width - (double)AsPlatform::Expanding_Platform_Inner_Width) / 2.0) * d_scale);
-    inner_rect.top = (y + 1) * scale;
-    inner_rect.right = inner_rect.left + AsPlatform::Expanding_Platform_Inner_Width * scale;
-    inner_rect.bottom = (y + 1 + 5) * scale;
-
-    // 1. Левая сторона
-    // 1.1 Шарик
-    Draw_Expanding_Platform_Ball(hdc, true, x);
-
-    // 1.2 Фермы
-    Draw_Expanding_Truss(hdc, inner_rect, true);
-
-    // 2. Левая сторона
-    // 2.1 Шарик
-    Draw_Expanding_Platform_Ball(hdc, false, x);
-
-    // 2.2 Фермы
-    Draw_Expanding_Truss(hdc, inner_rect, false);
-
-    // 3. Рисуем среднюю платформу
-    Inner_Color->Select(hdc);
-
-
-    Rectangle(hdc, inner_rect.left, inner_rect.top, inner_rect.right - 1, inner_rect.bottom - 1);
-}
-
-
-//
-void AsPlatform_Expanding::Reset()
-{
-    Expanding_Platform_Width = Min_Expanding_Platform_Width;
-}
-
-
-//
-bool AsPlatform_Expanding::Act(double &x_pos, EPlatform_State& next_state, bool &correct_pos)
-{
-    correct_pos = false;
-
-    next_state = EPlatform_State::Unknow;
-
-    switch (Platform_State->Expanding)
-    {
-    case EPlatform_Transformation::Init:
-        if (Expanding_Platform_Width < Max_Expanding_Platform_Width)
-        {
-            Expanding_Platform_Width += Expanding_Platform_Width_Step;
-            x_pos -= Expanding_Platform_Width_Step / 2.0;
-
-            correct_pos = true;
-        }
-        else
-            Platform_State->Expanding = EPlatform_Transformation::Active;
-
-        return true;
-
-    case EPlatform_Transformation::Active:
-        break;
-
-    case EPlatform_Transformation::Finalize:
-        if (Expanding_Platform_Width > Min_Expanding_Platform_Width)
-        {
-            Expanding_Platform_Width -= Expanding_Platform_Width_Step;
-            x_pos += Expanding_Platform_Width_Step / 2.0;
-
-            correct_pos = true;
-        }
-        else
-        {
-            Platform_State->Expanding = EPlatform_Transformation::Unknow;
-            next_state = Platform_State->Set_State(EPlatform_Substate_Regular::Normal);
-        }
-
-        return true;
-
-    default:
-        AsConfig::Throw();
-        break;
-    }
-
-    return false;
-}
-
-
-//
-void AsPlatform_Expanding::Draw_Expanding_Platform_Ball(HDC hdc, bool is_left, double x)
-{
-    int y = AsConfig::Platform_Y_POS;
-    int arc_mid_x;
-    int arc_start_y, arc_end_y;
-    int arc_right_offset;
-    const int scale = AsConfig::GLOBAL_SCALE;
-    const double d_scale = AsConfig::D_GLOBAL_SCALE;
-    RECT rect, arc_rect;
-
-    // 1.1 Шарик
-    if (is_left)
-        rect.left = (int)(x * d_scale);
-    else
-        rect.left = (int)((x + Expanding_Platform_Width - (double)AsPlatform::CIRCLE_SIZE) * d_scale);
-
-    rect.top = y * scale;
-    rect.right = rect.left + AsPlatform::CIRCLE_SIZE * scale;
-    rect.bottom = (y + AsPlatform::CIRCLE_SIZE) * scale;
-
-    Circle_Color->Select(hdc);
-    Ellipse(hdc, rect.left, rect.top, rect.right - 1, rect.bottom - 1);
-
-    // 1.2 Переходник на ферму
-    if (is_left)
-        Rectangle(hdc, rect.left + 4 * scale, rect.top, rect.right - scale + 1, rect.bottom - 1);
-    else
-        Rectangle(hdc, rect.left + 1, rect.top, rect.left + 3 * scale, rect.bottom - 1);
-
-
-    // 1.3 Дуга фермы на шарике        
-    arc_rect.left = rect.left + 4 * scale + 2;
-    arc_rect.top = rect.top + scale + 1;
-    arc_rect.right = rect.left + (4 + 3) * scale + 2;
-    arc_rect.bottom = rect.bottom - scale - 1;
-
-    arc_mid_x = arc_rect.left + (arc_rect.right - arc_rect.left) / 2;
-
-    if (is_left)
-    {
-        arc_start_y = arc_rect.top;
-        arc_end_y = arc_rect.bottom;
-    }
-    else
-    {
-        arc_start_y = arc_rect.bottom;
-        arc_end_y = arc_rect.top;
-
-        arc_right_offset = (AsPlatform::CIRCLE_SIZE - 2) * scale + 1;
-
-        arc_rect.left -= arc_right_offset;
-        arc_rect.right -= arc_right_offset;
-        arc_mid_x -= arc_right_offset;
-    }
-
-    // 1.3.1 Дырка в шарике под дугой 
-    AsConfig::BG_Color.Select(hdc);
-    Ellipse(hdc, arc_rect.left, arc_rect.top, arc_rect.right - 1, arc_rect.bottom - 1);
-
-    // 1.3.2 Сама дуга
-    Truss_Color->Select(hdc);
-    Arc(hdc, arc_rect.left, arc_rect.top, arc_rect.right - 1, arc_rect.bottom - 1,
-        arc_mid_x, arc_start_y, arc_mid_x, arc_end_y);
-
-}
-
-
-//
-void AsPlatform_Expanding::Draw_Expanding_Truss(HDC hdc, RECT& inner_rect, bool is_left)
-{
-    const int scale = AsConfig::GLOBAL_SCALE;
-    int truss_x;
-    int truss_top_y, truss_bottom_y;
-    int truss_x_offset;
-    double extesion_ratio; // [1.0 .. 0.0]
-
-    extesion_ratio = (Max_Expanding_Platform_Width - Expanding_Platform_Width) /
-        (Max_Expanding_Platform_Width - Min_Expanding_Platform_Width);
-    truss_x_offset = (int)(6.0 * extesion_ratio * AsConfig::D_GLOBAL_SCALE);
-
-    truss_x = inner_rect.left + 1;
-
-    if (is_left)
-        truss_x += truss_x_offset;
-    else
-    {
-        truss_x += (AsPlatform::Expanding_Platform_Inner_Width + 8 - 1) * scale + 1;
-        truss_x -= truss_x_offset;
-    }
-
-    truss_top_y = inner_rect.top + 1;
-    truss_bottom_y = inner_rect.bottom - scale + 1;
-
-    Truss_Color->Select(hdc);
-    MoveToEx(hdc, truss_x, truss_top_y, 0);
-    LineTo(hdc, truss_x - 4 * scale - 1, truss_bottom_y);
-    LineTo(hdc, truss_x - 8 * scale, truss_top_y);
-
-    MoveToEx(hdc, truss_x, truss_bottom_y, 0);
-    LineTo(hdc, truss_x - 4 * scale - 1, truss_top_y);
-    LineTo(hdc, truss_x - 8 * scale, truss_bottom_y);
-}
-
-
-
-//ALaser_Beam
-AHit_Checker* ALaser_Beam::Hit_checkers[] = {};
-int ALaser_Beam::Hit_Checkers_Count = 0;
-
-//
-ALaser_Beam::ALaser_Beam()
-    :X_Pos(0.0), Y_Pos(0.0), Beam_Rect{}, Speed(0.0), Prev_Beam_Rect{}, 
-    Laser_Beam_State(ELaser_Beam_State::Disabled)
-{
-    // !!! Надо сделать
-}
-
-
-//
-void ALaser_Beam::Advance(double max_speed)
-{
-    double next_step;
-
-    if (Laser_Beam_State != ELaser_Beam_State::Active)
-        return;
-
-    next_step = Speed / max_speed * AsConfig::Moving_STEP_SIZE;
-
-    Y_Pos -= next_step;
-
-    if (Y_Pos < AsConfig::LEVEL_Y_OFFSET)
-        Disable();  
-
-    for (int i = 0; i < Hit_Checkers_Count; i++)
-        if (Hit_checkers[i]->Check_Hit(X_Pos, Y_Pos))
-        {
-            Disable();
-            break;
-        }
-}
-
-
-//
-void ALaser_Beam::Begin_Movement()
-{
-    // Заглушка, т.к. этот метод не используется
-}
-
-
-//
-void ALaser_Beam::Finish_Movement()
-{
-    if (Laser_Beam_State != ELaser_Beam_State::Disabled)
-        Redraw_Beam();
-}
-
-
-//
-double ALaser_Beam::Get_Speed()
-{
-    return Speed;
-}
-
-
-//
-void ALaser_Beam::Act()
-{
-    // Заглушка, т.к. этот метод не используется
-}
-
-
-//
-void ALaser_Beam::Clear(HDC hdc, RECT& paint_area)
-{
-    RECT intersection_rect;
-
-    if (Laser_Beam_State == ELaser_Beam_State::Disabled)
-        return;
-
-    if (Laser_Beam_State == ELaser_Beam_State::Cleanup)
-        Laser_Beam_State = ELaser_Beam_State::Disabled;
-
-    if (!IntersectRect(&intersection_rect, &paint_area, &Prev_Beam_Rect))
-        return;
-
-    AsConfig::BG_Color.Select(hdc);
-    Rectangle(hdc, Prev_Beam_Rect.left, Prev_Beam_Rect.top, Prev_Beam_Rect.right - 1, Prev_Beam_Rect.bottom);
-}
-
-
-//
-void ALaser_Beam::Draw(HDC hdc, RECT& paint_area)
-{
-    int x_pos, y_pos;
-    RECT intersection_rect;
-
-    if (Laser_Beam_State == ELaser_Beam_State::Disabled)
-        return;
-
-    if (Laser_Beam_State == ELaser_Beam_State::Stopping)
-        Laser_Beam_State = ELaser_Beam_State::Cleanup;
-
-    if (!IntersectRect(&intersection_rect, &paint_area, &Beam_Rect))
-        return;
-
-    x_pos = Beam_Rect.left + (Beam_Rect.right - Beam_Rect.left) / 2;
-    y_pos = Beam_Rect.top;
-
-    AsConfig::Laser_Color.Select(hdc);
-    MoveToEx(hdc, x_pos, y_pos + 1, 0);
-    LineTo(hdc, x_pos, y_pos + Height * AsConfig::GLOBAL_SCALE - AsConfig::GLOBAL_SCALE / 2 - 1);
-}
-
-
-//
-bool ALaser_Beam::Is_Finished()
-{
-    return false; // Заглушка, т.к. этот метод не используется
-}
-
-
-//
-void ALaser_Beam::Set_At(double x_pos, double y_pos)
-{
-    X_Pos = x_pos;
-    Y_Pos = y_pos;
-
-    Laser_Beam_State = ELaser_Beam_State::Active;
-    Speed = 10.0;
-
-    Redraw_Beam();
-}
-
-
-//
-void ALaser_Beam::Disable()
-{
-    Laser_Beam_State = ELaser_Beam_State::Stopping;
-    Speed = 0.0;
-}
-
-
-//
-bool ALaser_Beam::Is_Active()
-{
-    if (Laser_Beam_State == ELaser_Beam_State::Active)
-        return true;
-    else
-        return false;
-}
-
-
-//
-void ALaser_Beam::Add_Hit_Checker(AHit_Checker* hit_checker)
-{
-    if (Hit_Checkers_Count >= sizeof(Hit_checkers) / sizeof(Hit_checkers[0]))
-    {
-        return;
-    }
-    Hit_checkers[Hit_Checkers_Count++] = hit_checker;
-}
-
-
-//
-void ALaser_Beam::Redraw_Beam()
-{
-    Prev_Beam_Rect = Beam_Rect;
-
-    Beam_Rect.left = (int)((X_Pos - (double)Width / 2.0) * AsConfig::D_GLOBAL_SCALE);
-    Beam_Rect.top = (int)(Y_Pos * AsConfig::D_GLOBAL_SCALE);
-    Beam_Rect.right = Beam_Rect.left + Width * AsConfig::GLOBAL_SCALE;
-    Beam_Rect.bottom = Beam_Rect.top + Height * AsConfig::GLOBAL_SCALE;
-
-    AsConfig::Invalidate_Rect(Beam_Rect);
-    AsConfig::Invalidate_Rect(Prev_Beam_Rect);
-}
-
-
-
-//AsLaser_Beam_Set
-// 
-void AsLaser_Beam_Set::Advance(double max_speed)
-{
-    for (int i = 0; i < Max_Laser_Beam_Count; i++)
-        Laser_Beams[i].Advance(max_speed);
-}
-
-
-//
-void AsLaser_Beam_Set::Begin_Movement()
-{
-    for (int i = 0; i < Max_Laser_Beam_Count; i++)
-        Laser_Beams[i].Begin_Movement();
-}
-
-
-//
-void AsLaser_Beam_Set::Finish_Movement()
-{
-    for (int i = 0; i < Max_Laser_Beam_Count; i++)
-        Laser_Beams[i].Finish_Movement();
-}
-
-
-//
-double AsLaser_Beam_Set::Get_Speed()
-{
-    double max_speed = 0.0;
-    double curr_speed;
-
-    for (int i = 0; i < Max_Laser_Beam_Count; i++)
-    {
-        curr_speed = Laser_Beams[i].Get_Speed();
-        if (curr_speed > max_speed)
-            max_speed = curr_speed;
-    }
-
-    return max_speed; // !!! Надо сделать
-}
-
-
-//
-void AsLaser_Beam_Set::Act()
-{
-    // Заглушка, Не используется, т.к. лазеры сам ничего не делают (не анимируется)
-}
-
-
-//
-void AsLaser_Beam_Set::Clear(HDC hdc, RECT& paint_area)
-{
-    for (int i = 0; i < Max_Laser_Beam_Count; i++)
-        Laser_Beams[i].Clear(hdc, paint_area);
-}
-
-
-//
-void AsLaser_Beam_Set::Draw(HDC hdc, RECT& paint_area)
-{
-    for (int i = 0; i < Max_Laser_Beam_Count; i++)
-        Laser_Beams[i].Draw(hdc, paint_area);
-}
-
-
-//
-bool AsLaser_Beam_Set::Is_Finished()
-{
-    return false; // Заглушка, т.к. этот метод не используется
-}
-
-
-//
-void AsLaser_Beam_Set::Fire(double left_gun_x_pos, double right_gun_x_pos)
-{
-    ALaser_Beam* left_beam = nullptr, * right_beam = nullptr;
-
-    for (int i = 0; i < Max_Laser_Beam_Count; i++)
-    {
-        if (Laser_Beams[i].Is_Active())
-            continue;
-
-        if (left_beam == nullptr)
-            left_beam = &Laser_Beams[i];
-        else if (right_beam == nullptr)
-        {
-            right_beam = &Laser_Beams[i];
-            break;
-        }
-
-    }
-
-    if (left_beam == nullptr || right_beam == nullptr)
-        AsConfig::Throw(); // Не хватило "свободных" лазерных лучей
-
-    left_beam->Set_At(left_gun_x_pos, AsConfig::Platform_Y_POS - 1);
-    right_beam->Set_At(right_gun_x_pos, AsConfig::Platform_Y_POS - 1);
-}
-
-
-
-// AsPlatform_Laser
-// 
-AsPlatform_Laser::AsPlatform_Laser(AsPlatform_State& platform_state)
-    :Platform_State(&platform_state), Circle_Color(nullptr), Inner_Color(nullptr), Gun_Color(nullptr), 
-    Laser_Transformatio_Step(0), Laser_Beam_Set(nullptr), Enable_Laser_Firing(false), Last_Laser_Shot_Tick(0)
-{
-    Gun_Color = new AColor(AsConfig::White_Color, AsConfig::GLOBAL_SCALE);
-}
-
-
-//
-AsPlatform_Laser::~AsPlatform_Laser()
-{
-    delete Gun_Color;
-}
-
-
-//
-void AsPlatform_Laser::Init(AsLaser_Beam_Set* laser_beam_set, AColor& inner_color, AColor& circle_color)
-{
-    Laser_Beam_Set = laser_beam_set;
-    Circle_Color = &circle_color;
-    Inner_Color = &inner_color;
-}
-
-
-//
-bool AsPlatform_Laser::Act(EPlatform_State& next_state, double x_pos)
-{
-    double left_gun_x_pos, right_gun_x_pos;
-    next_state = EPlatform_State::Unknow;
-
-    switch (Platform_State->Laser)
-    {
-    case EPlatform_Transformation::Init:
-        if (Laser_Transformatio_Step < Max_Laser_Transformatio_Step)
-            Laser_Transformatio_Step++;
-        else
-            Platform_State->Laser = EPlatform_Transformation::Active;
-
-        return true;
-
-    case EPlatform_Transformation::Active:
-        if (Enable_Laser_Firing)
-        {
-            if (Last_Laser_Shot_Tick + Laser_Shot_Timeout <= AsConfig::Current_Timer_Tick)
-            {
-                Last_Laser_Shot_Tick = AsConfig::Current_Timer_Tick + Laser_Shot_Timeout;
-                left_gun_x_pos = Get_Gun_Pos(x_pos, true) + 0.5;
-                right_gun_x_pos = Get_Gun_Pos(x_pos, false) + 0.5;
-
-                Laser_Beam_Set->Fire(left_gun_x_pos, right_gun_x_pos);
-            }
-        }
-        break;
-
-    case EPlatform_Transformation::Finalize:
-        if (Laser_Transformatio_Step > 0)
-            Laser_Transformatio_Step--;
-        else
-        {
-            Platform_State->Laser = EPlatform_Transformation::Unknow;
-            next_state = Platform_State->Set_State(EPlatform_Substate_Regular::Normal);
-            Enable_Laser_Firing = false;
-        }
-        return true;
-
-    default:
-        AsConfig::Throw();
-        break;
-    }
-
-    return false;
-}
-
-
-//
-void AsPlatform_Laser::Draw_State(HDC hdc, double x_pos, RECT &platform_rect)
-{// Рисуем лазерную платформу
-    HRGN region;
-
-    region = CreateRectRgnIndirect(&platform_rect);
-    SelectClipRgn(hdc, region);
-
-    // 1. Левое крыло
-    Draw_Laser_Wing(hdc, x_pos, true);
-
-    // 1. Правое крыло
-    Draw_Laser_Wing(hdc, x_pos, false);
-
-    // 3. Центральная чать
-    // 3.0  Нормальная средняя чать
-
-    Draw_Laser_Inner_Part(hdc, x_pos);
-
-
-    // 3.1 Левая нога
-    Draw_Laser_Leg(hdc, x_pos, true);
-
-    // 3.2 Правая нога
-    Draw_Laser_Leg(hdc, x_pos, false);
-
-    // 3.3 Кабина
-    Draw_Laser_Cabin(hdc, x_pos);
-
-    SelectClipRgn(hdc, 0);
-    DeleteObject(region);
-}
-
-
-//
-void AsPlatform_Laser::Reset()
-{
-    Laser_Transformatio_Step = 0;
-}
-
-
-//
-void AsPlatform_Laser::Fire(bool fire_on)
-{
-
-    if (Platform_State->Laser != EPlatform_Transformation::Active)
-        return; // Игнорируем выстрел, пока платформа не свормируется
-
-    Enable_Laser_Firing = fire_on;
-
-    
-
-    /*left_gun_x_pos = Get_Gun_Pos(x_pos, true) + 0.5;
-    right_gun_x_pos = Get_Gun_Pos(x_pos, false) + 0.5;
-
-    Laser_Beam_Set->Fire(fire_on, left_gun_x_pos, right_gun_x_pos);*/
-}
-
-
-//
-void AsPlatform_Laser::Draw_Laser_Inner_Part(HDC hdc, double x_pos)
-{// Рисуем уменьшающуюся часть обычной платформы
-
-    int x, y;
-    double ratio = (double)Laser_Transformatio_Step / (double)Max_Laser_Transformatio_Step;
-
-    // Размер: 20 x 5 -> 8 x 1
-    x = (int)x_pos;
-    y = AsConfig::Platform_Y_POS;
-
-    Inner_Color->Select(hdc);
-    Draw_Expanding_Figure(hdc, EFigure_Type::Round_Rect_3x, x + 4, y + 1, 20, 5, ratio, x + 10, y + 3, 8, 1);
-}
-
-
-//
-void AsPlatform_Laser::Draw_Laser_Wing(HDC hdc, double x_pos, bool is_left)
-{// Рисуем "крыло" лазерной платформы 
-
-    const int scale = AsConfig::GLOBAL_SCALE;
-    const double d_scale = AsConfig::D_GLOBAL_SCALE;
-    double x, y;
-    int x_offset;
-    double height;
-    int half_max_step = Max_Laser_Transformatio_Step / 2;
-    double ratio = (double)Laser_Transformatio_Step / (double)Max_Laser_Transformatio_Step;
-
-    x = x_pos;
-    y = AsConfig::Platform_Y_POS;
-
-    if (!is_left)
-        x += AsPlatform::NORMAL_WIDTH - AsPlatform::CIRCLE_SIZE;
-
-    // 1. Крыло
-    Circle_Color->Select(hdc);
-
-    Draw_Expanding_Figure(hdc, EFigure_Type::Ellipse, x, y, 7, 7, ratio, x, y + 1, 7, 12);
-
-    // 1.1 Перемычка
-    // Позиция: (3 : 6) -> (5 : 2)
-    // Размер: 1 x 1 -> 6 x 5
-
-    if (is_left)
-        x_offset = 5;
-    else
-        x_offset = -4;
-
-    Draw_Expanding_Figure(hdc, EFigure_Type::Rectangle, x + 3, y + 6, 1, 1, ratio, x + x_offset, y + 2, 6, 5);
-
-
-    // 1.2 Пушка
-    if (Laser_Transformatio_Step >= half_max_step)
-    {
-        ratio = (double)(Laser_Transformatio_Step - half_max_step) / (double)half_max_step;
-
-        Gun_Color->Select(hdc);
-
-
-        x = Get_Gun_Pos(x_pos, is_left);
-
-        height = 3.0 * (1.0 - ratio) * d_scale;
-
-        MoveToEx(hdc, (int)(x * d_scale + 1.0), (int)(y * d_scale + 3.0 * d_scale + 1.0), 0);
-        LineTo(hdc, (int)(x * d_scale + 1.0), (int)(y * d_scale + height + 1.0));
-
-        // 1.3 Хвост
-        Draw_Expanding_Figure(hdc, EFigure_Type::Ellipse, x + 1, y + 5, 0, 0, ratio, x - 1, y + 5 + 1.0 / d_scale, 3, 6);
-    }
-}
-
-
-void AsPlatform_Laser::Draw_Laser_Leg(HDC hdc, double x_pos, bool is_left)
-{// Рисуем "ногу" лазерной платформы 
-    const double d_scale = AsConfig::D_GLOBAL_SCALE;
-    double x, y;
-    double x_scale;
-    double ratio = (double)Laser_Transformatio_Step / (double)Max_Laser_Transformatio_Step;
-
-
-    Inner_Color->Select(hdc);
-
-    if (is_left)
-    {
-        x = (x_pos + 6.0) * d_scale;
-        x_scale = d_scale;
-    }
-    else
-    {
-        x = x_pos * d_scale + (AsPlatform::NORMAL_WIDTH - 6) * d_scale - 1.0;
-        x_scale = -d_scale;
-    }
-
-    y = (double)(AsConfig::Platform_Y_POS + 3) * d_scale;
-    POINT left_leg_points[7] =
-    {
-        {(int)x, (int)y},
-        {(int)(x + 2 * x_scale), (int)(y - 2 * d_scale)},
-        {(int)(x + 4 * x_scale), (int)(y - 2 * d_scale)},
-        {(int)(x + 4 * x_scale), (int)y},
-        {(int)(x + 2 * x_scale), (int)(y + 2 * d_scale)},
-        {(int)(x + 2 * x_scale), (int)(y + (2.0 + 2.0 * ratio) * d_scale)},
-        {(int)x, (int)(y + 4.0 * ratio * d_scale)}
-    };
-
-    Polygon(hdc, left_leg_points, 7);
-}
-
-
-//
-void AsPlatform_Laser::Draw_Laser_Cabin(HDC hdc, double x_pos)
-{// Рисуем "кабину" лазерной платформы 
-
-    const int scale = AsConfig::GLOBAL_SCALE;
-    int x, y;
-    double ratio = (double)Laser_Transformatio_Step / (double)Max_Laser_Transformatio_Step;
-    double one_pixel = 1.0 / AsConfig::D_GLOBAL_SCALE;
-
-    x = (int)x_pos;
-    y = AsConfig::Platform_Y_POS;
-
-    // 3.3.1 Внешнее кольцо
-    // Размер: 2 x 1 -> 10 x 8
-    Inner_Color->Select(hdc);
-    Draw_Expanding_Figure(hdc, EFigure_Type::Ellipse, x + 13, y + 1, 2, 1, ratio, x + 9, y - 1, 10, 8 - one_pixel);
-
-    // 3.3.2 Среднее кольцо
-    AsConfig::BG_Color.Select(hdc);
-    Draw_Expanding_Figure(hdc, EFigure_Type::Rectangle, x + 13, y + 1, 2, 1, ratio, x + 11, y, 6, 1);
-    Draw_Expanding_Figure(hdc, EFigure_Type::Ellipse, x + 13, y + 1, 2, 1, ratio, x + 10, y, 8, 5 - one_pixel);
-
-
-    // 3.3.3 Внутреннее кольцо
-    // РАзмер: 2 x 1 -> 6 x 4
-    AsConfig::White_Color.Select(hdc);
-    Draw_Expanding_Figure(hdc, EFigure_Type::Ellipse, x + 13, y + 1, 2, 1, ratio, x + 11, y, 6, 4 - one_pixel);
-}
-
-
-//
-void AsPlatform_Laser::Draw_Expanding_Figure(HDC hdc, EFigure_Type figure_tyoe, double start_x, double start_y, double start_width,
-    double start_height, double ratio, double end_x, double end_y, double end_width, double end_height)
-{
-    int x, y;
-    int width, height;
-    RECT rect;
-
-    x = Get_Expanding_Value(start_x, end_x, ratio);
-    y = Get_Expanding_Value(start_y, end_y, ratio);
-    width = Get_Expanding_Value(start_width, end_width, ratio);
-    height = Get_Expanding_Value(start_height, end_height, ratio);
-
-    switch (figure_tyoe)
-    {
-    case EFigure_Type::Ellipse:
-        Ellipse(hdc, x, y, x + width - 1, y + height);
-        break;
-
-    case EFigure_Type::Rectangle:
-        Rectangle(hdc, x, y, x + width - 1, y + height);
-        break;
-
-    case EFigure_Type::Round_Rect_3x:
-        rect.left = x;
-        rect.top = y;
-        rect.right = rect.left + width + 1;
-        rect.bottom = rect.top + height + 1;
-        AsConfig::Round_Rect(hdc, rect, 3);
-        break;
-
-    default:
-        AsConfig::Throw();
-        break;
-    }
-}
-
-
-//
-int AsPlatform_Laser::Get_Expanding_Value(double start, double end, double ratio)
-{
-    int value;
-    double delta;
-
-    delta = end - start;
-    value = (int)((start + delta * ratio) * AsConfig::D_GLOBAL_SCALE);
-
-    return value;
-}
-
-
-//
-double AsPlatform_Laser::Get_Gun_Pos(double platform_x_pos, bool is_left)
-{
-    double gun_x_pos;
-
-    if (is_left)
-        gun_x_pos = (platform_x_pos + 3.0);
-    else
-        gun_x_pos = platform_x_pos + (AsPlatform::NORMAL_WIDTH - 4);
-
-    return gun_x_pos;
-}
-
-
-
 // AsPlatform
 //
 AsPlatform::AsPlatform()
-    : X_Pos(AsConfig::BORDER_X_OFFSET), Inner_width(NORMAL_WIDTH - CIRCLE_SIZE), 
+    : X_Pos(AsConfig::BORDER_X_OFFSET), Inner_width(AsConfig::Platform_NORMAL_WIDTH - AsConfig::Platform_CIRCLE_SIZE),
     Platform_Rect(), Prev_Platform_Rect(), Meltdown_Y_Pos(0), Rolling_Step(0), Normal_Platform_Image(nullptr),
     Normal_Platform_Image_Width(0), Normal_Platform_Image_Height(0), Platform_Circle_Color(255, 85, 255), 
     Platform_Inner_Color(85, 255, 255), Meltdown_Platform_Y_Pos(), Speed(0.0), Left_Key_Down(false), 
@@ -1110,7 +11,7 @@ AsPlatform::AsPlatform()
     Gun_Color(AsConfig::White_Color, AsConfig::GLOBAL_SCALE), Platform_Glue(Platform_State), 
     Platform_Expanding(Platform_State), Platform_Laser(Platform_State)
 {
-    X_Pos = (AsConfig::MAX_X_POS - NORMAL_WIDTH) / 2;
+    X_Pos = (AsConfig::MAX_X_POS - AsConfig::Platform_NORMAL_WIDTH) / 2;
 }
 
 
@@ -1188,15 +89,15 @@ bool AsPlatform::Check_Hit(double next_x_pos, double next_y_pos, ABall* ball)
         return false;
 
     inner_top_y = (double)(AsConfig::Platform_Y_POS + 1);
-    inner_low_y = (double)(AsConfig::Platform_Y_POS + Height - 1);
-    inner_left_x = (double)(X_Pos + (CIRCLE_SIZE - 1));
-    inner_right_x = (double)(X_Pos + Get_Current_Width() - (CIRCLE_SIZE - 1));
+    inner_low_y = (double)(AsConfig::Platform_Y_POS + AsConfig::Platform_Height - 1);
+    inner_left_x = (double)(X_Pos + (AsConfig::Platform_CIRCLE_SIZE - 1));
+    inner_right_x = (double)(X_Pos + Get_Current_Width() - (AsConfig::Platform_CIRCLE_SIZE - 1));
 
     // Проверяем отражение от боковых шариков
     if (Reflect_On_Circle(next_x_pos, next_y_pos, 0.0, ball))
         goto _on_hit;// От левого
 
-    if (Reflect_On_Circle(next_x_pos, next_y_pos, Get_Current_Width() - CIRCLE_SIZE, ball))
+    if (Reflect_On_Circle(next_x_pos, next_y_pos, Get_Current_Width() - AsConfig::Platform_CIRCLE_SIZE, ball))
         goto _on_hit;// От правого
 
 
@@ -1389,7 +290,7 @@ void AsPlatform::Redraw_Platform()
     Platform_Rect.left = (int)(X_Pos * AsConfig::D_GLOBAL_SCALE);
     Platform_Rect.top = AsConfig::Platform_Y_POS * AsConfig::GLOBAL_SCALE;
     Platform_Rect.right = (int)((X_Pos + Get_Current_Width()) * AsConfig::D_GLOBAL_SCALE);
-    Platform_Rect.bottom = Platform_Rect.top + Height * AsConfig::GLOBAL_SCALE;
+    Platform_Rect.bottom = Platform_Rect.top + AsConfig::Platform_Height * AsConfig::GLOBAL_SCALE;
 
     if (Platform_State == EPlatform_State::Meltdown)
     {
@@ -1441,8 +342,8 @@ void AsPlatform::Set_State(EPlatform_State new_state)
 
     case EPlatform_State::Rolling:
         Platform_State.Rolling = EPlatform_Substate_Rolling::Roll_In;
-        X_Pos = AsConfig::MAX_X_POS;
-        Rolling_Step = MAX_ROLLING_STEP - 2;
+        X_Pos = AsConfig::MAX_X_POS - 1;
+        Rolling_Step = MAX_ROLLING_STEP - 1;
         break;
 
 
@@ -1617,7 +518,7 @@ void AsPlatform::Draw_Normal_State(HDC hdc, RECT& paint_area)
     int y = AsConfig::Platform_Y_POS;
     const int scale = AsConfig::GLOBAL_SCALE;
     const double d_scale = AsConfig::D_GLOBAL_SCALE;
-    int size = (CIRCLE_SIZE - 1) * scale - 1;
+    int size = (AsConfig::Platform_CIRCLE_SIZE - 1) * scale - 1;
 
     RECT inner_rect, rect;
 
@@ -1626,15 +527,15 @@ void AsPlatform::Draw_Normal_State(HDC hdc, RECT& paint_area)
 
     rect.left = (int)(x * d_scale);
     rect.top = y * scale;
-    rect.right = (int)((x + (double)CIRCLE_SIZE) * d_scale);
-    rect.bottom = (y + CIRCLE_SIZE) * scale;
+    rect.right = (int)((x + (double)AsConfig::Platform_CIRCLE_SIZE) * d_scale);
+    rect.bottom = (y + AsConfig::Platform_CIRCLE_SIZE) * scale;
 
     Ellipse(hdc, rect.left, rect.top, rect.right - 1, rect.bottom - 1);
 
     rect.left = (int)((x + Inner_width) * d_scale);
     rect.top = y * scale;
-    rect.right = (int)((x + Inner_width + (double)CIRCLE_SIZE) * d_scale);
-    rect.bottom = (y + CIRCLE_SIZE) * scale;
+    rect.right = (int)((x + Inner_width + (double)AsConfig::Platform_CIRCLE_SIZE) * d_scale);
+    rect.bottom = (y + AsConfig::Platform_CIRCLE_SIZE) * scale;
 
 
     Ellipse(hdc, rect.left, rect.top, rect.right - 1, rect.bottom - 1);
@@ -1664,8 +565,8 @@ void AsPlatform::Get_Normal_Platform_Image(HDC hdc)
     int y = AsConfig::Platform_Y_POS * AsConfig::GLOBAL_SCALE;
 
     
-    Normal_Platform_Image_Width = NORMAL_WIDTH * AsConfig::GLOBAL_SCALE;
-    Normal_Platform_Image_Height = Height * AsConfig::GLOBAL_SCALE;
+    Normal_Platform_Image_Width = AsConfig::Platform_NORMAL_WIDTH * AsConfig::GLOBAL_SCALE;
+    Normal_Platform_Image_Height = AsConfig::Platform_Height * AsConfig::GLOBAL_SCALE;
 
     Normal_Platform_Image = new int[Normal_Platform_Image_Width * Normal_Platform_Image_Height];
 
@@ -1759,7 +660,7 @@ void AsPlatform::Draw_Roll_In_State(HDC hdc, RECT& paint_area)
 {
     int x = (int)(X_Pos * AsConfig::D_GLOBAL_SCALE);
     int y = AsConfig::Platform_Y_POS * AsConfig::GLOBAL_SCALE;
-    int roller_size = CIRCLE_SIZE * AsConfig::GLOBAL_SCALE;
+    int roller_size = AsConfig::Platform_CIRCLE_SIZE * AsConfig::GLOBAL_SCALE;
     double alpha;
 
     XFORM xform, old_xform;
@@ -1836,9 +737,9 @@ void AsPlatform::Act_For_Rolling_State()
 
         Inner_width += 2;
 
-        if (Inner_width >= NORMAL_PLATFORM_INNER_WIDTH)
+        if (Inner_width >= AsConfig::Platform_NORMAL_INNER_WIDTH)
         {
-            Inner_width = NORMAL_PLATFORM_INNER_WIDTH;
+            Inner_width = AsConfig::Platform_NORMAL_INNER_WIDTH;
             Platform_State.Rolling = EPlatform_Substate_Rolling::Unknow;
             Set_State(EPlatform_Substate_Regular::Ready);
             Redraw_Platform();
@@ -1860,11 +761,12 @@ void AsPlatform::Act_For_Rolling_State()
 bool AsPlatform::Correct_Platform_Pos()
 {
     bool got_correction = false;
-    double max_platform_x = AsConfig::MAX_X_POS - Get_Current_Width() + 1;
+    double min_platform_x = AsConfig::BORDER_X_OFFSET + 1;
+    double max_platform_x = AsConfig::MAX_X_POS - Get_Current_Width();
 
-    if (X_Pos <= AsConfig::BORDER_X_OFFSET)
+    if (X_Pos <= min_platform_x)
     {
-        X_Pos = AsConfig::BORDER_X_OFFSET;
+        X_Pos = min_platform_x;
         got_correction = true;
     }
 
@@ -1890,7 +792,7 @@ bool AsPlatform::Reflect_On_Circle(double next_x_pos, double next_y_pos, double 
 
     const double pi_2 = 2.0 * M_PI;
 
-    platform_ball_radius = (double)(CIRCLE_SIZE / 2.0);
+    platform_ball_radius = (double)(AsConfig::Platform_CIRCLE_SIZE / 2.0);
     platform_ball_x = (double)(X_Pos + platform_ball_radius + platform_ball_x_offset);
     platform_ball_y = (double)AsConfig::Platform_Y_POS + platform_ball_radius;
 
@@ -1974,9 +876,9 @@ bool AsPlatform::Get_Platform_Image_Stroke_Color(int x, int y, const AColor **co
 double AsPlatform::Get_Current_Width()
 {
     if (Platform_State == EPlatform_State::Rolling && Platform_State.Rolling == EPlatform_Substate_Rolling::Roll_In)
-        return (double)CIRCLE_SIZE;
+        return (double)AsConfig::Platform_CIRCLE_SIZE;
     else if (Platform_State == EPlatform_State::Expanding)
         return Platform_Expanding.Expanding_Platform_Width;
     else
-        return (double)NORMAL_WIDTH;
+        return (double)AsConfig::Platform_NORMAL_WIDTH;
 }

@@ -45,13 +45,11 @@ private:
 	int fade_Step;
 
 	static const int MAX_FADE_STEP = AsConfig::FPS;
+	static const int MAX_ANIMATION_STEP = 5;
 
 	static AColor Fading_Blue_Brick_Colors[MAX_FADE_STEP];
 	static AColor Fading_Pink_Brick_Colors[MAX_FADE_STEP];
 
-
-	static const int MAX_ANIMATION_STEP = 5;
-	
 
 	static void Get_Fading_Color(const AColor& origin_color, int step, AColor & result_color);
 
@@ -94,8 +92,8 @@ public:
 private:
 	int Rotation_Step;
 
-	static const int Steps_Per_Turn = 16;
-	static const int MAX_ROTATION_STEP = Steps_Per_Turn * 4;
+	static const int STEPS_PER_TURN = 16;
+	static const int MAX_ROTATION_STEP = STEPS_PER_TURN * 4;
 
 	static void Draw_Stage(HDC hdc, RECT brick_rect, int x, int width);
 };
@@ -120,10 +118,10 @@ enum EDirection_Type
 class AActive_Brick_Teleport : public AActive_Brick
 {
 public:
-	EDirection_Type Relese_Direction;
-
 	AActive_Brick_Teleport(int level_x, int level_y, ABall* ball, AActive_Brick_Teleport* destination_teleport);
 	~AActive_Brick_Teleport();
+
+	EDirection_Type Relese_Direction;
 
 	virtual void Act();
 	virtual void Draw(HDC hdc, RECT& paint_area);
@@ -140,7 +138,7 @@ private:
 	AActive_Brick_Teleport* Destination_Teleport;
 	ABall* Ball;
 
-	static const int Max_Animation_Step = 12;
+	static const int MAX_ANIMATION_STEP = 12;
 
 	void Set_Ball(ABall* ball);
 };
@@ -173,10 +171,10 @@ private:
 	HRGN Empt_Region;
 	RECT Ad_Rect;
 
-	static const int Ball_Size = 12;
-	static const int High_Ball_Threshold = 12 * AsConfig::GLOBAL_SCALE;
-	static const int Low_Ball_Threshold = -3 * AsConfig::GLOBAL_SCALE;
-	static const int Deformation_Height = 2 * AsConfig::GLOBAL_SCALE;
+	static const int BALL_SIZE = 12;
+	static const int HIGH_BALL_THRESHOLD = 12 * AsConfig::GLOBAL_SCALE;
+	static const int LOW_BALL_THRESHOLD = -3 * AsConfig::GLOBAL_SCALE;
+	static const int DEFORMATION_HEIGHT = 2 * AsConfig::GLOBAL_SCALE;
 };
 
 

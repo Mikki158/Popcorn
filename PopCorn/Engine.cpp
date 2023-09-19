@@ -32,18 +32,13 @@ void AsEngine::Init_Engine(HWND hwnd)// Настройка игры при ст�
 
     AFalling_Letter::Init();
      
-    ABall::Add_Hit_Checker(&Border);
-    ABall::Add_Hit_Checker(&Level);
-    ABall::Add_Hit_Checker(&Platform);
+    ABall::Hit_Checker_List.Add_Hit_Checker(&Border);
+    ABall::Hit_Checker_List.Add_Hit_Checker(&Level);
+    ABall::Hit_Checker_List.Add_Hit_Checker(&Platform);
 
-    ALaser_Beam::Add_Hit_Checker(&Level);
+    ALaser_Beam::Hit_Checker_List.Add_Hit_Checker(&Level);
 
     Level.Set_Current_Level(AsLevel::Level_01);
-
-   //for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
-   //    Balls[i].Set_State(EBS_Disabled, -10);
-
-    //Platform.Set_State(EPlatform_State::Laser);
 
     Platform.Redraw_Platform();
 
@@ -62,6 +57,8 @@ void AsEngine::Init_Engine(HWND hwnd)// Настройка игры при ст�
     Modules[2] = &Platform;
     Modules[3] = &Ball_Set;
     Modules[4] = &Laser_Beam_Set;
+
+    Border.Open_Gate(7, true);
 }
 
 
@@ -124,10 +121,8 @@ int AsEngine::On_Timer()
 
     case EGS_Lost_Ball:
         if (Platform.Has_State(EPlatform_Substate_Regular::Missing))
-        {
-            Game_State = EGS_Restart_Level;
-            Platform.Set_State(EPlatform_State::Rolling);
-        }
+            Restart_Level();
+        
         break;
 
     case EGS_Restart_Level:
@@ -145,6 +140,15 @@ int AsEngine::On_Timer()
     Act();
 
     return 0;
+}
+
+
+//
+void AsEngine::Restart_Level()
+{
+    Game_State = EGS_Restart_Level;
+    Border.Open_Gate(7, true);
+    Border.Open_Gate(5, false);
 }
 
 
@@ -197,7 +201,6 @@ void AsEngine::Advance_Movers()
                 Movers[i]->Advance(max_speed);
         }
 
-        //Platform.Advance(max_speed);
         Rest_Distance -= AsConfig::Moving_STEP_SIZE;
     }
 
@@ -211,20 +214,25 @@ void AsEngine::Advance_Movers()
 //
 void AsEngine::Act()
 {
-    Level.Act();
-    Platform.Act();
-
-    if(! Platform.Has_State(EPlatform_Substate_Regular::Ready))
-        Ball_Set.Act();
-
-    AFalling_Letter *falling_letter;
+    AFalling_Letter* falling_letter;
     int index = 0;
 
+    // 1. Выполняем вск действия
+    for (int i = 0; i < AsConfig::Max_Modules_Count; i++)
+        if (Modules[i] != nullptr)
+            Modules[i]->Act();
+
+    // 2. Ловим падующие буквы
     while (Level.Get_Next_Falling_Leter(&falling_letter, index))
     {
         if (Platform.Hit_by(falling_letter))
             On_Falling_Letter(falling_letter);
     }
+
+    // 3. Рестарт уровня (если надо)
+    if(Game_State == EGS_Restart_Level)
+        if(Border.Is_Gate_Opened(AsConfig::Gate_Count - 1))
+            Platform.Set_State(EPlatform_State::Rolling);
 }
 
 

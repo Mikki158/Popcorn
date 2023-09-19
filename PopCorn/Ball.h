@@ -19,47 +19,6 @@ enum EBall_State
     EBS_Teleporting
 };
 
-class ABall;
-
-//
-class AGraphics_Object
-{
-public:
-    virtual ~AGraphics_Object();
-
-    virtual void Act() = 0;
-    virtual void Clear(HDC hdc, RECT& paint_area) = 0;
-    virtual void Draw(HDC hdc, RECT& paint_area) = 0;
-    virtual bool Is_Finished() = 0;
-};
-
-
-
-//
-class AMover
-{
-public:
-    virtual ~AMover();
-
-    virtual void Advance(double max_speed) = 0;
-    virtual void Begin_Movement() = 0;
-    virtual void Finish_Movement() = 0;
-    virtual double Get_Speed() = 0;
-};
-
-
-
-//
-class AHit_Checker
-{
-public:
-    virtual bool Check_Hit(double next_x_pos, double next_y_pos, ABall* ball) = 0;
-    virtual bool Check_Hit(double next_x_pos, double next_y_pos);
-
-    bool Hit_Circle_On_Line(double y, double next_x_pos, double left_x, double right_x, double radius, double& x);    
-};
-
-
 
 //
 class ABall: public AMover, public AGraphics_Object
@@ -100,7 +59,8 @@ public:
 
     EBall_State Get_State();
 
-    static void Add_Hit_Checker(AHit_Checker* hit_checker);
+    static AHit_Checker_List Hit_Checker_List;
+
 
 
 private:
@@ -108,7 +68,6 @@ private:
     double Center_X_Pos;
     double Center_Y_Pos;
     double Ball_Speed, Prev_Ball_Speed;
-    //double Result_Distance;
 
     int Test_Iteration;
     double Rest_Test_Distance;
@@ -119,9 +78,6 @@ private:
     RECT Ball_Rect, Prev_Ball_Rect;
     RECT Parachute_Rect, Prev_Parachute_Rect; 
 
-    static int Hit_Checkers_Count;
-
-    static AHit_Checker* Hit_checkers[3];
 
     static const int On_Platform_Timeout = 10 * AsConfig::FPS;// Время нахождения на платформе
     static const int Parachute_Size = 15;

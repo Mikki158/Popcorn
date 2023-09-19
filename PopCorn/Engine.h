@@ -44,6 +44,7 @@ public:
 
     int On_Key(EKey_Type key_type, bool key_down);
     int On_Timer();  
+    void Restart_Level();
 
 
 private:

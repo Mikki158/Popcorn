@@ -1,14 +1,5 @@
 #include "Active_Brick.h"
 
-
-AColor AActive_Brick_Pink_Blue::Fading_Blue_Brick_Colors[MAX_FADE_STEP];
-AColor AActive_Brick_Pink_Blue::Fading_Pink_Brick_Colors[MAX_FADE_STEP];
-
-
-
-
-
- 
 // AActive_Brick
 //
 void AActive_Brick::Get_Level_Pos(int& dest_brick_x, int& dest_brick_y)
@@ -20,7 +11,7 @@ void AActive_Brick::Get_Level_Pos(int& dest_brick_x, int& dest_brick_y)
 
 //
 AActive_Brick::AActive_Brick(EBrick_Type brick_type, int level_x, int level_y)
-    :Brick_Rect(), Brick_Type(brick_type), Level_X(level_x), Level_Y(level_y)
+    :Level_X(level_x), Level_Y(level_y), Brick_Type(brick_type), Brick_Rect()
 {
     Brick_Rect.left = (AsConfig::LEVEL_X_OFFSET + level_x * AsConfig::CELL_WIDTH) * AsConfig::GLOBAL_SCALE;
     Brick_Rect.top = (AsConfig::LEVEL_Y_OFFSET + level_y * AsConfig::CELL_HEIGHT) * AsConfig::GLOBAL_SCALE;
@@ -32,6 +23,7 @@ AActive_Brick::AActive_Brick(EBrick_Type brick_type, int level_x, int level_y)
 //
 AActive_Brick::~AActive_Brick()
 {
+
 }
 
 
@@ -68,12 +60,15 @@ double AActive_Brick::Get_Brick_Y_Pos(bool of_center)
 
 
 // AActive_Brick_Pink_Blue
+AColor AActive_Brick_Pink_Blue::Fading_Blue_Brick_Colors[MAX_FADE_STEP];
+AColor AActive_Brick_Pink_Blue::Fading_Pink_Brick_Colors[MAX_FADE_STEP];
+
 //
 AActive_Brick_Pink_Blue::AActive_Brick_Pink_Blue(EBrick_Type brick_type, int level_x, int level_y)
     :AActive_Brick(brick_type, level_x, level_y), fade_Step(0)
 {
-    if (! (brick_type == EBT_Blue || brick_type == EBT_Pink))
-        throw 13;
+    if (!(brick_type == EBT_Blue || brick_type == EBT_Pink))
+        AsConfig::Throw();
 }
 
 
@@ -310,7 +305,7 @@ void AActive_Brick_Multihit::Draw(HDC hdc, RECT& paint_area)
     AsConfig::Round_Rect(hdc, Brick_Rect);
 
     // 2. Настраиваем матрицу "поворота 100"
-    step = Rotation_Step % Steps_Per_Turn;
+    step = Rotation_Step % STEPS_PER_TURN;
     rotation_angle = M_PI_4 / 2.0 * (double)step;
     x_ratio = cos(rotation_angle);
 
@@ -428,8 +423,9 @@ void AActive_Brick_Multihit::Draw_Stage(HDC hdc, RECT brick_rect, int x, int wid
 // AActive_Brick_Teleport
 //
 AActive_Brick_Teleport::AActive_Brick_Teleport(int level_x, int level_y, ABall *ball, AActive_Brick_Teleport *destination_teleport)
-    :AActive_Brick(EBT_Teleport, level_x, level_y), Animation_Step(0), Ball(0), Destination_Teleport(destination_teleport),
-    Teleport_State(ETS_Starting)
+    :AActive_Brick(EBT_Teleport, level_x, level_y), Relese_Direction(), Animation_Step(0), Teleport_State(ETS_Starting), 
+    Destination_Teleport(destination_teleport), Ball(nullptr)
+    
 {
     Set_Ball(ball);
 }
@@ -451,7 +447,7 @@ void AActive_Brick_Teleport::Act()
     //if (AsConfig::Current_Timer_Tick % 5 != 0)
     //    return; 
 
-    if (Animation_Step <= Max_Animation_Step)
+    if (Animation_Step <= MAX_ANIMATION_STEP)
     {
         Animation_Step++;
         AsConfig::Invalidate_Rect(Brick_Rect);
@@ -528,7 +524,7 @@ void AActive_Brick_Teleport::Draw(HDC hdc, RECT& paint_area)
         break;
 
     case ETS_Finishing:
-        step = Max_Animation_Step - Animation_Step;
+        step = MAX_ANIMATION_STEP - Animation_Step;
         break;
 
     default:
@@ -587,9 +583,8 @@ void AActive_Brick_Teleport::Set_Ball(ABall* ball)
     ball_y = Get_Brick_Y_Pos(true);
 
     if (ball != nullptr)
-    {
         ball->Set_State(EBS_Teleporting, ball_x, ball_y);
-    }
+
     Ball = ball;
     
 }
@@ -599,9 +594,10 @@ void AActive_Brick_Teleport::Set_Ball(ABall* ball)
 // AAdvertisement
 //
 AAdvertisement::AAdvertisement(int level_x, int level_y, int width, int height)
-    :Level_X(level_x), Level_Y(level_y), Width(width), Height(height), Brick_Regions(nullptr), Empt_Region(0), 
-    Ball_X(0), Ball_Y(0), Ball_Width(Ball_Size * AsConfig::GLOBAL_SCALE), Ball_Height(Ball_Size * AsConfig::GLOBAL_SCALE),
-    Ball_Y_Offset(0), Falling_Speed(0), Acceleration_Step(0.2), Deformation_Ratio(0)
+    :Level_X(level_x), Level_Y(level_y), Width(width), Height(height), Ball_X(0), Ball_Y(0), 
+    Ball_Width(BALL_SIZE* AsConfig::GLOBAL_SCALE), Ball_Height(BALL_SIZE* AsConfig::GLOBAL_SCALE),
+    Ball_Y_Offset(0), Falling_Speed(0), Acceleration_Step(0.2), Deformation_Ratio(0), Brick_Regions(nullptr),
+    Empt_Region(0), Ad_Rect()    
 {
     const int scale = AsConfig::GLOBAL_SCALE;
 
@@ -674,14 +670,14 @@ void AAdvertisement::Act()
 
     // 2. Смещаем шарик
     Falling_Speed += Acceleration_Step;
-    Ball_Y_Offset = High_Ball_Threshold - (int)(Falling_Speed * Falling_Speed);
+    Ball_Y_Offset = HIGH_BALL_THRESHOLD - (int)(Falling_Speed * Falling_Speed);
 
-    if (Ball_Y_Offset <= Low_Ball_Threshold + Deformation_Height)
-        Deformation_Ratio = (double)(Ball_Y_Offset - Low_Ball_Threshold) / (double)Deformation_Height;
+    if (Ball_Y_Offset <= LOW_BALL_THRESHOLD + DEFORMATION_HEIGHT)
+        Deformation_Ratio = (double)(Ball_Y_Offset - LOW_BALL_THRESHOLD) / (double)DEFORMATION_HEIGHT;
     else
         Deformation_Ratio = 1.0;
 
-    if (Ball_Y_Offset > High_Ball_Threshold || Ball_Y_Offset < Low_Ball_Threshold)
+    if (Ball_Y_Offset > HIGH_BALL_THRESHOLD || Ball_Y_Offset < LOW_BALL_THRESHOLD)
         Acceleration_Step = -Acceleration_Step;
 }
 
@@ -691,7 +687,7 @@ void AAdvertisement::Draw(HDC hdc, RECT& paint_area)
 {
     const int scale = AsConfig::GLOBAL_SCALE;
     int x, y;
-    int circle_size = Ball_Size * scale;
+    int circle_size = BALL_SIZE * scale;
     int deformation;
     int ball_width, ball_height;
     int shadow_width, shadow_height;
@@ -735,9 +731,6 @@ void AAdvertisement::Draw(HDC hdc, RECT& paint_area)
     // 3.1 Синий элипс размер 8x6, пока шарик полностью над "столом"
     
     AsConfig::Blue_Color.Select(hdc);
-
-    //Ellipse(hdc, Ad_Rect.left + 11 * scale + 1, Ad_Rect.top + 14 * scale,
-    //    Ad_Rect.left + 20 * scale, Ad_Rect.top + 18 * scale - 1);
 
     shadow_width = Ball_Width - 4 * scale;
     shadow_height = 4 * scale;
@@ -801,7 +794,6 @@ void AAdvertisement::Draw(HDC hdc, RECT& paint_area)
     
 
     SelectClipRgn(hdc, 0);
-
 }
 
 
@@ -869,11 +861,7 @@ AActive_Brick_Ad::~AActive_Brick_Ad()
 //
 void AActive_Brick_Ad::Act()
 {
-    //if (Animation_Step <= MAX_ANIMATION_STEP)
-    //{
-    //    Animation_Step++;
     AsConfig::Invalidate_Rect(Brick_Rect);
-    //}
 }
 
 
@@ -887,10 +875,7 @@ void AActive_Brick_Ad::Draw(HDC hdc, RECT& paint_area)
 //
 bool AActive_Brick_Ad::Is_Finished()
 {
-    //if (Animation_Step >= MAX_ANIMATION_STEP - 1)
-    //    return true;
-    //else
-        return false;
+    return false;
 }
 
 
