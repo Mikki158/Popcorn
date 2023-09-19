@@ -173,13 +173,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		switch (wParam)
 		{
 		case VK_LEFT:
-			return Engine.On_Key(EKT_Left, true);
+			return Engine.On_Key(EKey_Type::Left, true);
 
 		case VK_RIGHT:
-			return Engine.On_Key(EKT_Right, true);
+			return Engine.On_Key(EKey_Type::Right, true);
 
 		case VK_SPACE:
-			return Engine.On_Key(EKT_Space, true);
+			return Engine.On_Key(EKey_Type::Space, true);
 		}
 		break;
 
@@ -187,16 +187,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		switch (wParam)
 		{
 		case VK_LEFT:
-			return Engine.On_Key(EKT_Left, false);
+			return Engine.On_Key(EKey_Type::Left, false);
 
 		case VK_RIGHT:
-			return Engine.On_Key(EKT_Right, false);
+			return Engine.On_Key(EKey_Type::Right, false);
 
 		case VK_SPACE:
-			return Engine.On_Key(EKT_Space, false);
+			return Engine.On_Key(EKey_Type::Space, false);
 
 		case VK_F2:
-			return Engine.On_Key(EKT_F, false);
+			return Engine.On_Key(EKey_Type::F, false);
 		}
 		break;
 
@@ -249,6 +249,7 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 При некоторых телепортациях в телепорте появляется черный круг
 Когда шарик получает парашют, он сначала летит наверх
 Платформа не растворяется при поражении
+После разбиения многоразового кирпича остается 100
 
 + Конец уровня при потере мяча
 + 1. Анимация пасплавления платформы
@@ -340,10 +341,10 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 + 3. Перехват падующей буквы
 4. Для каждой буквы - свое действие
 
-Гейты
-1. Вывод гейтов
-2. Анимация открытия и закрытия гейтов
-3. Состояние гейтов (закрыт, открывается, закрывается)
++ Гейты
++ 1. Вывод гейтов
++ 2. Анимация открытия и закрытия гейтов
++ 3. Состояние гейтов (закрыт, открывается, закрывается)
 
 Монстры
 1. Список монстров (глаз, черепаха, сатурн, голова, бубен, аквариум, зажигалка)

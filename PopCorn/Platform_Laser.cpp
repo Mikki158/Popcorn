@@ -31,7 +31,7 @@ void AsPlatform_Laser::Init(AsLaser_Beam_Set* laser_beam_set, AColor& inner_colo
 bool AsPlatform_Laser::Act(EPlatform_State& next_state, double x_pos)
 {
     double left_gun_x_pos, right_gun_x_pos;
-    next_state = EPlatform_State::Unknow;
+    next_state = EPlatform_State::Unknown;
 
     switch (Platform_State->Laser)
     {
@@ -62,7 +62,7 @@ bool AsPlatform_Laser::Act(EPlatform_State& next_state, double x_pos)
             Laser_Transformatio_Step--;
         else
         {
-            Platform_State->Laser = EPlatform_Transformation::Unknow;
+            Platform_State->Laser = EPlatform_Transformation::Unknown;
             next_state = Platform_State->Set_State(EPlatform_Substate_Regular::Normal);
             Enable_Laser_Firing = false;
         }
@@ -303,7 +303,7 @@ void AsPlatform_Laser::Draw_Expanding_Figure(HDC hdc, EFigure_Type figure_tyoe, 
         rect.top = y;
         rect.right = rect.left + width + 1;
         rect.bottom = rect.top + height + 1;
-        AsConfig::Round_Rect(hdc, rect, 3);
+        AsTools::Round_Rect(hdc, rect, 3);
         break;
 
     default:

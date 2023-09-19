@@ -15,7 +15,7 @@ AsPlatform_Glue::AsPlatform_Glue(AsPlatform_State& platform_state)
 //
 bool AsPlatform_Glue::Act(AsBall_Set* ball_set, EPlatform_State& next_state)
 {
-    next_state = EPlatform_State::Unknow;
+    next_state = EPlatform_State::Unknown;
 
     switch (Platform_State->Glue)
     {
@@ -41,7 +41,7 @@ bool AsPlatform_Glue::Act(AsBall_Set* ball_set, EPlatform_State& next_state)
         }
         else
         {
-            Platform_State->Glue = EPlatform_Transformation::Unknow;
+            Platform_State->Glue = EPlatform_Transformation::Unknown;
             next_state = Platform_State->Set_State(EPlatform_Substate_Regular::Normal);
         }
 

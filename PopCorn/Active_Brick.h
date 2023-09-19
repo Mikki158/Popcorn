@@ -4,7 +4,22 @@
 
 #include "Ball.h"
 
+enum class EBrick_Type : unsigned char
+{
+	None,
 
+	Pink,
+	Blue,
+	Unbreakable,
+	Multihit_1,
+	Multihit_2,
+	Multihit_3,
+	Multihit_4,
+	Parachute,
+	Teleport,
+	Ad,
+	Invisible
+};
 
 class AActive_Brick: public AGraphics_Object
 {
@@ -99,20 +114,20 @@ private:
 };
 
 
-enum ETeleport_State
+enum class ETeleport_State: unsigned char
 {
-	ETS_Starting,
-	ETS_Finishing,
-	ETS_Done
+	Starting,
+	Finishing,
+	Done
 };
 
 
-enum EDirection_Type
+enum class EDirection_Type: unsigned char
 {
-	EDT_Left,
-	EDT_Up,
-	EDT_Right,
-	EDT_Down
+	Left,
+	Up,
+	Right,
+	Down
 };
 
 class AActive_Brick_Teleport : public AActive_Brick

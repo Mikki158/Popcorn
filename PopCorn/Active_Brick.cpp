@@ -67,7 +67,7 @@ AColor AActive_Brick_Pink_Blue::Fading_Pink_Brick_Colors[MAX_FADE_STEP];
 AActive_Brick_Pink_Blue::AActive_Brick_Pink_Blue(EBrick_Type brick_type, int level_x, int level_y)
     :AActive_Brick(brick_type, level_x, level_y), fade_Step(0)
 {
-    if (!(brick_type == EBT_Blue || brick_type == EBT_Pink))
+    if (!(brick_type == EBrick_Type::Blue || brick_type == EBrick_Type::Pink))
         AsConfig::Throw();
 }
 
@@ -85,7 +85,7 @@ void AActive_Brick_Pink_Blue::Act()
     if (fade_Step <= MAX_FADE_STEP - 1)
     {
         fade_Step += 1;
-        AsConfig::Invalidate_Rect(Brick_Rect);
+        AsTools::Invalidate_Rect(Brick_Rect);
     }
 }
 
@@ -97,11 +97,11 @@ void AActive_Brick_Pink_Blue::Draw(HDC hdc, RECT& paint_area)
 
     switch (Brick_Type)
     {
-    case EBT_Pink:
+    case EBrick_Type::Pink:
         color = &Fading_Pink_Brick_Colors[fade_Step];
         break;
 
-    case EBT_Blue:
+    case EBrick_Type::Blue:
         color = &Fading_Blue_Brick_Colors[fade_Step];
         break;
 
@@ -145,15 +145,15 @@ void AActive_Brick_Pink_Blue::Draw_In_Level(HDC hdc, RECT brick_rect, EBrick_Typ
 
     switch (brick_type)
     {
-    case EBT_None:
+    case EBrick_Type::None:
         color = &AsConfig::BG_Color;
         break;
 
-    case EBT_Pink:
+    case EBrick_Type::Pink:
         color = &AsConfig::Pink_Color;
         break;
 
-    case EBT_Blue:
+    case EBrick_Type::Blue:
         color = &AsConfig::Blue_Color;
         break;
 
@@ -165,7 +165,7 @@ void AActive_Brick_Pink_Blue::Draw_In_Level(HDC hdc, RECT brick_rect, EBrick_Typ
     if(color != nullptr)
         color->Select(hdc);
     
-    AsConfig::Round_Rect(hdc, brick_rect);
+    AsTools::Round_Rect(hdc, brick_rect);
 }
 
 
@@ -193,7 +193,7 @@ void AActive_Brick_Pink_Blue::Get_Fading_Color(const AColor &origin_color, int s
 // AActive_Brick_Unbreakable
 //
 AActive_Brick_Unbreakable::AActive_Brick_Unbreakable(int level_x, int level_y)
-    :AActive_Brick(EBT_Unbreakable, level_x, level_y), Animation_Step(0), Region(0)
+    :AActive_Brick(EBrick_Type::Unbreakable, level_x, level_y), Animation_Step(0), Region(0)
 {
     Region = CreateRoundRectRgn(Brick_Rect.left, Brick_Rect.top, Brick_Rect.right + 1, Brick_Rect.bottom + 1, 
         2 * AsConfig::GLOBAL_SCALE - 1, 2 * AsConfig::GLOBAL_SCALE - 1);
@@ -213,7 +213,7 @@ void AActive_Brick_Unbreakable::Act()
     if (Animation_Step <= MAX_ANIMATION_STEP)
     {
         Animation_Step++;
-        AsConfig::Invalidate_Rect(Brick_Rect);
+        AsTools::Invalidate_Rect(Brick_Rect);
     }
 }
 
@@ -259,7 +259,7 @@ void AActive_Brick_Unbreakable::Draw_In_Level(HDC hdc, RECT brick_rect)
 {// Вывод неактивного кирпича на уровень
 
     AsConfig::White_Color.Select(hdc);
-    AsConfig::Round_Rect(hdc, brick_rect);
+    AsTools::Round_Rect(hdc, brick_rect);
 }
 
 
@@ -267,7 +267,7 @@ void AActive_Brick_Unbreakable::Draw_In_Level(HDC hdc, RECT brick_rect)
 // AActive_Brick_Multihit
 //
 AActive_Brick_Multihit::AActive_Brick_Multihit(int level_x, int level_y)
-    :AActive_Brick(EBT_Multihit_1, level_x, level_y), Rotation_Step(0)
+    :AActive_Brick(EBrick_Type::Multihit_1, level_x, level_y), Rotation_Step(0)
 {
 
 }
@@ -286,7 +286,7 @@ void AActive_Brick_Multihit::Act()
     if (Rotation_Step <= MAX_ROTATION_STEP)
     {
         Rotation_Step++;
-        AsConfig::Invalidate_Rect(Brick_Rect);
+        AsTools::Invalidate_Rect(Brick_Rect);
     }
 }
 
@@ -302,7 +302,7 @@ void AActive_Brick_Multihit::Draw(HDC hdc, RECT& paint_area)
 
     // 1. Очищаем фон
     AsConfig::BG_Color.Select(hdc);
-    AsConfig::Round_Rect(hdc, Brick_Rect);
+    AsTools::Round_Rect(hdc, Brick_Rect);
 
     // 2. Настраиваем матрицу "поворота 100"
     step = Rotation_Step % STEPS_PER_TURN;
@@ -331,12 +331,12 @@ void AActive_Brick_Multihit::Draw(HDC hdc, RECT& paint_area)
     zero_rect.top = 0 + 1 * scale;
     zero_rect.right = zero_rect.left + 3 * scale + 1;
     zero_rect.bottom = zero_rect.top + 5 *scale;
-    AsConfig::Round_Rect(hdc, zero_rect);
+    AsTools::Round_Rect(hdc, zero_rect);
 
 
     zero_rect.left += 5 * scale;
     zero_rect.right += 5 * scale;
-    AsConfig::Round_Rect(hdc, zero_rect);
+    AsTools::Round_Rect(hdc, zero_rect);
 
     SetWorldTransform(hdc, &old_xForm);
 }
@@ -360,7 +360,7 @@ void AActive_Brick_Multihit::Draw_In_Level(HDC hdc, RECT brick_rect, EBrick_Type
 
     // 1. Рисуем фон
     AsConfig::White_Color.Select(hdc);
-    AsConfig::Round_Rect(hdc, brick_rect);
+    AsTools::Round_Rect(hdc, brick_rect);
 
     AsConfig::Pink_Color.Select(hdc);
     Rectangle(hdc, brick_rect.left + scale, brick_rect.top + scale, 
@@ -369,22 +369,22 @@ void AActive_Brick_Multihit::Draw_In_Level(HDC hdc, RECT brick_rect, EBrick_Type
     // 2. Рисуем внутренние прямоугольники
     switch (brick_type)
     {
-    case EBT_Multihit_1:
+    case EBrick_Type::Multihit_1:
         Draw_Stage(hdc, brick_rect, 2, 10);
         break;
 
-    case EBT_Multihit_2:
+    case EBrick_Type::Multihit_2:
         Draw_Stage(hdc, brick_rect, 2, 4);
         Draw_Stage(hdc, brick_rect, 8, 4);
         break;
 
-    case EBT_Multihit_3:
+    case EBrick_Type::Multihit_3:
         Draw_Stage(hdc, brick_rect, 2, 2);
         Draw_Stage(hdc, brick_rect, 6, 2);
         Draw_Stage(hdc, brick_rect, 10, 2);
         break;
 
-    case EBT_Multihit_4:
+    case EBrick_Type::Multihit_4:
         Draw_Stage(hdc, brick_rect, 2, 2);
         Draw_Stage(hdc, brick_rect, 5, 2);
         Draw_Stage(hdc, brick_rect, 8, 2);
@@ -413,9 +413,7 @@ void AActive_Brick_Multihit::Draw_Stage(HDC hdc, RECT brick_rect, int x, int wid
     AsConfig::BG_Color.Select(hdc);
     Rectangle(hdc, stage_rect.left + scale, stage_rect.top + scale, stage_rect.right + scale - 1, stage_rect.bottom + scale - 1);
 
-    AsConfig::Blue_Color.Select(hdc);
-    Rectangle(hdc, stage_rect.left, stage_rect.top, stage_rect.right - 1, stage_rect.bottom - 1);
-
+    AsTools::Rect(hdc, stage_rect, AsConfig::Blue_Color);
 }
 
 
@@ -423,7 +421,7 @@ void AActive_Brick_Multihit::Draw_Stage(HDC hdc, RECT brick_rect, int x, int wid
 // AActive_Brick_Teleport
 //
 AActive_Brick_Teleport::AActive_Brick_Teleport(int level_x, int level_y, ABall *ball, AActive_Brick_Teleport *destination_teleport)
-    :AActive_Brick(EBT_Teleport, level_x, level_y), Relese_Direction(), Animation_Step(0), Teleport_State(ETS_Starting), 
+    :AActive_Brick(EBrick_Type::Teleport, level_x, level_y), Relese_Direction(), Animation_Step(0), Teleport_State(ETeleport_State::Starting), 
     Destination_Teleport(destination_teleport), Ball(nullptr)
     
 {
@@ -450,15 +448,15 @@ void AActive_Brick_Teleport::Act()
     if (Animation_Step <= MAX_ANIMATION_STEP)
     {
         Animation_Step++;
-        AsConfig::Invalidate_Rect(Brick_Rect);
+        AsTools::Invalidate_Rect(Brick_Rect);
     }
     else
     {
         switch (Teleport_State)
         {
-        case ETS_Starting:
+        case ETeleport_State::Starting:
             Animation_Step = 0;
-            Teleport_State = ETS_Finishing;
+            Teleport_State = ETeleport_State::Finishing;
             if (Destination_Teleport != nullptr)
             {
                 Destination_Teleport->Set_Ball(Ball);
@@ -466,29 +464,29 @@ void AActive_Brick_Teleport::Act()
             }
             break;
 
-        case ETS_Finishing:
-            Teleport_State = ETS_Done;
+        case ETeleport_State::Finishing:
+            Teleport_State = ETeleport_State::Done;
 
             if (Ball != nullptr)
             {
                 switch (Relese_Direction)
                 {
-                case EDT_Left:
+                case EDirection_Type::Left:
                     ball_x = Get_Brick_X_Pos(false) - ABall::RADIUS;
                     ball_y = Get_Brick_Y_Pos(true);
                     break;
 
-                case EDT_Up:
+                case EDirection_Type::Up:
                     ball_x = Get_Brick_X_Pos(true);
                     ball_y = Get_Brick_Y_Pos(false) - ABall::RADIUS;
                     break;
 
-                case EDT_Right:
+                case EDirection_Type::Right:
                     ball_x = Get_Brick_X_Pos(false) + (double)AsConfig::BRICK_WIDTH + ABall::RADIUS;
                     ball_y = Get_Brick_Y_Pos(true);
                     break;
 
-                case EDT_Down:
+                case EDirection_Type::Down:
                     ball_x = Get_Brick_X_Pos(true);
                     ball_y = Get_Brick_Y_Pos(false) + (double)AsConfig::BRICK_HEIGHT + ABall::RADIUS;
                     break;
@@ -499,11 +497,11 @@ void AActive_Brick_Teleport::Act()
                 }
 
                 direction = Ball->Get_Direction();
-                Ball->Set_State(EBS_Normal, ball_x, ball_y);
+                Ball->Set_State(EBall_State::Normal, ball_x, ball_y);
                 Ball->Set_Direction(direction);
 
                 Ball = nullptr; // Отмечаем мячик как отсутствующий в телепорте
-                AsConfig::Invalidate_Rect(Brick_Rect);
+                AsTools::Invalidate_Rect(Brick_Rect);
             }
             break;
         }
@@ -519,11 +517,11 @@ void AActive_Brick_Teleport::Draw(HDC hdc, RECT& paint_area)
 
     switch (Teleport_State)
     {
-    case ETS_Starting:
+    case ETeleport_State::Starting:
         step = Animation_Step;
         break;
 
-    case ETS_Finishing:
+    case ETeleport_State::Finishing:
         step = MAX_ANIMATION_STEP - Animation_Step;
         break;
 
@@ -542,7 +540,7 @@ void AActive_Brick_Teleport::Draw(HDC hdc, RECT& paint_area)
 //
 bool AActive_Brick_Teleport::Is_Finished()
 {
-    if(Teleport_State == ETS_Done)
+    if(Teleport_State == ETeleport_State::Done)
         return true;
     else
         return false;
@@ -561,7 +559,7 @@ void AActive_Brick_Teleport::Draw_In_Level(HDC hdc, RECT brick_rect, int step)
 
     // 1. Фон
     AsConfig::Pink_Color.Select(hdc);
-    AsConfig::Round_Rect(hdc, brick_rect);
+    AsTools::Round_Rect(hdc, brick_rect);
 
     // 2. Тень
     AsConfig::BG_Color.Select(hdc);
@@ -583,7 +581,7 @@ void AActive_Brick_Teleport::Set_Ball(ABall* ball)
     ball_y = Get_Brick_Y_Pos(true);
 
     if (ball != nullptr)
-        ball->Set_State(EBS_Teleporting, ball_x, ball_y);
+        ball->Set_State(EBall_State::Teleporting, ball_x, ball_y);
 
     Ball = ball;
     
@@ -665,7 +663,7 @@ void AAdvertisement::Act()
                 rect.right = rect.left + cell_width;
                 rect.bottom = rect.top + cell_height;
 
-                AsConfig::Invalidate_Rect(rect);
+                AsTools::Invalidate_Rect(rect);
             }
 
     // 2. Смещаем шарик
@@ -719,7 +717,7 @@ void AAdvertisement::Draw(HDC hdc, RECT& paint_area)
     // 1.1 Тонкая синяя рамка со скругленными углами
     AsConfig::BG_Color.Select(hdc);
     AsConfig::Blue_Color.Select_Pen(hdc);
-    AsConfig::Round_Rect(hdc, Ad_Rect);
+    AsTools::Round_Rect(hdc, Ad_Rect);
 
     // 2. Стол
     // 2.1 Белая поверхность
@@ -845,7 +843,7 @@ bool AAdvertisement::Has_Brick_At(int level_x, int level_y)
 // AActive_Brick_Ad
 //
 AActive_Brick_Ad::AActive_Brick_Ad(int level_x, int level_y, AAdvertisement * advertisement)
-    :AActive_Brick(EBT_Unbreakable, level_x, level_y), Advertisement(advertisement)
+    :AActive_Brick(EBrick_Type::Unbreakable, level_x, level_y), Advertisement(advertisement)
 {
     if(Advertisement != nullptr)
         Advertisement->Show_Under_Brick(Level_X, Level_Y);
@@ -861,7 +859,7 @@ AActive_Brick_Ad::~AActive_Brick_Ad()
 //
 void AActive_Brick_Ad::Act()
 {
-    AsConfig::Invalidate_Rect(Brick_Rect);
+    AsTools::Invalidate_Rect(Brick_Rect);
 }
 
 

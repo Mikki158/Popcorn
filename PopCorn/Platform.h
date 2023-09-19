@@ -10,7 +10,7 @@
 #include "Platform_Laser.h"
 
 
-class AsPlatform: public AHit_Checker, public AMover, public AGraphics_Object
+class AsPlatform: public AHit_Checker, public AGame_Object
 {
 public:
     AsPlatform();

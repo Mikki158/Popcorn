@@ -1,18 +1,10 @@
 #pragma once
 #include "Ball.h"
 
-class AsBall_Set : public AMover, public AGraphics_Object
+class AsBall_Set : public AsGame_Objects_Set
 {
 public:
-    virtual void Advance(double max_speed);
-    virtual void Begin_Movement();
-    virtual void Finish_Movement();
-    virtual double Get_Speed();
-
     virtual void Act();
-    virtual void Clear(HDC hdc, RECT& paint_area);
-    virtual void Draw(HDC hdc, RECT& paint_area);
-    virtual bool Is_Finished();
 
     void Release_From_Platform(double platform_x_pos);
     void Set_On_Platform(double platform_x_pos);
@@ -29,5 +21,5 @@ public:
 private:
     ABall Balls[AsConfig::Max_Balls_Count];
 
-    void Forced_Advance(double direction, double max_speed);
+    bool Get_Next_Game_Object(int& index, AGame_Object** game_obj);
 };

@@ -10,7 +10,7 @@ enum class ELaser_Beam_State :unsigned char
     Cleanup
 };
 
-class ALaser_Beam : public AMover, public AGraphics_Object
+class ALaser_Beam : public AGame_Object
 {
 public:
     int Release_Timer_Tick;// «начение счетчика времени, после которого надо отпускать прикрепленный м€чик 

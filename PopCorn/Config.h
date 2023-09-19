@@ -1,28 +1,6 @@
 ﻿#pragma once
 
-#include "Tools.h"
-
-enum EBrick_Type
-{
-    EBT_None,
-
-    EBT_Pink,
-    EBT_Blue,
-    EBT_Unbreakable,
-    EBT_Multihit_1,
-    EBT_Multihit_2,
-    EBT_Multihit_3,
-    EBT_Multihit_4,
-    EBT_Parachute,
-    EBT_Teleport,
-    EBT_Ad,
-    EBT_Invisible
-};
-
-class AColor;
-class AsEngine;
-
-
+#include "Common.h"
 
 class AsConfig
 {
@@ -70,7 +48,7 @@ public:
     static const int BRICK_HEIGHT = 7;
     static const int Max_Active_Bricks_Count = 10;
     static const int Max_Falling_Letters_Count = 10;
-    static const int Hits_Per_Letter = 10; // Вероятность выбить букву = 1.0 / Hits_Per_Letter
+    static const int Hits_Per_Letter = 1; // Вероятность выбить букву = 1.0 / Hits_Per_Letter
     
     static const AColor Pink_Color, Blue_Color, White_Color, Letter_Color, Teleport_Portal_Color, 
         Blue_Highlight_Unbreakable, Pink_Highlight_Unbreakable, Advertisement_Pink_Table, Advertisement_Blue_Table, 
@@ -86,12 +64,17 @@ public:
     static const int Platform_Height = 7;
     static const int Platform_Expanding_Inner_Width = 12;
 
+    static void Throw();
+};
+
+
+class AsTools
+{
+public:
     static void Rect(HDC hdc, RECT& rect, const AColor& color);
     static void Rect(HDC hdc, int x, int y, int width, int height, const AColor& color);
     static void Round_Rect(HDC hdc, RECT& rect, int corner_radius = 2);
-    static void Invalidate_Rect(RECT &rect);
-    static void Throw();
-
-
+    static void Ellipse(HDC hdc, RECT& rect, const AColor& color);
+    static void Invalidate_Rect(RECT& rect);
     static int Rand(int range);
 };

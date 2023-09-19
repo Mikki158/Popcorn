@@ -117,13 +117,13 @@ bool AsPlatform::Check_Hit(double next_x_pos, double next_y_pos, ABall* ball)
     return false;
 
 _on_hit:
-    if (ball->Get_State() == EBS_On_Parachute)
-        ball->Set_State(EBS_Off_Parachute);
+    if (ball->Get_State() == EBall_State::On_Parachute)
+        ball->Set_State(EBall_State::Off_Parachute);
 
     if (Platform_State == EPlatform_State::Glue && Platform_State.Glue == EPlatform_Transformation::Active)
     {
         ball->Get_Center(ball_x, ball_y);
-        ball->Set_State(EBS_On_Platform, ball_x, ball_y);
+        ball->Set_State(EBall_State::On_Platform, ball_x, ball_y);
     }
 
     return true;
@@ -155,10 +155,8 @@ void AsPlatform::Clear(HDC hdc, RECT& paint_area)
     case EPlatform_State::Glue:
     case EPlatform_State::Expanding:
     case EPlatform_State::Laser:
-        AsConfig::BG_Color.Select(hdc);
 
-        Rectangle(hdc, Prev_Platform_Rect.left, Prev_Platform_Rect.top,
-            Prev_Platform_Rect.right, Prev_Platform_Rect.bottom);
+        AsTools::Rect(hdc, Prev_Platform_Rect, AsConfig::BG_Color);
     }
 }
 
@@ -169,9 +167,7 @@ void AsPlatform::Draw(HDC hdc, RECT& paint_area)
     RECT intersection_rect;
 
     if (!IntersectRect(&intersection_rect, &paint_area, &Platform_Rect))
-    {
-        //return; // !!! не заказывается перерисовка для расплавляющейся платформы
-    }
+        return; // !!! не заказывается перерисовка для расплавляющейся 
 
     switch (Platform_State)
     {
@@ -229,7 +225,7 @@ void AsPlatform::Act()
         if (Platform_Glue.Act(Ball_Set, next_state))
             Redraw_Platform();
 
-        if (next_state != EPlatform_State::Unknow)
+        if (next_state != EPlatform_State::Unknown)
             Set_State(next_state);
         break;
 
@@ -240,7 +236,7 @@ void AsPlatform::Act()
         if(correct_pos)
             Correct_Platform_Pos();
 
-        if (next_state != EPlatform_State::Unknow)
+        if (next_state != EPlatform_State::Unknown)
             Set_State(next_state);
 
         break;
@@ -249,7 +245,7 @@ void AsPlatform::Act()
         if (Platform_Laser.Act(next_state, X_Pos))
             Redraw_Platform();
 
-        if (next_state != EPlatform_State::Unknow)
+        if (next_state != EPlatform_State::Unknown)
             Set_State(next_state);
         break;
 
@@ -298,8 +294,8 @@ void AsPlatform::Redraw_Platform()
     }
     
 
-    AsConfig::Invalidate_Rect(Prev_Platform_Rect);
-    AsConfig::Invalidate_Rect(Platform_Rect);
+    AsTools::Invalidate_Rect(Prev_Platform_Rect);
+    AsTools::Invalidate_Rect(Platform_Rect);
 }
 
 
@@ -385,7 +381,7 @@ void AsPlatform::Set_State(EPlatform_Substate_Regular new_regular_state)
 
     next_state = Platform_State.Set_State(new_regular_state);
 
-    if (next_state != EPlatform_State::Unknow)
+    if (next_state != EPlatform_State::Unknown)
         Set_State(next_state);
 }
 
@@ -523,22 +519,20 @@ void AsPlatform::Draw_Normal_State(HDC hdc, RECT& paint_area)
     RECT inner_rect, rect;
 
     // 1. Рисуем боковые шарики
-    Platform_Circle_Color.Select(hdc);
-
     rect.left = (int)(x * d_scale);
     rect.top = y * scale;
     rect.right = (int)((x + (double)AsConfig::Platform_CIRCLE_SIZE) * d_scale);
     rect.bottom = (y + AsConfig::Platform_CIRCLE_SIZE) * scale;
 
-    Ellipse(hdc, rect.left, rect.top, rect.right - 1, rect.bottom - 1);
+    AsTools::Ellipse(hdc, rect, Platform_Circle_Color);
+
 
     rect.left = (int)((x + Inner_width) * d_scale);
     rect.top = y * scale;
     rect.right = (int)((x + Inner_width + (double)AsConfig::Platform_CIRCLE_SIZE) * d_scale);
     rect.bottom = (y + AsConfig::Platform_CIRCLE_SIZE) * scale;
 
-
-    Ellipse(hdc, rect.left, rect.top, rect.right - 1, rect.bottom - 1);
+    AsTools::Ellipse(hdc, rect, Platform_Circle_Color);
 
 
     // 2. Рисуем среднюю платформу
@@ -549,7 +543,7 @@ void AsPlatform::Draw_Normal_State(HDC hdc, RECT& paint_area)
     inner_rect.right = (int)((x + 4 + Inner_width - 1) * d_scale);
     inner_rect.bottom = (y + 1 + 5) * scale;
 
-    AsConfig::Round_Rect(hdc, inner_rect, 3);
+    AsTools::Round_Rect(hdc, inner_rect, 3);
 
     if (Normal_Platform_Image == nullptr && Has_State(EPlatform_Substate_Regular::Ready))
         Get_Normal_Platform_Image(hdc);
@@ -602,7 +596,7 @@ void AsPlatform::Draw_Meltdown_State(HDC hdc, RECT& paint_area)
 
         x = Platform_Rect.left + i;
 
-        y_offset = AsConfig::Rand(AsConfig::Meltdown_Speed) + 1;
+        y_offset = AsTools::Rand(AsConfig::Meltdown_Speed) + 1;
 
         j = 0;
         y = Meltdown_Platform_Y_Pos[i];
@@ -740,7 +734,7 @@ void AsPlatform::Act_For_Rolling_State()
         if (Inner_width >= AsConfig::Platform_NORMAL_INNER_WIDTH)
         {
             Inner_width = AsConfig::Platform_NORMAL_INNER_WIDTH;
-            Platform_State.Rolling = EPlatform_Substate_Rolling::Unknow;
+            Platform_State.Rolling = EPlatform_Substate_Rolling::Unknown;
             Set_State(EPlatform_Substate_Regular::Ready);
             Redraw_Platform();
         }

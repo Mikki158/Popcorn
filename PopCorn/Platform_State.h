@@ -4,7 +4,7 @@
 
 enum class EPlatform_State : unsigned char
 {
-    Unknow,
+    Unknown,
     Regular,
     Meltdown,
     Rolling,
@@ -16,7 +16,7 @@ enum class EPlatform_State : unsigned char
 
 enum class EPlatform_Substate_Regular : unsigned char
 {
-    Unknow,
+    Unknown,
 
     Missing,
     Ready,
@@ -26,7 +26,7 @@ enum class EPlatform_Substate_Regular : unsigned char
 
 enum class EPlatform_Substate_Meltdown : unsigned char
 {
-    Unknow,
+    Unknown,
 
     Init,
     Active
@@ -35,7 +35,7 @@ enum class EPlatform_Substate_Meltdown : unsigned char
 
 enum class EPlatform_Substate_Rolling : unsigned char
 {
-    Unknow,
+    Unknown,
 
     Roll_In,
     Expand_Roll_In
@@ -44,7 +44,7 @@ enum class EPlatform_Substate_Rolling : unsigned char
 
 enum class EPlatform_Transformation : unsigned char
 {
-    Unknow,
+    Unknown,
 
     Init,
     Active,

@@ -7,7 +7,7 @@
 // AsEngine
 //
 AsEngine::AsEngine()
-    :Game_State(EGS_Lost_Ball), Rest_Distance(0.0), Movers{}, Modules{}, Life_Count(AsConfig::Initial_Life_Count)
+    :Game_State(EGame_State::Lost_Ball), Rest_Distance(0.0), Modules{}, Life_Count(AsConfig::Initial_Life_Count)
 {
 
 }
@@ -16,6 +16,7 @@ AsEngine::AsEngine()
 //
 void AsEngine::Init_Engine(HWND hwnd)// Настройка игры при старте
 {
+    int index = 0;
     SYSTEMTIME sys_time;
     FILETIME file_time;
 
@@ -44,21 +45,14 @@ void AsEngine::Init_Engine(HWND hwnd)// Настройка игры при ст�
 
     SetTimer(AsConfig::HWnd, TIMER_ID, 1000 / AsConfig::FPS, 0);
 
-    // Movers
-    memset(Movers, 0, sizeof(Movers));
-    Movers[0] = &Platform;
-    Movers[1] = &Ball_Set;
-    Movers[2] = &Laser_Beam_Set;
-
     // Modules
     memset(Modules, 0, sizeof(Modules));
-    Modules[0] = &Level;
-    Modules[1] = &Border;
-    Modules[2] = &Platform;
-    Modules[3] = &Ball_Set;
-    Modules[4] = &Laser_Beam_Set;
 
-    Border.Open_Gate(7, true);
+    Add_Next_Module(index, &Level);
+    Add_Next_Module(index, &Border);
+    Add_Next_Module(index, &Platform);
+    Add_Next_Module(index, &Ball_Set);
+    Add_Next_Module(index, &Laser_Beam_Set);
 }
 
 
@@ -82,19 +76,19 @@ int AsEngine::On_Key(EKey_Type key_type, bool key_down)
 {
     switch (key_type)
     {
-    case EKT_Left:
+    case EKey_Type::Left:
         Platform.Move(true, key_down);
         break;
 
-    case EKT_Right:
+    case EKey_Type::Right:
         Platform.Move(false, key_down);
         break;
 
-    case EKT_Space:
+    case EKey_Type::Space:
         Platform.On_Space_Key(key_down);
         break;
 
-    case EKT_F:
+    case EKey_Type::F:
         Ball_Set.Inverse_Balls();
         break;
 
@@ -110,25 +104,25 @@ int AsEngine::On_Timer()
 
     switch (Game_State)
     {
-    case EGS_Test_Ball:
+    case EGame_State::Test_Ball:
         Ball_Set.Set_For_Test();
-        Game_State = EGS_Play_Level;
+        Game_State = EGame_State::Play_Level;
         break;
 
-    case EGS_Play_Level:
+    case EGame_State::Play_Level:
         Play_Level();
         break;
 
-    case EGS_Lost_Ball:
+    case EGame_State::Lost_Ball:
         if (Platform.Has_State(EPlatform_Substate_Regular::Missing))
             Restart_Level();
         
         break;
 
-    case EGS_Restart_Level:
+    case EGame_State::Restart_Level:
         if (Platform.Has_State(EPlatform_Substate_Regular::Ready))
         {
-            Game_State = EGS_Play_Level;
+            Game_State = EGame_State::Play_Level;
             Ball_Set.Set_On_Platform(Platform.Get_Middle_Pos());
         }
         break;
@@ -146,7 +140,7 @@ int AsEngine::On_Timer()
 //
 void AsEngine::Restart_Level()
 {
-    Game_State = EGS_Restart_Level;
+    Game_State = EGame_State::Restart_Level;
     Border.Open_Gate(7, true);
     Border.Open_Gate(5, false);
 }
@@ -159,7 +153,7 @@ void AsEngine::Play_Level()
 
     if (Ball_Set.All_Balls_Are_Lost())
     {
-        Game_State = EGS_Lost_Ball;
+        Game_State = EGame_State::Lost_Ball;
         Level.Stop();
         Platform.Set_State(EPlatform_State::Meltdown);
     }
@@ -168,7 +162,7 @@ void AsEngine::Play_Level()
 
 
     if (Ball_Set.Is_Test_Finished())
-        Game_State = EGS_Test_Ball;
+        Game_State = EGame_State::Test_Ball;
 }
 
 
@@ -180,11 +174,11 @@ void AsEngine::Advance_Movers()
 
     // 1. Получаем максимальную скорость движущихся объектов
     for (int i = 0; i < AsConfig::Max_Movers_Count; i++)
-        if (Movers[i] != nullptr)
+        if (Modules[i] != nullptr)
         {
-            Movers[i]->Begin_Movement();
+            Modules[i]->Begin_Movement();
 
-            curr_speed = fabs(Movers[i]->Get_Speed());
+            curr_speed = fabs(Modules[i]->Get_Speed());
 
             if (curr_speed > max_speed)
                 max_speed = curr_speed;
@@ -197,8 +191,8 @@ void AsEngine::Advance_Movers()
     {
         for (int i = 0; i < AsConfig::Max_Movers_Count; i++)
         {
-            if (Movers[i] != nullptr)
-                Movers[i]->Advance(max_speed);
+            if (Modules[i] != nullptr)
+                Modules[i]->Advance(max_speed);
         }
 
         Rest_Distance -= AsConfig::Moving_STEP_SIZE;
@@ -206,8 +200,8 @@ void AsEngine::Advance_Movers()
 
     // 3. Заканчиваем все движения на этом кадре
     for (int i = 0; i < AsConfig::Max_Movers_Count; i++)
-        if (Movers[i] != nullptr)
-            Movers[i]->Finish_Movement();
+        if (Modules[i] != nullptr)
+            Modules[i]->Finish_Movement();
 }
 
 
@@ -230,7 +224,7 @@ void AsEngine::Act()
     }
 
     // 3. Рестарт уровня (если надо)
-    if(Game_State == EGS_Restart_Level)
+    if(Game_State == EGame_State::Restart_Level)
         if(Border.Is_Gate_Opened(AsConfig::Gate_Count - 1))
             Platform.Set_State(EPlatform_State::Rolling);
 }
@@ -241,54 +235,54 @@ void AsEngine::On_Falling_Letter(AFalling_Letter* falling_letter)
 {
     switch (falling_letter->letter_type)
     {
-    case ELT_O:
+    case ELetter_Type::O:
         Platform.Set_State(EPlatform_Substate_Regular::Normal);
         break;// !!! Пока отменился только клей
 
-    case ELT_I:
+    case ELetter_Type::I:
         Ball_Set.Inverse_Balls();
         Platform.Set_State(EPlatform_Substate_Regular::Normal);
         break;
 
-    case ELT_C:
+    case ELetter_Type::C:
         Ball_Set.Reset_Speed();
         Platform.Set_State(EPlatform_Substate_Regular::Normal);
         break;
 
-    case ELT_M:
+    case ELetter_Type::M:
         break;
 
-    case ELT_G:
+    case ELetter_Type::G:
         if (Life_Count < AsConfig::Max_Life_Count)
             Life_Count++; // !!! Отобразить на индикаторе!
         Platform.Set_State(EPlatform_Substate_Regular::Normal);
         break;
 
-    case ELT_K:
+    case ELetter_Type::K:
         Platform.Set_State(EPlatform_State::Glue);
         break;
 
-    case ELT_W:
+    case ELetter_Type::W:
         Platform.Set_State(EPlatform_State::Expanding);
         break;
 
-    case ELT_P:
+    case ELetter_Type::P:
         AsConfig::Level_Has_Floor = true;
         Border.Redraw_Floor();
         // !!! Отобразить на индикаторе
         Platform.Set_State(EPlatform_Substate_Regular::Normal);
         break;
 
-    case ELT_L:
+    case ELetter_Type::L:
         Platform.Set_State(EPlatform_State::Laser);
         break;
 
-    case ELT_T:
+    case ELetter_Type::T:
         Platform.Set_State(EPlatform_Substate_Regular::Normal);
         Ball_Set.Tripple_Balls();
         break;
 
-    case ELT_PLUS:
+    case ELetter_Type::PLUS:
         break;
 
     default:
@@ -299,6 +293,15 @@ void AsEngine::On_Falling_Letter(AFalling_Letter* falling_letter)
     falling_letter->Finalize();
 }
 
+
+//
+void AsEngine::Add_Next_Module(int& index, AGame_Object* game_obj)
+{
+    if (index >= 0 && index < AsConfig::Max_Modules_Count)
+        Modules[index++] = game_obj;
+    else
+        AsConfig::Throw();
+}
 
 
 

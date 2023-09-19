@@ -2,30 +2,30 @@
 
 #include "Active_Brick.h"
 
-enum ELetter_Type
+enum class ELetter_Type: unsigned char
 {
-    ELT_O, // "Отмена"
-    ELT_I, // "Инверсия"
-    ELT_C, // "Скорость"
-    ELT_M, // "Монстры"
-    ELT_G, // "Жизнь"
-    ELT_K, // "Клей"
-    ELT_W, // "Шире"
+    O, // "Отмена"
+    I, // "Инверсия"
+    C, // "Скорость"
+    M, // "Монстры"
+    G, // "Жизнь"
+    K, // "Клей"
+    W, // "Шире"
 
-    ELT_P, // "Пол"
-    ELT_L, // "Лазер"
-    ELT_T, // "Три"
+    P, // "Пол"
+    L, // "Лазер"
+    T, // "Три"
 
-    ELT_PLUS, // "Переход на следующий уровень"
+    PLUS, // "Переход на следующий уровень"
 
-    ELT_MAX // Позволяет узнать число элементов в перечислении
+    MAX // Позволяет узнать число элементов в перечислении
 };
 
-enum EFalling_Letter_State
+enum class EFalling_Letter_State: unsigned char
 {
-    EFLS_Normal,
-    EFLS_Finalizing, // Начинаем удалять объект
-    EFLS_Finished // Когда объект можно удалять
+    Normal,
+    Finalizing, // Начинаем удалять объект
+    Finished // Когда объект можно удалять
 };
 
 class AFalling_Letter : public AGraphics_Object
@@ -59,7 +59,7 @@ private:
     const EBrick_Type brick_type;
 
     static int All_Letters_Popularity;
-    static int Letters_Popularity[ELT_MAX]; // "Вес" каждой буквы
+    static int Letters_Popularity[(int)ELetter_Type::MAX]; // "Вес" каждой буквы
 
     static const int Ticks_Per_Step = 4;
     static const int Max_Rotation_Step = 16;

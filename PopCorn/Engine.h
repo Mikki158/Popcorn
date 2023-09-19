@@ -13,24 +13,24 @@
 // таймер
 const int TIMER_ID = WM_USER + 1;
 
-enum EKey_Type
+enum class EKey_Type: unsigned char
 {
-    EKT_None,
+    None,
 
-    EKT_Left,
-    EKT_Right,
-    EKT_Space,
+    Left,
+    Right,
+    Space,
 
-    EKT_F
+    F
 };
 
-enum EGame_State
+enum class EGame_State: unsigned char
 {
-    EGS_Test_Ball,
+    Test_Ball,
 
-    EGS_Play_Level,
-    EGS_Lost_Ball,
-    EGS_Restart_Level
+    Play_Level,
+    Lost_Ball,
+    Restart_Level
 };
 
 
@@ -59,13 +59,13 @@ private:
     AsBall_Set Ball_Set;
     AsLaser_Beam_Set Laser_Beam_Set;
 
-    AMover* Movers[AsConfig::Max_Movers_Count]; // Движущиеся в данный момент объекты
-    AGraphics_Object* Modules[AsConfig::Max_Modules_Count]; // Главные графические объекты (модули) игры
+    AGame_Object* Modules[AsConfig::Max_Modules_Count]; // Главные графические объекты (модули) игры
 
     void Play_Level();
     void Advance_Movers();
     void Act();
     void On_Falling_Letter(AFalling_Letter* falling_letter);
+    void Add_Next_Module(int &index, AGame_Object * game_obj);
 };
 
 

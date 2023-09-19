@@ -54,6 +54,7 @@ void AsPlatform_Expanding::Draw_State(HDC hdc, double x)
     // 1.2 Фермы
     Draw_Expanding_Truss(hdc, inner_rect, true);
 
+
     // 2. Левая сторона
     // 2.1 Шарик
     Draw_Expanding_Platform_Ball(hdc, false, x);
@@ -61,11 +62,9 @@ void AsPlatform_Expanding::Draw_State(HDC hdc, double x)
     // 2.2 Фермы
     Draw_Expanding_Truss(hdc, inner_rect, false);
 
+
     // 3. Рисуем среднюю платформу
-    Inner_Color->Select(hdc);
-
-
-    Rectangle(hdc, inner_rect.left, inner_rect.top, inner_rect.right - 1, inner_rect.bottom - 1);
+    AsTools::Rect(hdc, inner_rect, *Inner_Color);
 }
 
 
@@ -81,7 +80,7 @@ bool AsPlatform_Expanding::Act(double& x_pos, EPlatform_State& next_state, bool&
 {
     correct_pos = false;
 
-    next_state = EPlatform_State::Unknow;
+    next_state = EPlatform_State::Unknown;
 
     switch (Platform_State->Expanding)
     {
@@ -111,7 +110,7 @@ bool AsPlatform_Expanding::Act(double& x_pos, EPlatform_State& next_state, bool&
         }
         else
         {
-            Platform_State->Expanding = EPlatform_Transformation::Unknow;
+            Platform_State->Expanding = EPlatform_Transformation::Unknown;
             next_state = Platform_State->Set_State(EPlatform_Substate_Regular::Normal);
         }
 
@@ -147,8 +146,7 @@ void AsPlatform_Expanding::Draw_Expanding_Platform_Ball(HDC hdc, bool is_left, d
     rect.right = rect.left + AsConfig::Platform_CIRCLE_SIZE * scale;
     rect.bottom = (y + AsConfig::Platform_CIRCLE_SIZE) * scale;
 
-    Circle_Color->Select(hdc);
-    Ellipse(hdc, rect.left, rect.top, rect.right - 1, rect.bottom - 1);
+    AsTools::Ellipse(hdc, rect, *Circle_Color);
 
     // 1.2 Переходник на ферму
     if (is_left)
@@ -183,8 +181,7 @@ void AsPlatform_Expanding::Draw_Expanding_Platform_Ball(HDC hdc, bool is_left, d
     }
 
     // 1.3.1 Дырка в шарике под дугой 
-    AsConfig::BG_Color.Select(hdc);
-    Ellipse(hdc, arc_rect.left, arc_rect.top, arc_rect.right - 1, arc_rect.bottom - 1);
+    AsTools::Ellipse(hdc, arc_rect, AsConfig::BG_Color);
 
     // 1.3.2 Сама дуга
     Truss_Color->Select(hdc);

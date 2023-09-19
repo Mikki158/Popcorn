@@ -4,10 +4,10 @@
 //AsPlatform_State
 //
 AsPlatform_State::AsPlatform_State()
-    :Current_State(EPlatform_State::Regular), Next_State(EPlatform_State::Unknow), Regular(EPlatform_Substate_Regular::Missing),
-    Meltdown(EPlatform_Substate_Meltdown::Unknow), Rolling(EPlatform_Substate_Rolling::Unknow),
-    Glue(EPlatform_Transformation::Unknow), Expanding(EPlatform_Transformation::Unknow),
-    Laser(EPlatform_Transformation::Unknow), Moving(EPlatform_Moving_State::Stop)
+    :Current_State(EPlatform_State::Regular), Next_State(EPlatform_State::Unknown), Regular(EPlatform_Substate_Regular::Missing),
+    Meltdown(EPlatform_Substate_Meltdown::Unknown), Rolling(EPlatform_Substate_Rolling::Unknown),
+    Glue(EPlatform_Transformation::Unknown), Expanding(EPlatform_Transformation::Unknown),
+    Laser(EPlatform_Transformation::Unknown), Moving(EPlatform_Moving_State::Stop)
 {
 }
 
@@ -72,7 +72,7 @@ EPlatform_State AsPlatform_State::Set_State(EPlatform_Substate_Regular new_regul
     EPlatform_Transformation* transformation_state = nullptr;
 
     if (Current_State == EPlatform_State::Regular && Regular == new_regular_state)
-        return EPlatform_State::Unknow;
+        return EPlatform_State::Unknown;
 
     if (new_regular_state == EPlatform_Substate_Regular::Normal)
     {
@@ -96,18 +96,18 @@ EPlatform_State AsPlatform_State::Set_State(EPlatform_Substate_Regular new_regul
 
         if (transformation_state != nullptr)
         {
-            if (*transformation_state == EPlatform_Transformation::Unknow) // Финализация состояния 
+            if (*transformation_state == EPlatform_Transformation::Unknown) // Финализация состояния 
                 return Set_Next_Or_Regular_State(new_regular_state);
             else // Запускаем финализацию состояния
                 *transformation_state = EPlatform_Transformation::Finalize;
 
-            return EPlatform_State::Unknow;
+            return EPlatform_State::Unknown;
         }
     }
     Current_State = EPlatform_State::Regular;
     Regular = new_regular_state;
 
-    return EPlatform_State::Unknow;
+    return EPlatform_State::Unknown;
 }
 
 
@@ -129,7 +129,7 @@ EPlatform_State AsPlatform_State::Set_Next_Or_Regular_State(EPlatform_Substate_R
     next_state = Get_Next_State();
 
     // Если есть отложенное состояние, то переводим в него, а не в Regular
-    if (next_state == EPlatform_State::Unknow)
+    if (next_state == EPlatform_State::Unknown)
         Regular = new_regular_state;
 
     return next_state;
