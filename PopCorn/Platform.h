@@ -16,10 +16,12 @@ public:
     AsPlatform();
     ~AsPlatform();
 
+    static AHit_Checker_List Hit_Checker_List;
+
     virtual void Advance(double max_speed);
     virtual void Begin_Movement();
     virtual void Finish_Movement();
-    virtual bool Check_Hit(double next_x_pos, double next_y_pos, ABall* ball);
+    virtual bool Check_Hit(double next_x_pos, double next_y_pos, ABall_Object* ball);
     virtual double Get_Speed();
 
     virtual void Clear(HDC hdc, RECT& paint_area);
@@ -82,7 +84,6 @@ private:
     void Act_For_Rolling_State();
 
     bool Correct_Platform_Pos();
-    bool Reflect_On_Circle(double next_x_pos, double next_y_pos, double platform_ball_x_offset, ABall* ball);
     bool Get_Platform_Image_Stroke_Color(int x, int y, const AColor** color, int& stroke_len);
 
     double Get_Current_Width();

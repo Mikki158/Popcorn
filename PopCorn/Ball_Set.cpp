@@ -34,6 +34,7 @@ void AsBall_Set::Set_On_Platform(double platform_x_pos)
     {
         Balls[i].Set_State(EBall_State::Normal);
         Balls[i].Set_State(EBall_State::On_Platform, platform_x_pos, AsConfig::START_BALL_Y_POS);
+        Balls[i].Release_Timer_Tick = 0;
     }
 
     for (; i < AsConfig::Max_Balls_Count; i++)

@@ -6,6 +6,7 @@ int AsConfig::Current_Timer_Tick = 0;
 HWND AsConfig::HWnd;
 
 const double AsConfig::D_GLOBAL_SCALE = (double)GLOBAL_SCALE;
+const double AsConfig::Ball_RADIUS = 2.0 - 0.5 / GLOBAL_SCALE;
 const double AsConfig::Normal_Ball_Speed = 3.0;
 const double AsConfig::Moving_STEP_SIZE = 1.0 / GLOBAL_SCALE;
 const double AsConfig::START_BALL_Y_POS = 184.0;
@@ -24,6 +25,12 @@ const AColor AsConfig::Pink_Highlight_Unbreakable(AsConfig::Pink_Color, 3 * AsCo
 const AColor AsConfig::Advertisement_Pink_Table(AsConfig::Pink_Color, 2 * AsConfig::GLOBAL_SCALE);
 const AColor AsConfig::Advertisement_Blue_Table(0, 159, 159, AsConfig::GLOBAL_SCALE);
 const AColor AsConfig::Gate_Color(AsConfig::White_Color, AsConfig::GLOBAL_SCALE);
+const AColor AsConfig::Monster_Dark_Pink_Color(228, 0, 228);
+const AColor AsConfig::Monster_Cornea_Color(AsConfig::BG_Color, AsConfig::White_Color, AsConfig::GLOBAL_SCALE * 2 / 3);
+const AColor AsConfig::Monster_Iris_Color(AsConfig::BG_Color, AsConfig::Blue_Color, AsConfig::GLOBAL_SCALE * 2 / 3);
+const AColor AsConfig::BG_Outline_Color(AsConfig::BG_Color, AsConfig::GLOBAL_SCALE * 2 / 3);
+const AColor AsConfig::Explosion_Pink_Color(AsConfig::White_Color, AsConfig::Pink_Color, 0);
+const AColor AsConfig::Explosion_Blue_Color(AsConfig::White_Color, AsConfig::Blue_Color, 0);
 
 //
 void AsConfig::Throw()
@@ -81,5 +88,167 @@ void AsTools::Invalidate_Rect(RECT& rect)
 int AsTools::Rand(int range)
 {// Вычисляет псевдослучайное число в диапазоне [0, ... range - 1]
     return rand() * range / RAND_MAX;
+}
+
+
+//
+unsigned char AsTools::Get_Fading_Channel(unsigned char color, unsigned char bg_color, int step, int max_step)
+{
+    return color - step * (color - bg_color) / (max_step - 1);
+}
+
+
+//
+void AsTools::Get_Fading_Color(const AColor& origin_color, int step, AColor& result_color, int max_step)
+{
+    unsigned char r, g, b;
+
+    r = Get_Fading_Channel(origin_color.R, AsConfig::BG_Color.R, step, max_step);
+    g = Get_Fading_Channel(origin_color.G, AsConfig::BG_Color.G, step, max_step);
+    b = Get_Fading_Channel(origin_color.B, AsConfig::BG_Color.B, step, max_step);
+
+    result_color = AColor(r, g, b);
+}
+
+
+//
+bool AsTools::Reflect_On_Circle(double next_x_pos, double next_y_pos, double circle_x, double circle_y, double circle_radius, ABall_Object* ball)
+{
+    double dx, dy;
+    double distance, two_radius;
+
+    double alpha, beta, gamma;
+    double realted_ball_direction;
+
+    const double pi_2 = 2.0 * M_PI;
+
+    dx = next_x_pos - circle_x;
+    dy = next_y_pos - circle_y;
+
+    distance = sqrt((dx * dx) + (dy * dy));
+    two_radius = circle_radius + AsConfig::Ball_RADIUS;
+
+    if (distance - AsConfig::Moving_STEP_SIZE < two_radius)
+    {// Мячик коснулся бокового шарика
+        beta = atan2(-dy, dx);
+
+        realted_ball_direction = ball->Get_Direction();
+        realted_ball_direction -= beta;
+
+        if (realted_ball_direction > pi_2)
+            realted_ball_direction -= pi_2;
+
+        if (realted_ball_direction < 0)
+            realted_ball_direction += pi_2;
+
+        if (realted_ball_direction > M_PI_2 && realted_ball_direction < M_PI + M_PI_2)
+        {
+            alpha = beta + M_PI - ball->Get_Direction();
+            gamma = beta + alpha;
+
+            ball->Set_Direction(gamma);
+
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
+
+// AHit_Checker
+bool AHit_Checker::Check_Hit(double next_x_pos, double next_y_pos)
+{
+    return false;
+}
+
+
+//
+bool AHit_Checker::Check_Hit(RECT& rect)
+{
+    return false;
+}
+
+
+//
+bool AHit_Checker::Hit_Circle_On_Line(double y, double next_x_pos, double left_x, double right_x, double radius, double& x)
+{// Проверяет пересечение горизонтального отрезка (проходящего от left_x до right_x через y) с окружностью радиусом ridius
+    double min_x, max_x;
+
+    if (y > radius)
+    {
+        return false;
+    }
+
+    x = sqrt(radius * radius - y * y);
+
+    max_x = next_x_pos + x;
+    min_x = next_x_pos - x;
+
+    if ((max_x >= left_x && max_x <= right_x) || (min_x >= left_x && min_x <= right_x))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+
+}
+
+
+
+// AHit_Checker_List
+//
+AHit_Checker_List::AHit_Checker_List()
+    :Hit_Checkers_Count(0), Hit_checkers{}
+{
+
+}
+
+
+//
+bool AHit_Checker_List::Add_Hit_Checker(AHit_Checker* hit_checker)
+{
+    if (Hit_Checkers_Count >= sizeof(Hit_checkers) / sizeof(Hit_checkers[0]))
+        AsConfig::Throw();
+
+    Hit_checkers[Hit_Checkers_Count++] = hit_checker;
+
+    return true;
+}
+
+
+//
+bool AHit_Checker_List::Check_Hit(double x_pos, double y_pos, ABall_Object* ball)
+{
+    for (int i = 0; i < Hit_Checkers_Count; i++)
+        if (Hit_checkers[i]->Check_Hit(x_pos, y_pos, ball))
+            return true;
+
+    return false;
+}
+
+
+//
+bool AHit_Checker_List::Check_Hit(double x_pos, double y_pos)
+{
+    for (int i = 0; i < Hit_Checkers_Count; i++)
+        if (Hit_checkers[i]->Check_Hit(x_pos, y_pos))
+            return true;
+
+    return false;
+}
+
+
+//
+bool AHit_Checker_List::Check_Hit(RECT &rect)
+{
+    for (int i = 0; i < Hit_Checkers_Count; i++)
+        if (Hit_checkers[i]->Check_Hit(rect))
+            return true;
+
+    return false;
 }
 

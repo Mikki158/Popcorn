@@ -21,7 +21,12 @@ enum class EGate_Tranformation : unsigned char
 class AGate : public AGraphics_Object
 {
 public:
-    AGate(int x_pos, int y_pos);
+    AGate(int x_pos, int y_pos, int level_x_pos = -1, int level_y_pos = -1);
+
+    static const int Width = 6;
+    static const int Height = 19;
+
+    int Level_X_Pos, Level_Y_Pos; // ѕозици€ на уровне, соответствующа€ верхнему кирпичу напротив гейта (-1, если гейт не находитс€ напротив кирпича)
 
     virtual void Act();
     virtual void Clear(HDC hdc, RECT& paint_area);
@@ -30,7 +35,9 @@ public:
 
     void Open_Gate(bool short_open);
     bool Is_Opened();
+    bool Is_Closed();
     void Get_Y_Size(int& gate_top_y, int& gate_low_y);
+    void Get_Pos(int &gate_x_pos, int &gate_y_pos);
 
 private:
     int X_Pos;
@@ -44,8 +51,6 @@ private:
 
     static const double Max_Gap_Short_Height, Gap_Height_Short_Step;
     static const double Max_Gap_Long_Height, Gap_Height_Long_Step;
-    static const int Width = 6;
-    static const int Height = 19;
     static const int Short_Opening_Timeout = AsConfig::FPS; // 1 секунда
     static const int Long_Opening_Timeout = AsConfig::FPS * 3; // 2 секунда
 

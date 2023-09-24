@@ -3,14 +3,15 @@
 
 // AGate
 const double AGate::Max_Gap_Short_Height = 9.0;
-const double AGate::Gap_Height_Short_Step = Max_Gap_Short_Height / ((double)AsConfig::FPS * 1.5); // Для анимации за 1 секунду
+const double AGate::Gap_Height_Short_Step = Max_Gap_Short_Height / ((double)AsConfig::FPS * 2.0); // Для анимации за 1 секунду
 const double AGate::Max_Gap_Long_Height = 18.0;
-const double AGate::Gap_Height_Long_Step = Max_Gap_Short_Height / ((double)AsConfig::FPS * 2.0); // Для анимации за 2 секунды
+const double AGate::Gap_Height_Long_Step = Max_Gap_Short_Height / ((double)AsConfig::FPS * 1.5); // Для анимации за 2 секунды
 
 //
-AGate::AGate(int x_pos, int y_pos)
-    :X_Pos(x_pos), Y_Pos(y_pos), Origin_Y_Pos(y_pos), Edge_Count(5), Gate_Close_Tick(0), Gap_Height(0.0),
-    Gate_State(EGate_State::Closed), Gate_Tranformation(EGate_Tranformation::Unknown)
+AGate::AGate(int x_pos, int y_pos, int level_x_pos, int level_y_pos)
+    :X_Pos(x_pos), Y_Pos(y_pos), Origin_Y_Pos(y_pos), Level_X_Pos(level_x_pos), Level_Y_Pos(level_y_pos), 
+    Edge_Count(5), Gate_Close_Tick(0), Gap_Height(0.0), Gate_State(EGate_State::Closed), 
+    Gate_Tranformation(EGate_Tranformation::Unknown)
 {
     int scale = AsConfig::GLOBAL_SCALE;
 
@@ -125,10 +126,28 @@ bool AGate::Is_Opened()
 
 
 //
+bool AGate::Is_Closed()
+{
+    if (Gate_State == EGate_State::Closed)
+        return true;
+    else
+        return false;
+}
+
+
+//
 void AGate::Get_Y_Size(int& gate_top_y, int& gate_low_y)
 {
     gate_top_y = Gate_Rect.top;
     gate_low_y = Gate_Rect.bottom;
+}
+
+
+//
+void AGate::Get_Pos(int& gate_x_pos, int& gate_y_pos)
+{
+    gate_x_pos = X_Pos;
+    gate_y_pos = (int)Origin_Y_Pos;
 }
 
 
@@ -161,6 +180,9 @@ bool AGate::Act_For_Open(bool short_open, bool& correct_pos)
         {
             Gap_Height += gap_height_step;
 
+            if (Gap_Height > max_gap_height)
+                Gap_Height = max_gap_height;
+
             correct_pos = true;
         }
         else
@@ -181,6 +203,9 @@ bool AGate::Act_For_Open(bool short_open, bool& correct_pos)
         if (Gap_Height > 0.0)
         {
             Gap_Height -= gap_height_step;
+
+            if (Gap_Height < 0)
+                Gap_Height = 0;
 
             correct_pos = true;
         }

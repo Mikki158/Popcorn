@@ -2,7 +2,7 @@
 
 #include <Windows.h>
 
-#include "Ball.h"
+#include "Config.h"
 
 enum class EBrick_Type : unsigned char
 {
@@ -64,11 +64,6 @@ private:
 
 	static AColor Fading_Blue_Brick_Colors[MAX_FADE_STEP];
 	static AColor Fading_Pink_Brick_Colors[MAX_FADE_STEP];
-
-
-	static void Get_Fading_Color(const AColor& origin_color, int step, AColor & result_color);
-
-	static unsigned char Get_Fading_Channel(unsigned char color, unsigned char bg_color, int step);
 };
 
 class AActive_Brick_Unbreakable : public AActive_Brick
@@ -133,7 +128,7 @@ enum class EDirection_Type: unsigned char
 class AActive_Brick_Teleport : public AActive_Brick
 {
 public:
-	AActive_Brick_Teleport(int level_x, int level_y, ABall* ball, AActive_Brick_Teleport* destination_teleport);
+	AActive_Brick_Teleport(int level_x, int level_y, ABall_Object* ball, AActive_Brick_Teleport* destination_teleport);
 	~AActive_Brick_Teleport();
 
 	EDirection_Type Relese_Direction;
@@ -151,11 +146,11 @@ private:
 	ETeleport_State Teleport_State;
 
 	AActive_Brick_Teleport* Destination_Teleport;
-	ABall* Ball;
+	ABall_Object* Ball;
 
 	static const int MAX_ANIMATION_STEP = 12;
 
-	void Set_Ball(ABall* ball);
+	void Set_Ball(ABall_Object* ball);
 };
 
 

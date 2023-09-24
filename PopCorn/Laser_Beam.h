@@ -35,13 +35,9 @@ public:
     void Disable();
     bool Is_Active();
 
-    //static void Add_Hit_Checker(AHit_Checker* hit_checker);
-
 private:
     static const int Width = 1;
     static const int Height = 3;
-    //static AHit_Checker* Hit_checkers[3];
-    //static int Hit_Checkers_Count;
 
 
     double X_Pos, Y_Pos;

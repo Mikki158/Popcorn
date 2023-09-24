@@ -24,7 +24,7 @@ public:
     AsLevel();
     ~AsLevel();
 
-    virtual bool Check_Hit(double next_x_pos, double next_y_pos, ABall* ball);
+    virtual bool Check_Hit(double next_x_pos, double next_y_pos, ABall_Object* ball);
     virtual bool Check_Hit(double next_x_pos, double next_y_pos);
 
     virtual void Advance(double max_speed);
@@ -40,6 +40,9 @@ public:
     void Init();
     void Set_Current_Level(char Level[AsConfig::LEVEL_HEIGHT][AsConfig::LEVEL_WIDTH]);
     void Stop();
+
+    static bool Has_Brick_At(int level_x, int level_y);
+    static bool Has_Brick_At(RECT monster_rect);
 
     bool Get_Next_Falling_Leter(AFalling_Letter **falling_letter, int &index);
 
@@ -66,6 +69,8 @@ private:
 
     AAdvertisement* Advertisement;
 
+    static AsLevel* Level;
+
     void Act_Objects(AGraphics_Object** object_array, int objects_max_count, int& count);
     void Clear_Objects(HDC hdc, RECT& paint_area, AGraphics_Object** object_array, int objects_max_count);
     void Delete_Objects(AGraphics_Object** object_array, int& objects_count, int objects_max_count);
@@ -74,14 +79,14 @@ private:
     void Draw_Parachute_in_Level(HDC hdc, RECT brick_rect);
     void Draw_Parachute_Part(HDC hdc, RECT brick_rect, int offset, int width);
     void Redraw_Brick(int brick_x, int brick_y);
-    void Add_Active_Brick_Teleport(int brick_x, int brick_y, ABall* ball, bool vertical_hit);
+    void Add_Active_Brick_Teleport(int brick_x, int brick_y, ABall_Object* ball, bool vertical_hit);
     void Add_Active_Brick(AActive_Brick* active_brick);
     void Cancel_All_Activity();
     
-    bool On_Hit(int brick_x, int brick_y, ABall* ball, bool vertical_hit);
-    bool Create_Active_Brick(int brick_x, int brick_y, EBrick_Type brick_type, ABall* ball, bool vertical_hit);
-    bool Check_Vertical_Hit(double next_x_pos, double next_y_pos, int level_x, int level_y, ABall* ball, double& reflection_pos);
-    bool Check_Horizontal_Hit(double next_x_pos, double next_y_pos, int level_x, int level_y, ABall* ball, double& reflection_pos);
+    bool On_Hit(int brick_x, int brick_y, ABall_Object* ball, bool vertical_hit);
+    bool Create_Active_Brick(int brick_x, int brick_y, EBrick_Type brick_type, ABall_Object* ball, bool vertical_hit);
+    bool Check_Vertical_Hit(double next_x_pos, double next_y_pos, int level_x, int level_y, ABall_Object* ball, double& reflection_pos);
+    bool Check_Horizontal_Hit(double next_x_pos, double next_y_pos, int level_x, int level_y, ABall_Object* ball, double& reflection_pos);
     bool Add_Falling_Letter(int brick_x, int brick_y, EBrick_Type brick_type);
 
     AActive_Brick_Teleport *Select_Destination_Teleport(int source_x, int source_y);

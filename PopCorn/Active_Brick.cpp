@@ -132,8 +132,8 @@ void AActive_Brick_Pink_Blue::Setup_Color()
 {
     for (int i = 0; i < MAX_FADE_STEP; i++)
     {
-        Get_Fading_Color(AsConfig::Blue_Color, i, Fading_Blue_Brick_Colors[i]);
-        Get_Fading_Color(AsConfig::Pink_Color, i, Fading_Pink_Brick_Colors[i]);
+        AsTools::Get_Fading_Color(AsConfig::Blue_Color, i, Fading_Blue_Brick_Colors[i], MAX_FADE_STEP);
+        AsTools::Get_Fading_Color(AsConfig::Pink_Color, i, Fading_Pink_Brick_Colors[i], MAX_FADE_STEP);
     }
 }
 
@@ -166,26 +166,6 @@ void AActive_Brick_Pink_Blue::Draw_In_Level(HDC hdc, RECT brick_rect, EBrick_Typ
         color->Select(hdc);
     
     AsTools::Round_Rect(hdc, brick_rect);
-}
-
-
-//
-unsigned char AActive_Brick_Pink_Blue::Get_Fading_Channel(unsigned char color, unsigned char bg_color, int step)
-{
-    return color - step * (color - bg_color) / (MAX_FADE_STEP - 1);
-}
-
-
-//
-void AActive_Brick_Pink_Blue::Get_Fading_Color(const AColor &origin_color, int step, AColor& result_color)
-{
-    unsigned char r, g, b;
-
-    r = Get_Fading_Channel(origin_color.R, AsConfig::BG_Color.R, step);
-    g = Get_Fading_Channel(origin_color.G, AsConfig::BG_Color.G, step);
-    b = Get_Fading_Channel(origin_color.B, AsConfig::BG_Color.B, step);
-
-    result_color = AColor(r, g, b);
 }
 
 
@@ -420,7 +400,7 @@ void AActive_Brick_Multihit::Draw_Stage(HDC hdc, RECT brick_rect, int x, int wid
 
 // AActive_Brick_Teleport
 //
-AActive_Brick_Teleport::AActive_Brick_Teleport(int level_x, int level_y, ABall *ball, AActive_Brick_Teleport *destination_teleport)
+AActive_Brick_Teleport::AActive_Brick_Teleport(int level_x, int level_y, ABall_Object*ball, AActive_Brick_Teleport *destination_teleport)
     :AActive_Brick(EBrick_Type::Teleport, level_x, level_y), Relese_Direction(), Animation_Step(0), Teleport_State(ETeleport_State::Starting), 
     Destination_Teleport(destination_teleport), Ball(nullptr)
     
@@ -472,23 +452,23 @@ void AActive_Brick_Teleport::Act()
                 switch (Relese_Direction)
                 {
                 case EDirection_Type::Left:
-                    ball_x = Get_Brick_X_Pos(false) - ABall::RADIUS;
+                    ball_x = Get_Brick_X_Pos(false) - AsConfig::Ball_RADIUS;
                     ball_y = Get_Brick_Y_Pos(true);
                     break;
 
                 case EDirection_Type::Up:
                     ball_x = Get_Brick_X_Pos(true);
-                    ball_y = Get_Brick_Y_Pos(false) - ABall::RADIUS;
+                    ball_y = Get_Brick_Y_Pos(false) - AsConfig::Ball_RADIUS;
                     break;
 
                 case EDirection_Type::Right:
-                    ball_x = Get_Brick_X_Pos(false) + (double)AsConfig::BRICK_WIDTH + ABall::RADIUS;
+                    ball_x = Get_Brick_X_Pos(false) + (double)AsConfig::BRICK_WIDTH + AsConfig::Ball_RADIUS;
                     ball_y = Get_Brick_Y_Pos(true);
                     break;
 
                 case EDirection_Type::Down:
                     ball_x = Get_Brick_X_Pos(true);
-                    ball_y = Get_Brick_Y_Pos(false) + (double)AsConfig::BRICK_HEIGHT + ABall::RADIUS;
+                    ball_y = Get_Brick_Y_Pos(false) + (double)AsConfig::BRICK_HEIGHT + AsConfig::Ball_RADIUS;
                     break;
 
                 default:
@@ -572,7 +552,7 @@ void AActive_Brick_Teleport::Draw_In_Level(HDC hdc, RECT brick_rect, int step)
 
 
 //
-void AActive_Brick_Teleport::Set_Ball(ABall* ball)
+void AActive_Brick_Teleport::Set_Ball(ABall_Object* ball)
 {
     double ball_x, ball_y;
 

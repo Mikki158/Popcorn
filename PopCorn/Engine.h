@@ -9,6 +9,7 @@
 #include "Platform.h"
 #include "Active_Brick.h"
 #include "Ball_Set.h"
+#include "Monster_Set.h"
 
 // таймер
 const int TIMER_ID = WM_USER + 1;
@@ -58,6 +59,7 @@ private:
     AsBorder Border;
     AsBall_Set Ball_Set;
     AsLaser_Beam_Set Laser_Beam_Set;
+    AsMonster_Set Monster_Set;
 
     AGame_Object* Modules[AsConfig::Max_Modules_Count]; // Главные графические объекты (модули) игры
 

@@ -6,29 +6,25 @@
 
 #include "Config.h"
 
-
-enum class EBall_State: unsigned char
-{
-    Disabled, // Отключён (не рисуется, не перемещается и не взаимодействует)
-
-    Normal,
-    Lost,
-    On_Platform,
-    On_Parachute,
-    Off_Parachute,
-    Teleporting
-};
-
-
 //
-class ABall: public AGame_Object
+class ABall: public ABall_Object, public AGame_Object
 {
 public:
     int Release_Timer_Tick;// Значение счетчика времени, после которого надо отпускать прикрепленный мячик 
 
-    static const double RADIUS;
-
     ABall();
+
+    virtual double Get_Direction();
+    virtual void Set_Direction(double new_direction);
+    virtual void Set_State(EBall_State new_state, double x_pos = 0, double y_pos = 0);
+    virtual EBall_State Get_State();
+    virtual void Reflect(bool from_horizontal);
+    virtual void Draw_Teleporting(HDC hdc, int step);
+    virtual void Set_On_Parachute(int brick_x, int brick_y);
+    virtual void Get_Center(double& x_pos, double& y_pos);
+    virtual bool Is_Moving_Up();
+    virtual bool Is_Moving_Left();
+
 
     virtual void Advance(double max_speed);
     virtual void Begin_Movement();
@@ -40,24 +36,14 @@ public:
     virtual void Draw(HDC hdc, RECT& paint_area);
     virtual bool Is_Finished();
     
-    void Draw_Teleporting(HDC hdc, int step);
     void Set_For_Test();
-    void Set_State(EBall_State new_state, double x_pos = 0, double y_pos = 0);
-    void Set_Direction(double new_direction);
-    void Reflect(bool from_horizontal);
-    void Set_On_Parachute(int brick_x, int brick_y);
-    void Get_Center(double& x_pos, double& y_pos);
     void Set_Speed(double new_speed);
     void Forced_Advance(double direction, double speed, double max_speed);
     void Release();
 
     bool Is_Test_Finished();
-    bool Is_Moving_Up();
-    bool Is_Moving_Left();
 
-    double Get_Direction();
 
-    EBall_State Get_State();
 
     static AHit_Checker_List Hit_Checker_List;
 

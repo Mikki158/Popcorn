@@ -31,6 +31,14 @@ void AsLaser_Beam_Set::Fire(double left_gun_x_pos, double right_gun_x_pos)
 
 
 //
+void AsLaser_Beam_Set::Disable_All()
+{
+    for (int i = 0; i < Max_Laser_Beam_Count; i++)
+        Laser_Beams[i].Disable();
+}
+
+
+//
 bool AsLaser_Beam_Set::Get_Next_Game_Object(int& index, AGame_Object** game_obj)
 {
     if (index < 0 || index >= Max_Laser_Beam_Count)

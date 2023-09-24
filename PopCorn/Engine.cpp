@@ -26,18 +26,24 @@ void AsEngine::Init_Engine(HWND hwnd)// Настройка игры при ст�
 
     AsConfig::HWnd = hwnd;
     AActive_Brick_Pink_Blue::Setup_Color();
-
+    AExplosive_Ball::Setup_Color();
     
     Level.Init();
     Platform.Init(&Ball_Set, &Laser_Beam_Set);
+    Monster_Set.Init(&Border);
 
     AFalling_Letter::Init();
      
     ABall::Hit_Checker_List.Add_Hit_Checker(&Border);
     ABall::Hit_Checker_List.Add_Hit_Checker(&Level);
     ABall::Hit_Checker_List.Add_Hit_Checker(&Platform);
+    ABall::Hit_Checker_List.Add_Hit_Checker(&Monster_Set);
 
     ALaser_Beam::Hit_Checker_List.Add_Hit_Checker(&Level);
+    ALaser_Beam::Hit_Checker_List.Add_Hit_Checker(&Monster_Set);
+
+    AsPlatform::Hit_Checker_List.Add_Hit_Checker(&Monster_Set);
+
 
     Level.Set_Current_Level(AsLevel::Level_01);
 
@@ -53,6 +59,7 @@ void AsEngine::Init_Engine(HWND hwnd)// Настройка игры при ст�
     Add_Next_Module(index, &Platform);
     Add_Next_Module(index, &Ball_Set);
     Add_Next_Module(index, &Laser_Beam_Set);
+    Add_Next_Module(index, &Monster_Set);
 }
 
 
@@ -124,6 +131,7 @@ int AsEngine::On_Timer()
         {
             Game_State = EGame_State::Play_Level;
             Ball_Set.Set_On_Platform(Platform.Get_Middle_Pos());
+            Monster_Set.Activate(10);
         }
         break;
 
@@ -142,7 +150,6 @@ void AsEngine::Restart_Level()
 {
     Game_State = EGame_State::Restart_Level;
     Border.Open_Gate(7, true);
-    Border.Open_Gate(5, false);
 }
 
 
@@ -152,9 +159,12 @@ void AsEngine::Play_Level()
     Advance_Movers();
 
     if (Ball_Set.All_Balls_Are_Lost())
-    {
+    {// Потеряли все мячики 
+
         Game_State = EGame_State::Lost_Ball;
         Level.Stop();
+        Monster_Set.Destroy_All();
+        Laser_Beam_Set.Disable_All();
         Platform.Set_State(EPlatform_State::Meltdown);
     }
     else

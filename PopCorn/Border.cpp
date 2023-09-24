@@ -11,11 +11,11 @@ AsBorder::AsBorder()
     Floor_Rect.bottom = AsConfig::MAX_Y_POS * AsConfig::GLOBAL_SCALE;
 
     // Гейты
-    Gates[0] = new AGate(1, 29);
-    Gates[1] = new AGate(AsConfig::MAX_X_POS, 29);
+    Gates[0] = new AGate(1, 29, 0, 3);
+    Gates[1] = new AGate(AsConfig::MAX_X_POS, 29, AsConfig::LEVEL_WIDTH - 1, 3);
         
-    Gates[2] = new AGate(1, 77);
-    Gates[3] = new AGate(AsConfig::MAX_X_POS, 77);
+    Gates[2] = new AGate(1, 77, 0, 9);
+    Gates[3] = new AGate(AsConfig::MAX_X_POS, 77, AsConfig::LEVEL_WIDTH - 1, 9);
         
     Gates[4] = new AGate(1, 129);
     Gates[5] = new AGate(AsConfig::MAX_X_POS, 129);
@@ -34,40 +34,40 @@ AsBorder::~AsBorder()
 
 
 //
-bool AsBorder::Check_Hit(double next_x_pos, double next_y_pos, ABall* ball)
+bool AsBorder::Check_Hit(double next_x_pos, double next_y_pos, ABall_Object* ball)
 {// Корректируем позицию при отражении от рамки
     bool got_hit = false;
 
     // 1. Левый край
-    if (next_x_pos - ball->RADIUS < AsConfig::BORDER_X_OFFSET)
+    if (next_x_pos - AsConfig::Ball_RADIUS < AsConfig::BORDER_X_OFFSET)
     {
         got_hit = true;
         ball->Reflect(false);
     }
 
     // 2. Верхний край
-    if (next_y_pos - ball->RADIUS < AsConfig::BORDER_Y_OFFSET)
+    if (next_y_pos - AsConfig::Ball_RADIUS < AsConfig::BORDER_Y_OFFSET)
     {
         got_hit = true;
         ball->Reflect(true);
     }
 
     // 3. Правый край
-    if (next_x_pos + ball->RADIUS > AsConfig::MAX_X_POS + 1)
+    if (next_x_pos + AsConfig::Ball_RADIUS > AsConfig::MAX_X_POS + 1)
     {
         got_hit = true;
         ball->Reflect(false);
     }
 
     // 4. Нижний край
-    if (AsConfig::Level_Has_Floor && next_y_pos + ball->RADIUS > AsConfig::Floor_Y_Pos)
+    if (AsConfig::Level_Has_Floor && next_y_pos + AsConfig::Ball_RADIUS > AsConfig::Floor_Y_Pos)
     {
         got_hit = true;
         ball->Reflect(true);
     }
 
     // Чтобы шарик смог улететь ниже пола, проверяем его max_y_pos ниже видимой границы
-    if (next_y_pos + ball->RADIUS > AsConfig::MAX_Y_POS + ball->RADIUS * 4.0)
+    if (next_y_pos + AsConfig::Ball_RADIUS > AsConfig::MAX_Y_POS + AsConfig::Ball_RADIUS * 4.0)
         ball->Set_State(EBall_State::Lost);
     
     return got_hit;
@@ -196,6 +196,53 @@ void AsBorder::Open_Gate(int gate_index, bool short_open)
 
 
 //
+int AsBorder::Long_Open_Gate()
+{
+    bool got_gate = false;
+    int gate_index;
+    AGate* gate;
+
+    gate_index = AsTools::Rand(AsConfig::Gate_Count - 1);
+
+    for (int i = 0; i < AsConfig::Gate_Count; i++)
+    {
+        gate = Gates[gate_index];
+
+        if (gate_index != AsConfig::Gate_Count - 1) // Гейт, из которого выкатывается платформа, не выпускает монстров 
+        {
+            if (gate->Is_Closed())
+            {
+                if (gate->Level_X_Pos == -1)
+                {
+                    got_gate = true;
+                    break;
+                }
+
+                if (!AsLevel::Has_Brick_At(gate->Level_X_Pos, gate->Level_Y_Pos)
+                    && !AsLevel::Has_Brick_At(gate->Level_X_Pos, gate->Level_Y_Pos + 1))
+                {
+                    got_gate = true;
+                    break;
+                }
+            }
+        }
+
+        gate_index++;
+
+        if (gate_index >= AsConfig::Gate_Count)
+            gate_index = 0;
+    }
+
+    if (!got_gate)
+        AsConfig::Throw();
+
+    Open_Gate(gate_index, false);
+
+    return gate_index;
+}
+
+
+//
 bool AsBorder::Is_Gate_Opened(int gate_index)
 {
     if (gate_index >= 0 && gate_index < AsConfig::Gate_Count)
@@ -205,6 +252,29 @@ bool AsBorder::Is_Gate_Opened(int gate_index)
         AsConfig::Throw();
         return false;
     }
+}
+
+
+//
+bool AsBorder::Is_Gate_Closed(int gate_index)
+{
+    if (gate_index >= 0 && gate_index < AsConfig::Gate_Count)
+        return Gates[gate_index]->Is_Closed();
+    else
+    {
+        AsConfig::Throw();
+        return false;
+    }
+}
+
+
+//
+void AsBorder::Get_Gate_Pos(int gate_index, int& gate_x_pos, int& gate_y_pos)
+{
+    if (gate_index >= 0 && gate_index < AsConfig::Gate_Count)
+        Gates[gate_index]->Get_Pos(gate_x_pos, gate_y_pos);
+    else
+        AsConfig::Throw();
 }
 
 
