@@ -17,20 +17,21 @@ const AColor AsConfig::BG_Color(0, 0, 0);
 const AColor AsConfig::Pink_Color(255, 85, 255);
 const AColor AsConfig::Blue_Color(85, 255, 255);
 const AColor AsConfig::White_Color(255, 255, 255);
-const AColor AsConfig::Letter_Color(AsConfig::White_Color, AsConfig::GLOBAL_SCALE);
-const AColor AsConfig::Laser_Color(AsConfig::White_Color, AsConfig::GLOBAL_SCALE);
-const AColor AsConfig::Teleport_Portal_Color(AsConfig::Blue_Color, AsConfig::BG_Color, AsConfig::GLOBAL_SCALE);
-const AColor AsConfig::Blue_Highlight_Unbreakable(AsConfig::Blue_Color, AsConfig::GLOBAL_SCALE);
-const AColor AsConfig::Pink_Highlight_Unbreakable(AsConfig::Pink_Color, 3 * AsConfig::GLOBAL_SCALE);
-const AColor AsConfig::Advertisement_Pink_Table(AsConfig::Pink_Color, 2 * AsConfig::GLOBAL_SCALE);
-const AColor AsConfig::Advertisement_Blue_Table(0, 159, 159, AsConfig::GLOBAL_SCALE);
-const AColor AsConfig::Gate_Color(AsConfig::White_Color, AsConfig::GLOBAL_SCALE);
+const AColor AsConfig::Letter_Color(White_Color, GLOBAL_SCALE);
+const AColor AsConfig::Laser_Color(White_Color, GLOBAL_SCALE);
+const AColor AsConfig::Teleport_Portal_Color(Blue_Color, BG_Color, GLOBAL_SCALE);
+const AColor AsConfig::Blue_Highlight_Unbreakable(Blue_Color, GLOBAL_SCALE);
+const AColor AsConfig::Pink_Highlight_Unbreakable(Pink_Color, 3 * GLOBAL_SCALE);
+const AColor AsConfig::Advertisement_Pink_Table(Pink_Color, 2 * GLOBAL_SCALE);
+const AColor AsConfig::Advertisement_Blue_Table(0, 159, 159, GLOBAL_SCALE);
+const AColor AsConfig::Gate_Color(White_Color, GLOBAL_SCALE);
 const AColor AsConfig::Monster_Dark_Pink_Color(228, 0, 228);
-const AColor AsConfig::Monster_Cornea_Color(AsConfig::BG_Color, AsConfig::White_Color, AsConfig::GLOBAL_SCALE * 2 / 3);
-const AColor AsConfig::Monster_Iris_Color(AsConfig::BG_Color, AsConfig::Blue_Color, AsConfig::GLOBAL_SCALE * 2 / 3);
-const AColor AsConfig::BG_Outline_Color(AsConfig::BG_Color, AsConfig::GLOBAL_SCALE * 2 / 3);
-const AColor AsConfig::Explosion_Pink_Color(AsConfig::White_Color, AsConfig::Pink_Color, 0);
-const AColor AsConfig::Explosion_Blue_Color(AsConfig::White_Color, AsConfig::Blue_Color, 0);
+const AColor AsConfig::Monster_Cornea_Color(BG_Color, White_Color, GLOBAL_SCALE * 2 / 3);
+const AColor AsConfig::Monster_Iris_Color(BG_Color, Blue_Color, GLOBAL_SCALE * 2 / 3);
+const AColor AsConfig::Monster_Comet_Tail(Monster_Dark_Pink_Color, GLOBAL_SCALE);
+const AColor AsConfig::BG_Outline_Color(BG_Color, GLOBAL_SCALE * 2 / 3);
+const AColor AsConfig::Explosion_Pink_Color(White_Color, Pink_Color, 0);
+const AColor AsConfig::Explosion_Blue_Color(White_Color, Blue_Color, 0);
 
 //
 void AsConfig::Throw()

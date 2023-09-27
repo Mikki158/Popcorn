@@ -53,8 +53,8 @@ public:
     
     static const AColor Pink_Color, Blue_Color, White_Color, Letter_Color, Teleport_Portal_Color, 
         Blue_Highlight_Unbreakable, Pink_Highlight_Unbreakable, Advertisement_Pink_Table, Advertisement_Blue_Table, 
-        Laser_Color, Gate_Color, Monster_Dark_Pink_Color, Monster_Cornea_Color, Monster_Iris_Color, BG_Outline_Color,
-        Explosion_Pink_Color, Explosion_Blue_Color;
+        Laser_Color, Gate_Color, Monster_Dark_Pink_Color, Monster_Cornea_Color, Monster_Iris_Color, Monster_Comet_Tail,
+        BG_Outline_Color, Explosion_Pink_Color, Explosion_Blue_Color;
 
 
     // Platform

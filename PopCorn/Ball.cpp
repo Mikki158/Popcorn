@@ -1,7 +1,7 @@
 ﻿#include "Ball.h"
 
 
-
+ 
 
 // ABall
 AHit_Checker_List ABall::Hit_Checker_List;

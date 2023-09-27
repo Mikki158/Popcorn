@@ -23,6 +23,7 @@ class AMonster: public AHit_Checker, public AGame_Object
 {
 public:
     AMonster();
+    virtual ~AMonster();
 
     static const int Width = 16;
     static const int Height = 16;
@@ -42,36 +43,77 @@ public:
     virtual void Draw(HDC hdc, RECT& paint_area);
     virtual bool Is_Finished();
 
-    void Act_Alive();
     void Act_Destroing();
     void Activate(int x_pos, int y_pos, bool moving_right);
     void Destroy();
-    bool Is_Active();
+
+protected:
+    EMonster_State Monster_State;
+    RECT Prev_Monster_Rect, Monster_Rect;
+    double X_Pos, Y_Pos;
+    int Next_Direction_Switch_Tick;
+    int Alive_Timer_Tick;
+    double Direction;
+
+    virtual void Draw_Alive(HDC hdc) = 0;
+    virtual void Act_Alive() = 0;
+    virtual void On_Activation() = 0;
 
 private:
-    double X_Pos, Y_Pos;
+    double Speed;
 
-    int Start_Blink_Timeout, Totla_Animation_Timeout;
-    int Next_Direction_Switch_Tick, Alive_Timer_Tick;
+    static const int Explosive_Balls_Count = 20;
+
+    AExplosive_Ball Explosive_Balls[Explosive_Balls_Count];
+
+    void Draw_Destroing(HDC hdc, RECT& paint_area);
+    void Redraw_Monster();
+    void Get_Monster_Rect(double x_pos, double y_pos, RECT& rect);
+    void Change_Direction();
+};
+
+
+class AMonster_Eye : public AMonster
+{
+public:
+    AMonster_Eye();
+
+private:
+    EEye_State Eye_State;
     double Cornea_Height;
-
-    double Speed, Direction;
+    int Start_Blink_Timeout;
+    int Totla_Animation_Timeout;
 
     static const int Blink_Stage_Count = 7;
-    static const int Explosive_Balls_Count = 20;
+    int Blink_Ticks[Blink_Stage_Count];
+
     static const double Max_Cornea_Height;
     static const double Blink_Timeouts[Blink_Stage_Count];
     static const EEye_State Blink_States[Blink_Stage_Count];
 
-    EEye_State Eye_State;
-    EMonster_State Monster_State;
-    RECT Prev_Monster_Rect, Monster_Rect;
+    virtual void Draw_Alive(HDC hdc);
+    virtual void Act_Alive();
+    virtual void On_Activation();
 
-    int Blink_Ticks[Blink_Stage_Count];
-    AExplosive_Ball Explosive_Balls[Explosive_Balls_Count];
+};
 
-    void Draw_Alive(HDC hdc);
-    void Draw_Destroing(HDC hdc, RECT& paint_area);
-    void Redraw_Monster();
-    void Get_Monster_Rect(double x_pos, double y_pos, RECT& rect);
+
+class AMonster_Comet : public AMonster
+{
+public:
+    AMonster_Comet(); 
+
+private:
+    static const int Min_Ticks_Per_Rotation = AsConfig::FPS * 2;
+    static const int Max_Ticks_Per_Rotation = AsConfig::FPS * 4;
+
+    int Ticks_Per_Rotation;
+    double Current_Angle;
+
+    virtual void Clear(HDC hdc, RECT& paint_area);
+
+    virtual void Draw_Alive(HDC hdc);
+    virtual void Act_Alive();
+    virtual void On_Activation();
+
 };

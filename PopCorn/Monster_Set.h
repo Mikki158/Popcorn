@@ -32,7 +32,7 @@ private:
     int Current_Gate_Index;
 
     EMonster_Set_State Monster_Set_State;
-    AMonster Monsters[Max_Monsters_Count];
+    AMonster *Monsters[Max_Monsters_Count];
     AsBorder* Border;
 
     bool Get_Next_Game_Object(int& index, AGame_Object** game_obj);

@@ -680,7 +680,6 @@ void AsPlatform::Draw_Roll_In_State(HDC hdc, RECT& paint_area)
 
     // 2. Разделительная линия
 
-
     alpha = -2.0 * M_PI / (double)MAX_ROLLING_STEP * (double)Rolling_Step;
 
     xform.eM11 = (float)cos(alpha);
@@ -689,7 +688,6 @@ void AsPlatform::Draw_Roll_In_State(HDC hdc, RECT& paint_area)
     xform.eM22 = (float)cos(alpha);
     xform.eDx = (float)(x + roller_size / 2);
     xform.eDy = (float)(y + roller_size / 2);
-
     GetWorldTransform(hdc, &old_xform);
     SetWorldTransform(hdc, &xform);
 

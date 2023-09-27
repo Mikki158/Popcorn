@@ -4,48 +4,103 @@
 #include "framework.h"
 #include "Main.h"
 
-#define MAX_LOADSTRING 100
+// AsFrame_DC
+// 
+AsFrame_DC::AsFrame_DC()
+	:Weight(0), Height(0), DC(0), Bitmap(0)
+{
+
+}
+
+
+//
+AsFrame_DC::~AsFrame_DC()
+{
+	if (Bitmap != 0)
+		DeleteObject(Bitmap);
+
+	if (DC != 0)
+		DeleteObject(DC);
+}
+
+
+//
+HDC AsFrame_DC::Get_DC(HWND hwnd, HDC hdc)
+{
+	RECT rect;
+	int dc_weight, dc_height;
+
+	GetClientRect(hwnd, &rect);
+
+	dc_weight = rect.right - rect.left;
+	dc_height = rect.bottom - rect.top;
+
+	if (dc_weight != Weight && dc_height != Height)
+	{
+		if (Bitmap != 0)
+			DeleteObject(Bitmap);
+
+		if (DC != 0)
+			DeleteObject(DC);
+
+		Weight = dc_weight;
+		Height = dc_height;
+
+		DC = CreateCompatibleDC(hdc);
+		Bitmap = CreateCompatibleBitmap(hdc, Weight, Height);
+		SelectObject(DC, Bitmap);
+
+		AsTools::Rect(DC, rect, AsConfig::BG_Color);
+	}
+
+	return DC;
+}
 
 // Глобальные переменные:
-AsEngine Engine;
-HINSTANCE hInst;                                // текущий экземпляр
-WCHAR szTitle[MAX_LOADSTRING];                  // Текст строки заголовка
-WCHAR szWindowClass[MAX_LOADSTRING];            // имя класса главного окна
-
-// Отправить объявления функций, включенных в этот модуль кода:
-ATOM                MyRegisterClass(HINSTANCE hInstance);
-BOOL                InitInstance(HINSTANCE, int);
-LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
-INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+AsMain_Window Main_Window;
 
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
-	UNREFERENCED_PARAMETER(hPrevInstance);
-	UNREFERENCED_PARAMETER(lpCmdLine);
-
-	// TODO: Разместите код здесь.
+	return Main_Window.Main(hInstance, nCmdShow);
+}
 
 
-	// Инициализация глобальных строк
-	LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
-	LoadStringW(hInstance, IDC_POPCORN, szWindowClass, MAX_LOADSTRING);
-	MyRegisterClass(hInstance);
+// AsMain_Window
+AsMain_Window* AsMain_Window::Self = 0;
+// 
+AsMain_Window::AsMain_Window()
+	:Instance(0), szTitle{}, szWindowClass{}
+{
+	Self = this;
+}
+
+
+//
+int APIENTRY AsMain_Window::Main(HINSTANCE instance, int command_show)
+{
+	MSG msg;
+	HACCEL accel_table;
+
+	Instance = instance; // Сохранить маркер экземпляра в глобальной переменной
+
+	LoadStringW(Instance, IDS_APP_TITLE, szTitle, Max_String_Size);
+	LoadStringW(Instance, IDC_POPCORN, szWindowClass, Max_String_Size);
+	Register_Class();
 
 	// Выполнить инициализацию приложения:
-	if (!InitInstance(hInstance, nCmdShow))
+	if (!Init_Instance(command_show))
 	{
 		return FALSE;
 	}
 
-	HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_POPCORN));
+	accel_table = LoadAccelerators(Instance, MAKEINTRESOURCE(IDC_POPCORN));
 
-	MSG msg;
 
 	// Цикл основного сообщения:
 	while (GetMessage(&msg, nullptr, 0, 0))
 	{
-		if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+		if (!TranslateAccelerator(msg.hwnd, accel_table, &msg))
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
@@ -56,49 +111,35 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 }
 
 
-
 //
-//  ФУНКЦИЯ: MyRegisterClass()
-//
-//  ЦЕЛЬ: Регистрирует класс окна.
-//
-ATOM MyRegisterClass(HINSTANCE hInstance)
+ATOM AsMain_Window::Register_Class()
 {
 	WNDCLASSEXW wcex;
 
 	wcex.cbSize = sizeof(WNDCLASSEX);
 
 	wcex.style = CS_HREDRAW | CS_VREDRAW;
-	wcex.lpfnWndProc = WndProc;
+	wcex.lpfnWndProc = Window_Proc;
 	wcex.cbClsExtra = 0;
 	wcex.cbWndExtra = 0;
-	wcex.hInstance = hInstance;
-	wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_POPCORN));
+	wcex.hInstance = Instance;
+	wcex.hIcon = LoadIcon(Instance, MAKEINTRESOURCE(IDI_POPCORN));
 	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
 	wcex.hbrBackground = AsConfig::BG_Color.Get_Brush();
 	wcex.lpszMenuName = MAKEINTRESOURCEW(IDC_POPCORN);
 	wcex.lpszClassName = szWindowClass;
-	wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+	wcex.hIconSm = LoadIcon(Instance, MAKEINTRESOURCE(IDI_SMALL));
 
 	return RegisterClassExW(&wcex);
 }
 
+
 //
-//   ФУНКЦИЯ: InitInstance(HINSTANCE, int)
-//
-//   ЦЕЛЬ: Сохраняет маркер экземпляра и создает главное окно
-//
-//   КОММЕНТАРИИ:
-//
-//        В этой функции маркер экземпляра сохраняется в глобальной переменной, а также
-//        создается и выводится главное окно программы.
-//
-BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
+BOOL AsMain_Window::Init_Instance(int command_show)
 {
-	hInst = hInstance; // Сохранить маркер экземпляра в глобальной переменной
-
-
 	RECT window_rect;
+	HWND hwnd;
+
 	window_rect.left = 0;
 	window_rect.top = 0;
 	window_rect.right = 320 * 3;
@@ -106,36 +147,40 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 	AdjustWindowRect(&window_rect, WS_OVERLAPPEDWINDOW, TRUE);
 
-	HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-		0, 0, window_rect.right - window_rect.left, window_rect.bottom - window_rect.top, nullptr, nullptr, hInstance, nullptr);
+	hwnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+		0, 0, window_rect.right - window_rect.left, window_rect.bottom - window_rect.top, nullptr, nullptr, Instance, nullptr);
 
-	Engine.Init_Engine(hWnd);
+	Engine.Init_Engine(hwnd);
 
-	if (hWnd == 0)
+	if (hwnd == 0)
 	{
 		return FALSE;
 	}
 
-	ShowWindow(hWnd, nCmdShow);
-	UpdateWindow(hWnd);
+	ShowWindow(hwnd, command_show);
+	UpdateWindow(hwnd);
 
 	return TRUE;
 }
 
+
 //
-//  ФУНКЦИЯ: WndProc(HWND, UINT, WPARAM, LPARAM)
-//
-//  ЦЕЛЬ: Обрабатывает сообщения в главном окне.
-//
-//  WM_COMMAND  - обработать меню приложения
-//  WM_PAINT    - Отрисовка главного окна
-//  WM_DESTROY  - отправить сообщение о выходе и вернуться
-//
-//
+void AsMain_Window::On_Paint(HWND hwnd)
+{
+	PAINTSTRUCT ps;
+	HDC hdc = BeginPaint(hwnd, &ps);
+	HDC frame_dc;
+
+	frame_dc = Frame_DC.Get_DC(hwnd, hdc);
+	Engine.Draw_Frame(frame_dc, ps.rcPaint);
+	BitBlt(hdc, 0, 0, Frame_DC.Weight, Frame_DC.Height, frame_dc, 0, 0, SRCCOPY);
+
+	EndPaint(hwnd, &ps);
+}
 
 
-
-LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+//
+LRESULT CALLBACK AsMain_Window::Window_Proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
 	{
@@ -146,11 +191,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		switch (wmId)
 		{
 		case IDM_ABOUT:
-			DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+			DialogBox(Self->Instance, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
 			break;
+
 		case IDM_EXIT:
 			DestroyWindow(hWnd);
 			break;
+
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
 		}
@@ -158,28 +205,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	break;
 
 	case WM_PAINT:
-	{
-		PAINTSTRUCT ps;
-		HDC hdc = BeginPaint(hWnd, &ps);
-		// TODO: Добавьте сюда любой код прорисовки, использующий HDC...
-
-		Engine.Draw_Frame(hdc, ps.rcPaint);
-
-		EndPaint(hWnd, &ps);
-	}
-	break;
+		Self->On_Paint(hWnd);
+		break;
 
 	case WM_KEYDOWN:
 		switch (wParam)
 		{
 		case VK_LEFT:
-			return Engine.On_Key(EKey_Type::Left, true);
+			return Self->Engine.On_Key(EKey_Type::Left, true);
 
 		case VK_RIGHT:
-			return Engine.On_Key(EKey_Type::Right, true);
+			return Self->Engine.On_Key(EKey_Type::Right, true);
 
 		case VK_SPACE:
-			return Engine.On_Key(EKey_Type::Space, true);
+			return Self->Engine.On_Key(EKey_Type::Space, true);
 		}
 		break;
 
@@ -187,16 +226,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		switch (wParam)
 		{
 		case VK_LEFT:
-			return Engine.On_Key(EKey_Type::Left, false);
+			return Self->Engine.On_Key(EKey_Type::Left, false);
 
 		case VK_RIGHT:
-			return Engine.On_Key(EKey_Type::Right, false);
+			return Self->Engine.On_Key(EKey_Type::Right, false);
 
 		case VK_SPACE:
-			return Engine.On_Key(EKey_Type::Space, false);
+			return Self->Engine.On_Key(EKey_Type::Space, false);
 
 		case VK_F2:
-			return Engine.On_Key(EKey_Type::F, false);
+			return Self->Engine.On_Key(EKey_Type::F, false);
 		}
 		break;
 
@@ -204,7 +243,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_TIMER:
 		if (wParam == TIMER_ID)
 		{
-			return Engine.On_Timer();
+			return Self->Engine.On_Timer();
 		}
 		break;
 
@@ -219,7 +258,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 // Обработчик сообщений для окна "О программе".
-INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK AsMain_Window::About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	UNREFERENCED_PARAMETER(lParam);
 	switch (message)
@@ -347,12 +386,12 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 + 3. Состояние гейтов (закрыт, открывается, закрывается)
 
 Монстры
-1. Список монстров (глаз, черепаха, сатурн, голова, бубен, аквариум, зажигалка)
-2. для каждого монстра - сделать раскадровку
-3. Перемещение, выбор направления + состояние(живой/пауза/мертвый)
-4. Взаимодействие с мячом и платформой
-5. Выход из гейта
-6. Для каждого - анимация
++ 1. Список монстров (глаз, черепаха, сатурн, голова, бубен, аквариум, зажигалка)
++ 2. для каждого монстра - сделать раскадровку
++ 3. Перемещение, выбор направления + состояние(живой/пауза/мертвый)
++ 4. Взаимодействие с мячом и платформой
++ 5. Выход из гейта
++ 6. Для каждого - анимация
 
 Информационная панель
 1. Логотип
