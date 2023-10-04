@@ -1,13 +1,11 @@
 ﻿#include "Engine.h"
 
 
-
-
-
 // AsEngine
 //
 AsEngine::AsEngine()
-    :Game_State(EGame_State::Lost_Ball), Rest_Distance(0.0), Modules{}, Life_Count(AsConfig::Initial_Life_Count)
+    :TIMER_ID(WM_USER + 1), Game_State(EGame_State::Lost_Ball), Rest_Distance(0.0), Modules{}, 
+    Life_Count(AsConfig::Initial_Life_Count)
 {
 
 }
@@ -31,6 +29,7 @@ void AsEngine::Init_Engine(HWND hwnd)// Настройка игры при ст�
     Level.Init();
     Platform.Init(&Ball_Set, &Laser_Beam_Set);
     Monster_Set.Init(&Border);
+    Info_Panel.Init();
 
     AFalling_Letter::Init();
      
@@ -60,6 +59,7 @@ void AsEngine::Init_Engine(HWND hwnd)// Настройка игры при ст�
     Add_Next_Module(index, &Ball_Set);
     Add_Next_Module(index, &Laser_Beam_Set);
     Add_Next_Module(index, &Monster_Set);
+    Add_Next_Module(index, &Info_Panel);
 }
 
 

@@ -1,18 +1,12 @@
 ﻿#pragma once
 
-#define _USE_MATH_DEFINES
-#include <Windows.h>
-
-#include "Config.h"
 #include "Border.h"
 #include "Level.h"
 #include "Platform.h"
 #include "Active_Brick.h"
 #include "Ball_Set.h"
 #include "Monster_Set.h"
-
-// таймер
-const int TIMER_ID = WM_USER + 1;
+#include "Info_Panel.h"
 
 enum class EKey_Type: unsigned char
 {
@@ -43,6 +37,8 @@ public:
     void Init_Engine(HWND hWnd);
     void Draw_Frame(HDC hdc, RECT& paint_area);
 
+    const int TIMER_ID;
+
     int On_Key(EKey_Type key_type, bool key_down);
     int On_Timer();  
     void Restart_Level();
@@ -60,6 +56,7 @@ private:
     AsBall_Set Ball_Set;
     AsLaser_Beam_Set Laser_Beam_Set;
     AsMonster_Set Monster_Set;
+    AsInfo_Panel Info_Panel;
 
     AGame_Object* Modules[AsConfig::Max_Modules_Count]; // Главные графические объекты (модули) игры
 

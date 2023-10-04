@@ -124,6 +124,13 @@ void AFalling_Letter::Test_Draw_All_Steps(HDC hdc)
 
 
 //
+void AFalling_Letter::Show_Full_Size()
+{
+    Rotation_step = 8;
+}
+
+
+//
 void AFalling_Letter::Init()
 {
     All_Letters_Popularity = 0;

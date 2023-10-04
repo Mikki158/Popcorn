@@ -3,6 +3,7 @@
 #include <Windows.h>
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include <string>
 
 //
 enum class EBall_State : unsigned char
@@ -72,6 +73,7 @@ public:
     AColor(const AColor& color, int pen_size);
     AColor(const AColor& pen_color, const AColor& brush_color, int pen_size);
     AColor(unsigned char r, unsigned char g, unsigned char b, int pen_size);
+    ~AColor();
 
     void Select(HDC hdc) const;
     void Select_Pen(HDC hdc) const;
@@ -108,4 +110,18 @@ public:
 protected:
     virtual bool Get_Next_Game_Object(int& index, AGame_Object** game_obj) = 0;
 
+};
+
+class AString
+{
+public:
+    AString();
+    AString(const wchar_t* str);
+
+    void Append(int value);
+    const wchar_t* Get_Content();
+    int Get_Lenght();
+
+private:
+    std::wstring Content;
 };

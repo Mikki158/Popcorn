@@ -3,6 +3,8 @@
 // AsConfig
 bool AsConfig::Level_Has_Floor = false;
 int AsConfig::Current_Timer_Tick = 0;
+int AsConfig::Score = 0;
+int AsConfig::Extra_Lives_Count = 5;
 HWND AsConfig::HWnd;
 
 const double AsConfig::D_GLOBAL_SCALE = (double)GLOBAL_SCALE;
@@ -251,5 +253,48 @@ bool AHit_Checker_List::Check_Hit(RECT &rect)
             return true;
 
     return false;
+}
+
+
+
+// AString
+//
+AString::AString()
+{
+
+}
+
+//
+AString::AString(const wchar_t* str)
+    :Content(str)
+{
+
+}
+
+
+//
+void AString::Append(int value)
+{
+    wchar_t buf[32];
+
+    //_itow_s(value, buf, 32, 10);
+    swprintf(buf, 32, L"%.6i", value);
+
+    Content += buf;
+
+}
+
+
+//
+const wchar_t* AString::Get_Content()
+{
+    return Content.c_str();
+}
+
+
+//
+int AString::Get_Lenght()
+{
+    return Content.length();
 }
 

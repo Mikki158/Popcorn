@@ -65,6 +65,17 @@ AColor::AColor(unsigned char r, unsigned char g, unsigned char b, int pen_size)
 
 
 //
+AColor::~AColor()
+{
+    if (Pen != 0)
+        DeleteObject(Pen);
+
+    if (Brush != 0)
+        DeleteObject(Brush);
+}
+
+
+//
 void AColor::Select(HDC hdc) const
 {
     SelectObject(hdc, Pen);
