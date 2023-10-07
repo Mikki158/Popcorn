@@ -269,7 +269,7 @@ void AsEngine::On_Falling_Letter(AFalling_Letter* falling_letter)
     case ELetter_Type::P:
         AsConfig::Level_Has_Floor = true;
         Border.Redraw_Floor();
-        // !!! Отобразить на индикаторе
+        Info_Panel.Floor_Indicator.Restart(); // !!! Отобразить на индикаторе
         Platform.Set_State(EPlatform_Substate_Regular::Normal);
         break;
 
@@ -291,6 +291,8 @@ void AsEngine::On_Falling_Letter(AFalling_Letter* falling_letter)
     }
 
     falling_letter->Finalize();
+
+    AsInfo_Panel::Update_Score(EScore_Event_Type::Catch_Letter);
 }
 
 

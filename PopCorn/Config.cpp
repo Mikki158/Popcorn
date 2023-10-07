@@ -113,8 +113,6 @@ HBRUSH AColor::Get_Brush() const
 // AsConfig
 bool AsConfig::Level_Has_Floor = false;
 int AsConfig::Current_Timer_Tick = 0;
-int AsConfig::Score = 0;
-int AsConfig::Extra_Lives_Count = 5;
 HWND AsConfig::HWnd;
 
 const double AsConfig::D_GLOBAL_SCALE = (double)GLOBAL_SCALE;

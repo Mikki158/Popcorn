@@ -1,7 +1,10 @@
-﻿  Ball_Set.cpp
+﻿  Border.cpp
   Engine.cpp
+  Explosive_Ball.cpp
+  Info_Panel.cpp
+  Level.cpp
   Mian.cpp
-  Platform.cpp
-  Platform_Glue.cpp
+  Monster.cpp
+  Monster_Set.cpp
   Generating Code...
   PopCorn.vcxproj -> D:\Work\PopCornProject\PopCorn\Popcorn\Debug\PopCorn.exe

@@ -53,8 +53,6 @@ public:
     static const int Max_Life_Count = 12;
     static const double D_GLOBAL_SCALE;
     static int Current_Timer_Tick;
-    static int Score;
-    static int Extra_Lives_Count;
     static HWND HWnd;
 
     // Border

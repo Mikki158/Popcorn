@@ -6,6 +6,7 @@
 
 #include "Active_Brick.h"
 #include "Falling_Letter.h"
+#include "Info_Panel.h"
 
 struct SPoint
 {

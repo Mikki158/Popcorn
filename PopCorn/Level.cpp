@@ -697,6 +697,8 @@ bool AsLevel::On_Hit(int brick_x, int brick_y, ABall_Object* ball, bool vertical
 
     Redraw_Brick(brick_x, brick_y);
 
+    AsInfo_Panel::Update_Score(EScore_Event_Type::Hit_Brick);
+
     return can_reflect;
 }
 

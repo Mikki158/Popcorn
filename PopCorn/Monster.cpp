@@ -332,6 +332,8 @@ void AMonster::Destroy()
         ball.Explode(x_pos + x_offset, y_pos + y_offset, size * 2, is_red, time_offset, 10);
     }
 
+    AsInfo_Panel::Update_Score(EScore_Event_Type::Hit_Monster);
+
     Monster_State = EMonster_State::Destroing;
 }
 
