@@ -64,7 +64,7 @@ private:
 
     static const int Explosive_Balls_Count = 20;
 
-    AExplosive_Ball Explosive_Balls[Explosive_Balls_Count];
+    std::vector<AExplosive_Ball> Explosive_Balls;
 
     void Draw_Destroing(HDC hdc, RECT& paint_area);
     void Redraw_Monster();
@@ -85,7 +85,7 @@ private:
     int Totla_Animation_Timeout;
 
     static const int Blink_Stage_Count = 7;
-    int Blink_Ticks[Blink_Stage_Count];
+    std::vector<int> Blink_Ticks;
 
     static const double Max_Cornea_Height;
     static const double Blink_Timeouts[Blink_Stage_Count];

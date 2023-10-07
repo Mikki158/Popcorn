@@ -1,2 +1,7 @@
-﻿  Info_Panel.cpp
+﻿  Ball_Set.cpp
+  Engine.cpp
+  Mian.cpp
+  Platform.cpp
+  Platform_Glue.cpp
+  Generating Code...
   PopCorn.vcxproj -> D:\Work\PopCornProject\PopCorn\Popcorn\Debug\PopCorn.exe

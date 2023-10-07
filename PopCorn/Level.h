@@ -60,10 +60,8 @@ private:
 
     SPoint* Teleport_Bricks_Pos;
 
-    int Active_Bricks_Count;
-    AActive_Brick* Active_Briks[AsConfig::Max_Active_Bricks_Count];
-    int Falling_Letters_Count;
-    AFalling_Letter* Falling_Letters[AsConfig::Max_Falling_Letters_Count];
+    std::vector<AGraphics_Object*> Active_Bricks;
+    std::vector<AGraphics_Object*> Falling_Letters;
 
     RECT Level_Rect;
 
@@ -71,16 +69,14 @@ private:
 
     static AsLevel* Level;
 
-    void Act_Objects(AGraphics_Object** object_array, int objects_max_count, int& count);
-    void Clear_Objects(HDC hdc, RECT& paint_area, AGraphics_Object** object_array, int objects_max_count);
+    void Act_Objects(std::vector<AGraphics_Object*>& falling_letters);
     void Delete_Objects(AGraphics_Object** object_array, int& objects_count, int objects_max_count);
-    void Draw_Objects(HDC hdc, RECT& paint_area, AGraphics_Object** object_array, int max_count);
+    void Delete_Objects(std::vector<AGraphics_Object*>& falling_letters);
     void Draw_Brick(HDC hdc, RECT Brick_Rect, int level_x, int level_y);
     void Draw_Parachute_in_Level(HDC hdc, RECT brick_rect);
     void Draw_Parachute_Part(HDC hdc, RECT brick_rect, int offset, int width);
     void Redraw_Brick(int brick_x, int brick_y);
     void Add_Active_Brick_Teleport(int brick_x, int brick_y, ABall_Object* ball, bool vertical_hit);
-    void Add_Active_Brick(AActive_Brick* active_brick);
     void Cancel_All_Activity();
     
     bool On_Hit(int brick_x, int brick_y, ABall_Object* ball, bool vertical_hit);

@@ -5,7 +5,7 @@
 AMonster::AMonster()
     :X_Pos(0), Y_Pos(0), Next_Direction_Switch_Tick(0),
     Alive_Timer_Tick(0), Speed(0.0), Direction(0.0), 
-    Monster_State(EMonster_State::Missing), Prev_Monster_Rect{}, Monster_Rect{}
+    Monster_State(EMonster_State::Missing), Prev_Monster_Rect{}, Monster_Rect{}, Explosive_Balls(Explosive_Balls_Count)
 {
 
 }
@@ -246,11 +246,11 @@ void AMonster::Act_Destroing()
 {
     bool destroing_is_finished = true;
 
-    for (int i = 0; i < Explosive_Balls_Count; i++)
+    for (auto& ball : Explosive_Balls)
     {
-        Explosive_Balls[i].Act();
+        ball.Act();
 
-        destroing_is_finished &= Explosive_Balls[i].Is_Finished();
+        destroing_is_finished &= ball.Is_Finished();
     }
 
     if (destroing_is_finished)
@@ -310,7 +310,7 @@ void AMonster::Destroy()
     if (half_height < half_size)
         half_size = half_height;
 
-    for (int i = 0; i < Explosive_Balls_Count; i++)
+    for (auto &ball : Explosive_Balls)
     {
         x_offset = AsTools::Rand(half_width) - half_width / 2;
         y_offset = AsTools::Rand(half_height) - half_height / 2;
@@ -329,7 +329,7 @@ void AMonster::Destroy()
         else
             is_red = false;
 
-        Explosive_Balls[i].Explode(x_pos + x_offset, y_pos + y_offset, size * 2, is_red, time_offset, 10);
+        ball.Explode(x_pos + x_offset, y_pos + y_offset, size * 2, is_red, time_offset, 10);
     }
 
     Monster_State = EMonster_State::Destroing;
@@ -339,8 +339,8 @@ void AMonster::Destroy()
 //
 void AMonster::Draw_Destroing(HDC hdc, RECT& paint_area)
 {
-    for (int i = 0; i < Explosive_Balls_Count; i++)
-        Explosive_Balls[i].Draw(hdc, paint_area);
+    for (auto& ball : Explosive_Balls)
+        ball.Draw(hdc, paint_area);
 }
 
 
@@ -397,7 +397,7 @@ const EEye_State AMonster_Eye::Blink_States[Blink_Stage_Count] =
 //
 AMonster_Eye::AMonster_Eye()
     : Start_Blink_Timeout(0), Totla_Animation_Timeout(0), Cornea_Height(Max_Cornea_Height), 
-    Eye_State(EEye_State::Closed), Blink_Ticks{}
+    Eye_State(EEye_State::Closed), Blink_Ticks(Blink_Stage_Count)
 {
 
 }

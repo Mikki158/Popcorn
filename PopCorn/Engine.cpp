@@ -51,15 +51,13 @@ void AsEngine::Init_Engine(HWND hwnd)// Настройка игры при ст�
     SetTimer(AsConfig::HWnd, TIMER_ID, 1000 / AsConfig::FPS, 0);
 
     // Modules
-    memset(Modules, 0, sizeof(Modules));
-
-    Add_Next_Module(index, &Level);
-    Add_Next_Module(index, &Border);
-    Add_Next_Module(index, &Platform);
-    Add_Next_Module(index, &Ball_Set);
-    Add_Next_Module(index, &Laser_Beam_Set);
-    Add_Next_Module(index, &Monster_Set);
-    Add_Next_Module(index, &Info_Panel);
+    Modules.push_back(&Level);
+    Modules.push_back(&Border);
+    Modules.push_back(&Platform);
+    Modules.push_back(&Ball_Set);
+    Modules.push_back(&Laser_Beam_Set);
+    Modules.push_back(&Monster_Set);
+    Modules.push_back(&Info_Panel);
 }
 
 
@@ -68,13 +66,11 @@ void AsEngine::Draw_Frame(HDC hdc, RECT& paint_area)// отрисовка экр
 {  
     SetGraphicsMode(hdc, GM_ADVANCED);
 
-    for (int i = 0; i < AsConfig::Max_Modules_Count; i++)
-        if (Modules[i] != nullptr)
-            Modules[i]->Clear(hdc, paint_area);
+    for (auto* curr_module : Modules)
+        curr_module->Clear(hdc, paint_area);
 
-    for (int i = 0; i < AsConfig::Max_Modules_Count; i++)
-        if(Modules[i] != nullptr)
-            Modules[i]->Draw(hdc, paint_area);
+    for (auto* curr_module : Modules)
+        curr_module->Draw(hdc, paint_area);
 }
 
 
@@ -183,35 +179,30 @@ void AsEngine::Advance_Movers()
     double curr_speed;
 
     // 1. Получаем максимальную скорость движущихся объектов
-    for (int i = 0; i < AsConfig::Max_Movers_Count; i++)
-        if (Modules[i] != nullptr)
-        {
-            Modules[i]->Begin_Movement();
+    for (auto* curr_module : Modules)
+    {
+        curr_module->Begin_Movement();
 
-            curr_speed = fabs(Modules[i]->Get_Speed());
+        curr_speed = fabs(curr_module->Get_Speed());
 
-            if (curr_speed > max_speed)
-                max_speed = curr_speed;
-        }
+        if (curr_speed > max_speed)
+            max_speed = curr_speed;
+    }
 
     // 2. Смещаем все объекты
     Rest_Distance += max_speed;
 
     while (Rest_Distance > 0.0)
     {
-        for (int i = 0; i < AsConfig::Max_Movers_Count; i++)
-        {
-            if (Modules[i] != nullptr)
-                Modules[i]->Advance(max_speed);
-        }
+        for (auto* curr_module : Modules)
+            curr_module->Advance(max_speed);
 
         Rest_Distance -= AsConfig::Moving_STEP_SIZE;
     }
 
     // 3. Заканчиваем все движения на этом кадре
-    for (int i = 0; i < AsConfig::Max_Movers_Count; i++)
-        if (Modules[i] != nullptr)
-            Modules[i]->Finish_Movement();
+    for (auto* curr_module : Modules)
+        curr_module->Finish_Movement();
 }
 
 
@@ -222,9 +213,8 @@ void AsEngine::Act()
     int index = 0;
 
     // 1. Выполняем вск действия
-    for (int i = 0; i < AsConfig::Max_Modules_Count; i++)
-        if (Modules[i] != nullptr)
-            Modules[i]->Act();
+    for (auto *curr_module : Modules)
+        curr_module->Act();
 
     // 2. Ловим падующие буквы
     while (Level.Get_Next_Falling_Leter(&falling_letter, index))
@@ -301,16 +291,6 @@ void AsEngine::On_Falling_Letter(AFalling_Letter* falling_letter)
     }
 
     falling_letter->Finalize();
-}
-
-
-//
-void AsEngine::Add_Next_Module(int& index, AGame_Object* game_obj)
-{
-    if (index >= 0 && index < AsConfig::Max_Modules_Count)
-        Modules[index++] = game_obj;
-    else
-        AsConfig::Throw();
 }
 
 

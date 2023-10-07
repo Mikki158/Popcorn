@@ -14,6 +14,7 @@ class AsMonster_Set: public AHit_Checker, public AGame_Objects_Set
 {
 public:
     AsMonster_Set();
+    ~AsMonster_Set();
 
     virtual bool Check_Hit(double next_x_pos, double next_y_pos, ABall_Object* ball);
     virtual bool Check_Hit(double next_x_pos, double next_y_pos);
@@ -32,7 +33,8 @@ private:
     int Current_Gate_Index;
 
     EMonster_Set_State Monster_Set_State;
-    AMonster *Monsters[Max_Monsters_Count];
+    //AMonster *Monsters[Max_Monsters_Count]; // !!! Заменить на вектор!
+    std::vector<AMonster*> Monsters;
     AsBorder* Border;
 
     bool Get_Next_Game_Object(int& index, AGame_Object** game_obj);

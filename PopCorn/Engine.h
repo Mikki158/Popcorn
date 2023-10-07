@@ -58,13 +58,12 @@ private:
     AsMonster_Set Monster_Set;
     AsInfo_Panel Info_Panel;
 
-    AGame_Object* Modules[AsConfig::Max_Modules_Count]; // Главные графические объекты (модули) игры
+    std::vector<AGame_Object*> Modules;// Главные графические объекты (модули) игры
 
     void Play_Level();
     void Advance_Movers();
     void Act();
     void On_Falling_Letter(AFalling_Letter* falling_letter);
-    void Add_Next_Module(int &index, AGame_Object * game_obj);
 };
 
 

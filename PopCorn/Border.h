@@ -33,7 +33,7 @@ public:
 
 private:
     RECT Floor_Rect;
-    AGate *Gates[AsConfig::Gate_Count];
+    std::vector<AGate*> Gates;
 
 
     void Draw_Floor(HDC hdc, RECT& paint_area);

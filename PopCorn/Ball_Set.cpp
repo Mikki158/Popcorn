@@ -1,28 +1,30 @@
 #include "Ball_Set.h"
 
 // AsBall_Set
+// 
+AsBall_Set::AsBall_Set()
+    :Balls(AsConfig::Max_Balls_Count)
+{
+
+}
+ 
+
 //
 void AsBall_Set::Act()
 {
-    ABall* curr_ball;
-
-    for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
-    {
-        curr_ball = &Balls[i];
-
-        if (curr_ball->Get_State() == EBall_State::On_Platform)
-            if (curr_ball->Release_Timer_Tick != 0 && AsConfig::Current_Timer_Tick >= curr_ball->Release_Timer_Tick)
-                curr_ball->Release();
-    }
+    for (auto &ball : Balls)
+        if (ball.Get_State() == EBall_State::On_Platform)
+            if (ball.Release_Timer_Tick != 0 && AsConfig::Current_Timer_Tick >= ball.Release_Timer_Tick)
+                ball.Release();
 }
 
 
 //
 void AsBall_Set::Release_From_Platform(double platform_x_pos)
 {
-    for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
-        if (Balls[i].Get_State() == EBall_State::On_Platform)
-            Balls[i].Set_State(EBall_State::Normal, platform_x_pos, AsConfig::START_BALL_Y_POS);
+    for (auto& ball : Balls)
+        if (ball.Get_State() == EBall_State::On_Platform)
+            ball.Set_State(EBall_State::Normal, platform_x_pos, AsConfig::START_BALL_Y_POS);
 }
 
 
@@ -37,7 +39,7 @@ void AsBall_Set::Set_On_Platform(double platform_x_pos)
         Balls[i].Release_Timer_Tick = 0;
     }
 
-    for (; i < AsConfig::Max_Balls_Count; i++)
+    for (; i < (int)Balls.size(); i++)
         Balls[i].Set_State(EBall_State::Disabled);
 
 }
@@ -53,26 +55,24 @@ void AsBall_Set::Set_For_Test()
 //
 void AsBall_Set::Tripple_Balls()
 {// "Растроить" самый дальний летящий от платформы мячик 
+
     double curr_ball_x, curr_ball_y;
     double further_ball_x, further_ball_y;
     ABall* further_ball = nullptr;
-    ABall* curr_ball;
     ABall* left_candidate = nullptr;
     ABall* right_candidate = nullptr;
 
     // 1. Выбираем самый дальний по Y мячик
-    for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
+    for (auto& ball : Balls)
     {
-        curr_ball = &Balls[i];
-
-        if (curr_ball->Get_State() != EBall_State::Normal)
+        if (ball.Get_State() != EBall_State::Normal)
             continue;
 
         if (further_ball == nullptr)
-            further_ball = curr_ball;
+            further_ball = &ball;
         else
         {
-            curr_ball->Get_Center(curr_ball_x, curr_ball_y);
+            ball.Get_Center(curr_ball_x, curr_ball_y);
             further_ball->Get_Center(further_ball_x, further_ball_y);
 
             if (curr_ball_y < further_ball_y)
@@ -84,20 +84,18 @@ void AsBall_Set::Tripple_Balls()
     if (further_ball == nullptr)
         return;
 
-    for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
+    for (auto& ball : Balls)
     {
-        curr_ball = &Balls[i];
-
-        switch (curr_ball->Get_State())
+        switch (ball.Get_State())
         {
         case EBall_State::Disabled:
         case EBall_State::Lost:
             if (left_candidate == nullptr)
-                left_candidate = curr_ball;
+                left_candidate = &ball;
             else
                 if (right_candidate == nullptr)
                 {
-                    right_candidate = curr_ball;
+                    right_candidate = &ball;
                     break; // Оба кандидата найдены
                 }
         }
@@ -107,13 +105,13 @@ void AsBall_Set::Tripple_Balls()
     if (left_candidate != nullptr)
     {
         *left_candidate = *further_ball;
-        left_candidate->Set_Direction(left_candidate->Get_Direction() + AsConfig::Min_Ball_Angle);
+        Turn_Tripled_Ball(left_candidate, false);
     }
 
     if (right_candidate != nullptr)
     {
         *right_candidate = *further_ball;
-        right_candidate->Set_Direction(right_candidate->Get_Direction() - M_PI / 8.0);
+        Turn_Tripled_Ball(right_candidate, true);
     }
 }
 
@@ -121,62 +119,37 @@ void AsBall_Set::Tripple_Balls()
 //
 void AsBall_Set::Inverse_Balls()
 {// Меняем направление на обратное у всех мячиков
-    ABall* curr_ball;
 
-    for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
-    {
-        curr_ball = &Balls[i];
-
-        if (curr_ball->Get_State() == EBall_State::Normal)
-            curr_ball->Set_Direction(curr_ball->Get_Direction() + M_PI);
-    }
+    for (auto& ball : Balls)
+        if (ball.Get_State() == EBall_State::Normal)
+            ball.Set_Direction(ball.Get_Direction() + M_PI);
 }
 
 
 //
 void AsBall_Set::Accelerate()
 {
-    ABall* curr_ball;
-
-    for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
-    {
-        curr_ball = &Balls[i];
-
-        if (curr_ball->Get_State() == EBall_State::Normal)
-        {
-            curr_ball->Set_Speed(curr_ball->Get_Speed() * AsConfig::Ball_Accelerate);
-        }
-    }
+    for (auto& ball : Balls)
+        if (ball.Get_State() == EBall_State::Normal)
+            ball.Set_Speed(ball.Get_Speed() * AsConfig::Ball_Accelerate);
 }
 
 
 //
 void AsBall_Set::Reset_Speed()
 {
-    ABall* curr_ball;
-
-    for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
-    {
-        curr_ball = &Balls[i];
-
-        if (curr_ball->Get_State() == EBall_State::Normal)
-            curr_ball->Set_Speed(AsConfig::Normal_Ball_Speed);
-    }
+    for (auto& ball : Balls)
+        if (ball.Get_State() == EBall_State::Normal)
+            ball.Set_Speed(AsConfig::Normal_Ball_Speed);
 }
 
 
 //
 void AsBall_Set::On_Platform_Advance(double direction, double platform_speed, double max_speed)
 {
-    ABall* curr_ball;
-
-    for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
-    {
-        curr_ball = &Balls[i];
-
-        if (curr_ball->Get_State() == EBall_State::On_Platform)
-            curr_ball->Forced_Advance(direction, platform_speed, max_speed);
-    }
+    for (auto& ball : Balls)
+        if (ball.Get_State() == EBall_State::On_Platform)
+            ball.Forced_Advance(direction, platform_speed, max_speed);
 }
 
 
@@ -193,17 +166,16 @@ bool AsBall_Set::All_Balls_Are_Lost()
     int lost_balls_count = 0;
     int active_balls_count = 0;
 
-    for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
+    for (auto& ball : Balls)
     {
-        if (Balls[i].Get_State() == EBall_State::Disabled)
+        if (ball.Get_State() == EBall_State::Disabled)
             continue;
 
         active_balls_count++;
 
-        if (Balls[i].Get_State() == EBall_State::Lost)
+        if (ball.Get_State() == EBall_State::Lost)
         {
             lost_balls_count++;
-
             continue;
         }
 
@@ -220,14 +192,11 @@ bool AsBall_Set::All_Balls_Are_Lost()
 //
 bool AsBall_Set::Release_Next_Ball()
 {
-    ABall* curr_ball;
-
-    for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
+    for (auto& ball : Balls)
     {
-        curr_ball = &Balls[i];
-        if (curr_ball->Get_State() == EBall_State::On_Platform)
+        if (ball.Get_State() == EBall_State::On_Platform)
         {
-            curr_ball->Release();
+            ball.Release();
             return true;
         }
     }
@@ -239,10 +208,32 @@ bool AsBall_Set::Release_Next_Ball()
 //
 bool AsBall_Set::Get_Next_Game_Object(int& index, AGame_Object** game_obj)
 {
-    if (index < 0 || index >= AsConfig::Max_Balls_Count)
+    if (index < 0 || index >= (int)Balls.size())
         return false;
 
     *game_obj = &Balls[index++];
 
     return true;
+}
+
+
+//
+void AsBall_Set::Turn_Tripled_Ball(ABall *ball, bool add_min_angle)
+{// Корректируем направление растроившегося мячика
+    double prev_direction, direction_delts;
+    double correction_angle;
+
+    prev_direction = ball->Get_Direction();
+
+    if (add_min_angle)
+        correction_angle = AsConfig::Min_Ball_Angle;
+    else
+        correction_angle = -AsConfig::Min_Ball_Angle;
+
+    ball->Set_Direction(prev_direction + correction_angle);
+
+    direction_delts = fabs(ball->Get_Direction() - prev_direction);
+
+    if (direction_delts < AsConfig::Min_Ball_Angle / 2.0)
+        ball->Set_Direction(prev_direction - correction_angle / 2.0);
 }

@@ -120,7 +120,7 @@ void AActive_Brick_Pink_Blue::Draw(HDC hdc, RECT& paint_area)
 //
 bool AActive_Brick_Pink_Blue::Is_Finished()
 {
-    if (fade_Step >= MAX_FADE_STEP - 1)
+    if (fade_Step >= MAX_FADE_STEP)
         return true;
     else
         return false;

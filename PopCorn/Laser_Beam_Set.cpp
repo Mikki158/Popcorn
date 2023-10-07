@@ -2,21 +2,27 @@
 
 
 //AsLaser_Beam_Set
+// 
+AsLaser_Beam_Set::AsLaser_Beam_Set()
+    :Laser_Beams(Max_Laser_Beam_Count)
+{
+
+}
 //
 void AsLaser_Beam_Set::Fire(double left_gun_x_pos, double right_gun_x_pos)
 {
     ALaser_Beam* left_beam = nullptr, * right_beam = nullptr;
 
-    for (int i = 0; i < Max_Laser_Beam_Count; i++)
+    for (auto &beam : Laser_Beams)
     {
-        if (Laser_Beams[i].Is_Active())
+        if (beam.Is_Active())
             continue;
 
         if (left_beam == nullptr)
-            left_beam = &Laser_Beams[i];
+            left_beam = &beam;
         else if (right_beam == nullptr)
         {
-            right_beam = &Laser_Beams[i];
+            right_beam = &beam;
             break;
         }
 
@@ -33,15 +39,15 @@ void AsLaser_Beam_Set::Fire(double left_gun_x_pos, double right_gun_x_pos)
 //
 void AsLaser_Beam_Set::Disable_All()
 {
-    for (int i = 0; i < Max_Laser_Beam_Count; i++)
-        Laser_Beams[i].Disable();
+    for (auto& beam : Laser_Beams)
+        beam.Disable();
 }
 
 
 //
 bool AsLaser_Beam_Set::Get_Next_Game_Object(int& index, AGame_Object** game_obj)
 {
-    if (index < 0 || index >= Max_Laser_Beam_Count)
+    if (index < 0 || index >= (int)Laser_Beams.size())
         return false;
 
     *game_obj = &Laser_Beams[index++];
