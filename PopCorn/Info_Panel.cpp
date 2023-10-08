@@ -1,98 +1,19 @@
 #include "Info_Panel.h"
 
-// AIndicator
-//
-AIndicator::AIndicator(int x_pos, int y_pos)
-    :X_Pos(x_pos), Y_Pos(y_pos), End_Tick(0)
-{
-    const int scale = AsConfig::GLOBAL_SCALE;
-
-    Indicator_Rect.left = X_Pos * scale;
-    Indicator_Rect.top = Y_Pos * scale;
-    Indicator_Rect.right = Indicator_Rect.left + Width * scale;
-    Indicator_Rect.bottom = Indicator_Rect.top + Height * scale;
-}
-
-
-//
-void AIndicator::Act()
-{
-    if (!Is_Finished())
-        AsTools::Invalidate_Rect(Indicator_Rect);
-}
-
-
-//
-void AIndicator::Clear(HDC hdc, RECT& paint_area)
-{
-    // Заглушка, т.к. очистка не нужна (индикатор при рисовании полностью себя перерисовывает)
-}
-
-
-//
-void AIndicator::Draw(HDC hdc, RECT& paint_area)
-{
-    int inner_x_offest = (Width - Inner_Width) / 2;
-    int inner_y_offest = (Height- Inner_Height) / 2;
-    const int scale = AsConfig::GLOBAL_SCALE;
-    int curr_height;
-    double ratio;
-    RECT rect;
-
-    AsTools::Rect(hdc, X_Pos, Y_Pos, Width, Height, AsConfig::Teleport_Portal_Color);
-
-    if (End_Tick == 0 || Is_Finished())
-        return;
-
-    ratio = (double)(End_Tick - AsConfig::Current_Timer_Tick) / (double)Indicator_Timeout;
-
-    curr_height = (int)((double)(Inner_Height * scale) * ratio);
-
-    if (curr_height == 0)
-        return;
-
-    rect.left = (X_Pos + inner_x_offest) * scale;
-    rect.top = (Y_Pos + inner_y_offest) * scale + (Inner_Height * scale - curr_height);
-    rect.right = rect.left + Inner_Width * scale;
-    rect.bottom = (Y_Pos + inner_y_offest + Inner_Height) * scale;
-
-    AsTools::Rect(hdc, rect, AsConfig::Pink_Color);
-}
-
-
-//
-bool AIndicator::Is_Finished()
-{
-    if (AsConfig::Current_Timer_Tick > End_Tick)
-        return true;
-    else
-        return false;
-}
-
-
-//
-void AIndicator::Restart()
-{
-    End_Tick = AsConfig::Current_Timer_Tick + Indicator_Timeout;
-}
-
-
-
 // AsInfo_Panel
 int AsInfo_Panel::Score = 0;
-int AsInfo_Panel::Extra_Lives_Count = 5;
 RECT AsInfo_Panel::Logo_Rect;
 RECT AsInfo_Panel::Data_Rect;
 
 //
 AsInfo_Panel::AsInfo_Panel()
-    :Logo_Pop_Font(0), Logo_Corn_Font(0), Name_Font(0), Score_Font(0), Shadow_Color(nullptr), Highlight_Color(nullptr),
-    Dark_Blue(nullptr), Dark_Pink(nullptr),
+    :Extra_Lives_Count(AsConfig::Initial_Life_Count), Logo_Pop_Font(0), Logo_Corn_Font(0), Name_Font(0), 
+    Score_Font(0), Shadow_Color(nullptr), Highlight_Color(nullptr), Dark_Blue(nullptr), Dark_Pink(nullptr),
     Letter_P(EBrick_Type::Blue, ELetter_Type::P, 214 * AsConfig::GLOBAL_SCALE + 1, 151 * AsConfig::GLOBAL_SCALE + 1),
     Letter_G(EBrick_Type::Blue, ELetter_Type::G, 256 * AsConfig::GLOBAL_SCALE, 153 * AsConfig::GLOBAL_SCALE),
     Letter_M(EBrick_Type::Blue, ELetter_Type::M, 297 * AsConfig::GLOBAL_SCALE - 1, 154 * AsConfig::GLOBAL_SCALE - 1),
-    Floor_Indicator(Score_X + 8, Score_Y + Indicator_Y_Offset), 
-    Monster_Indicator(Score_X + 90, Score_Y + Indicator_Y_Offset)
+    Floor_Indicator(EMessage_Type::Floor_Is_Over, Score_X + 8, Score_Y + Indicator_Y_Offset), 
+    Monster_Indicator(EMessage_Type::Unfreeze_Monsters, Score_X + 90, Score_Y + Indicator_Y_Offset)
 {
     const int scale = AsConfig::GLOBAL_SCALE;
 
@@ -310,6 +231,31 @@ void AsInfo_Panel::Init()
     Highlight_Color = new AColor(AsConfig::White_Color, AsConfig::GLOBAL_SCALE);
     Dark_Blue = new AColor(0, 190, 190);
     Dark_Pink = new AColor(228, 0, 228);
+}
+
+
+//
+void AsInfo_Panel::Increase_Life_Count()
+{
+    if (Extra_Lives_Count < AsConfig::Max_Life_Count)
+    {
+        Extra_Lives_Count++;
+        AsTools::Invalidate_Rect(Data_Rect);
+    }
+
+}
+
+
+//
+bool AsInfo_Panel::Decrease_Life_Count()
+{
+    if (Extra_Lives_Count == 0)
+        return false;
+
+    Extra_Lives_Count--;
+    AsTools::Invalidate_Rect(Data_Rect);
+
+    return true;
 }
 
 

@@ -1,38 +1,13 @@
 #pragma once
 
-#include "Config.h"
 #include "Falling_Letter.h"
+#include "Indicator.h"
 
 enum class EScore_Event_Type : unsigned char
 {
     Hit_Brick,
     Hit_Monster,
     Catch_Letter
-};
-
-class AIndicator : public AGraphics_Object
-{
-public:
-    AIndicator(int x_pos, int y_pos);
-
-    virtual void Act();
-    virtual void Clear(HDC hdc, RECT& paint_area);
-    virtual void Draw(HDC hdc, RECT& paint_area);
-    virtual bool Is_Finished();
-
-    void Restart();
-
-private:
-    int X_Pos, Y_Pos;
-    int End_Tick;
-    RECT Indicator_Rect;
-
-    static const int Width = 12;
-    static const int Height = 30;
-    static const int Inner_Width = Width - 2;
-    static const int Inner_Height = Height - 2;
-    static const int Indicator_Timeout = AsConfig::FPS * 50; // 50 секунд
-
 };
 
 class AsInfo_Panel : public AGame_Object
@@ -52,12 +27,15 @@ public:
     virtual bool Is_Finished();
 
     void Init();
+    void Increase_Life_Count();
+    bool Decrease_Life_Count();
 
     static void Update_Score(EScore_Event_Type event_type);
 
     AIndicator Floor_Indicator, Monster_Indicator;
 
 private:
+    int Extra_Lives_Count;
     HFONT Logo_Pop_Font, Logo_Corn_Font, Name_Font, Score_Font;
     AColor* Shadow_Color, * Highlight_Color, * Dark_Blue, * Dark_Pink;
 
@@ -69,7 +47,6 @@ private:
     static RECT Data_Rect; // Область данных (имени игрока, счета и индикаторов)
 
     static int Score;
-    static int Extra_Lives_Count;
 
     static const int Logo_X_Pos = 212;
     static const int Logo_Y_Pos = 0;

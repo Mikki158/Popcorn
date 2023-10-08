@@ -41,11 +41,11 @@ public:
 
     int On_Key(EKey_Type key_type, bool key_down);
     int On_Timer();  
-    void Restart_Level();
+    bool Restart_Level();
+    void Game_Over();
 
 
 private:
-    int Life_Count;
     double Rest_Distance;
 
     EGame_State Game_State;
@@ -63,6 +63,7 @@ private:
     void Play_Level();
     void Advance_Movers();
     void Act();
+    void Handle_Message();
     void On_Falling_Letter(AFalling_Letter* falling_letter);
 };
 

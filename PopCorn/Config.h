@@ -114,7 +114,6 @@ public:
 };
 
 
-
 //
 class AHit_Checker
 {

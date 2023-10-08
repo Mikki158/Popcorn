@@ -26,9 +26,11 @@ public:
     void Emit_At_Gate(int gate_index);
     void Activate(int max_alive_monsters_count);
     void Destroy_All();
+    void Set_Freeze_State(bool freeze);
 
 private:
     static const int Max_Monsters_Count = 10;
+    bool Is_Frozen;
     int Max_Alive_Monsters_Count;
     int Current_Gate_Index;
 

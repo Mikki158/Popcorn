@@ -46,6 +46,7 @@ public:
     void Act_Destroing();
     void Activate(int x_pos, int y_pos, bool moving_right);
     void Destroy();
+    void Set_Freeze_State(bool freeze);
 
 protected:
     EMonster_State Monster_State;
@@ -54,6 +55,7 @@ protected:
     int Next_Direction_Switch_Tick;
     int Alive_Timer_Tick;
     double Direction;
+    double Prev_Speed;
 
     virtual void Draw_Alive(HDC hdc) = 0;
     virtual void Act_Alive() = 0;
@@ -61,7 +63,7 @@ protected:
 
 private:
     double Speed;
-
+    bool Need_To_Freeze;
     static const int Explosive_Balls_Count = 20;
 
     std::vector<AExplosive_Ball> Explosive_Balls;

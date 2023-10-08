@@ -4,8 +4,7 @@
 // AsEngine
 //
 AsEngine::AsEngine()
-    :TIMER_ID(WM_USER + 1), Game_State(EGame_State::Lost_Ball), Rest_Distance(0.0), Modules{}, 
-    Life_Count(AsConfig::Initial_Life_Count)
+    :TIMER_ID(WM_USER + 1), Game_State(EGame_State::Lost_Ball), Rest_Distance(0.0), Modules{}
 {
 
 }
@@ -118,8 +117,8 @@ int AsEngine::On_Timer()
 
     case EGame_State::Lost_Ball:
         if (Platform.Has_State(EPlatform_Substate_Regular::Missing))
-            Restart_Level();
-        
+            if (!Restart_Level())
+                Game_Over();
         break;
 
     case EGame_State::Restart_Level:
@@ -142,10 +141,21 @@ int AsEngine::On_Timer()
 
 
 //
-void AsEngine::Restart_Level()
+bool AsEngine::Restart_Level()
 {
+    if (!Info_Panel.Decrease_Life_Count())
+        return false;
     Game_State = EGame_State::Restart_Level;
     Border.Open_Gate(7, true);
+
+    return true;
+}
+
+
+//
+void AsEngine::Game_Over()
+{
+    AsConfig::Throw();// !!! Надо сделать!
 }
 
 
@@ -162,6 +172,8 @@ void AsEngine::Play_Level()
         Monster_Set.Destroy_All();
         Laser_Beam_Set.Disable_All();
         Platform.Set_State(EPlatform_State::Meltdown);
+        Info_Panel.Floor_Indicator.Reset();
+        Info_Panel.Monster_Indicator.Reset();
     }
     else
         Ball_Set.Accelerate();
@@ -227,6 +239,36 @@ void AsEngine::Act()
     if(Game_State == EGame_State::Restart_Level)
         if(Border.Is_Gate_Opened(AsConfig::Gate_Count - 1))
             Platform.Set_State(EPlatform_State::Rolling);
+
+    Handle_Message();
+}
+
+
+//
+void AsEngine::Handle_Message()
+{
+    AMessage* message;
+
+    if (AsMessage_Menager::Get_Message(&message))
+    {
+        switch (message->Message_Type)
+        {
+        case EMessage_Type::Floor_Is_Over:
+            AsConfig::Level_Has_Floor = false;
+            Border.Redraw_Floor();
+            delete message;
+            break;
+
+        case EMessage_Type::Unfreeze_Monsters:
+            Monster_Set.Set_Freeze_State(false);
+            break;
+
+        default:
+            AsConfig::Throw();
+            break;
+        }
+    }
+
 }
 
 
@@ -236,8 +278,10 @@ void AsEngine::On_Falling_Letter(AFalling_Letter* falling_letter)
     switch (falling_letter->letter_type)
     {
     case ELetter_Type::O:
+        Info_Panel.Floor_Indicator.Cancel();
+        Info_Panel.Monster_Indicator.Cancel();
         Platform.Set_State(EPlatform_Substate_Regular::Normal);
-        break;// !!! Пока отменился только клей
+        break;
 
     case ELetter_Type::I:
         Ball_Set.Inverse_Balls();
@@ -250,11 +294,12 @@ void AsEngine::On_Falling_Letter(AFalling_Letter* falling_letter)
         break;
 
     case ELetter_Type::M:
+        Monster_Set.Set_Freeze_State(true);
+        Info_Panel.Monster_Indicator.Restart();
         break;
 
     case ELetter_Type::G:
-        if (Life_Count < AsConfig::Max_Life_Count)
-            Life_Count++; // !!! Отобразить на индикаторе!
+        Info_Panel.Increase_Life_Count();
         Platform.Set_State(EPlatform_Substate_Regular::Normal);
         break;
 
@@ -269,7 +314,7 @@ void AsEngine::On_Falling_Letter(AFalling_Letter* falling_letter)
     case ELetter_Type::P:
         AsConfig::Level_Has_Floor = true;
         Border.Redraw_Floor();
-        Info_Panel.Floor_Indicator.Restart(); // !!! Отобразить на индикаторе
+        Info_Panel.Floor_Indicator.Restart();
         Platform.Set_State(EPlatform_Substate_Regular::Normal);
         break;
 

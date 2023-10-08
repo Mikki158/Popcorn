@@ -111,3 +111,26 @@ bool AGame_Objects_Set::Is_Finished()
 {
     return false; // «аглушка, т.к. этот метод не используетс€
 }
+
+
+
+// AsMessage_Menager
+std::queue<AMessage*> AsMessage_Menager::Messages_Queue;
+//
+void AsMessage_Menager::Add_Message(AMessage* message)
+{
+    Messages_Queue.push(message);
+}
+
+
+//
+bool AsMessage_Menager::Get_Message(AMessage** message)
+{
+    if (Messages_Queue.size() == 0)
+        return false;
+
+    *message = Messages_Queue.front();
+    Messages_Queue.pop();
+
+    return true;
+}

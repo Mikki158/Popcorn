@@ -401,3 +401,17 @@ int AString::Get_Lenght()
     return Content.length();
 }
 
+
+
+// AMessage
+//
+AMessage::AMessage(EMessage_Type message_type)
+    :Message_Type(message_type)
+{
+
+}
+
+
+
+
+

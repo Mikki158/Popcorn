@@ -32,6 +32,7 @@ public:
     void Get_Gate_Pos(int gate_index, int &gate_x_pos, int &gate_y_pos);
 
 private:
+    bool Clear_Floor;
     RECT Floor_Rect;
     std::vector<AGate*> Gates;
 
