@@ -44,7 +44,7 @@ public:
     virtual bool Is_Finished();
 
     void Act_Destroing();
-    void Activate(int x_pos, int y_pos, bool moving_right);
+    void Activate(double x_pos, double y_pos, bool moving_right);
     void Destroy();
     void Set_Freeze_State(bool freeze);
 

@@ -92,7 +92,7 @@ void AMonster::Advance(double max_speed)
 
     origin_direction = Direction;
 
-    for (int i = 0; i < 16; i++)
+    for (int i = 0; i < 64; i++)
     {
         next_x_pos = X_Pos + next_step * cos(Direction);
         next_y_pos = Y_Pos - next_step * sin(Direction);
@@ -100,7 +100,7 @@ void AMonster::Advance(double max_speed)
         Get_Monster_Rect(next_x_pos, next_y_pos, monster_rect);
 
         if (AsLevel::Has_Brick_At(monster_rect))
-            Direction += M_PI / 8.0;
+            Direction += M_PI / 32.0;
         else
         {
             got_new_direction = true;
@@ -267,7 +267,7 @@ void AMonster::Act_Destroing()
 
 
 //
-void AMonster::Activate(int x_pos, int y_pos, bool moving_right)
+void AMonster::Activate(double x_pos, double y_pos, bool moving_right)
 {
     int rand_speed;
     int emitting_time_offset;
@@ -394,7 +394,7 @@ void AMonster::Change_Direction()
 
     if (AsConfig::Current_Timer_Tick > Next_Direction_Switch_Tick)
     {
-        Next_Direction_Switch_Tick += AsTools::Rand(AsConfig::FPS);
+        Next_Direction_Switch_Tick += AsConfig::FPS;
 
         // ¬ыбираем случайное направление +/- 45 градусов
         direction_delta = (double)(AsTools::Rand(90) - 45) * M_PI / 180.0;

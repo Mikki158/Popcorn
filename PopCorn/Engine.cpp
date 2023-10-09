@@ -43,7 +43,7 @@ void AsEngine::Init_Engine(HWND hwnd)// Настройка игры при ст�
     AsPlatform::Hit_Checker_List.Add_Hit_Checker(&Monster_Set);
 
 
-    Level.Set_Current_Level(AsLevel::Level_01);
+    Level.Set_Current_Level(10);
 
     Platform.Redraw_Platform();
 

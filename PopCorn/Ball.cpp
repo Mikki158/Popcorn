@@ -28,6 +28,7 @@ double ABall::Get_Direction()
 void ABall::Set_Direction(double new_direction)
 {
     const double pi_2 = 2.0 * M_PI;
+    const double min_angle = AsConfig::Min_Ball_Angle;
 
     // 1. Переводим угол в диапазон [0 .. pi_2]
     while (new_direction > 2.0 * pi_2)
@@ -43,22 +44,43 @@ void ABall::Set_Direction(double new_direction)
     // 2. Не позволим приближаться к горизонтальной оси ближе, чем на угол AsConfig::Min_Ball_Angle
     // 2.1 Слева
     // 2.1.1 Сверху
-    if (new_direction < AsConfig::Min_Ball_Angle)
-        new_direction = AsConfig::Min_Ball_Angle;
+    if (new_direction < min_angle)
+        new_direction = min_angle;
 
     // 2.1.2 Снизу
-    if (new_direction > pi_2 - AsConfig::Min_Ball_Angle)
-        new_direction = pi_2 - AsConfig::Min_Ball_Angle;
+    if (new_direction > pi_2 - min_angle)
+        new_direction = pi_2 - min_angle;
 
 
     // 2.2 Справа
     // 2.2.1 Сверху
-    if (new_direction > M_PI + AsConfig::Min_Ball_Angle && new_direction < M_PI)
-        new_direction = M_PI - AsConfig::Min_Ball_Angle;
+    if (new_direction > M_PI + min_angle && new_direction < M_PI)
+        new_direction = M_PI - min_angle;
 
     // 2.2.2 Снизу
-    if (new_direction > M_PI && new_direction < M_PI + AsConfig::Min_Ball_Angle)
-        new_direction = M_PI + AsConfig::Min_Ball_Angle;
+    if (new_direction > M_PI && new_direction < M_PI + min_angle)
+        new_direction = M_PI + min_angle;
+
+    // 3. Не позволим приближаться к вертикальной оси ближе, чем на угол AsConfig::Min_Ball_Angle
+    // 3.1 Сверху
+    // 3.1.1 Справа
+    if (new_direction < M_PI_2 - min_angle && new_direction < M_PI_2)
+        new_direction = M_PI_2 - min_angle;
+
+    // 3.1.2 Слева
+    if (new_direction > M_PI_2 && new_direction < M_PI_2 + min_angle)
+        new_direction = M_PI_2 + min_angle;
+
+
+    // 3.2 Снизу
+    // 3.2.1 Слева
+    if (new_direction > M_PI + M_PI_2 - min_angle && new_direction <= M_PI + M_PI_2)
+        new_direction = M_PI + M_PI_2 - min_angle;
+
+    // 3.2.2 Справа
+    if (new_direction >= M_PI + M_PI_2 && new_direction < M_PI + M_PI_2 + min_angle)
+        new_direction = M_PI + M_PI_2 + min_angle;
+
 
     Ball_Direction = new_direction;
 }
@@ -306,7 +328,7 @@ void ABall::Begin_Movement()
 //
 void ABall::Finish_Movement()
 {
-    if (Ball_State == EBall_State::Disabled || Ball_State == EBall_State::Lost || Ball_State == EBall_State::On_Platform)
+    if (Ball_State == EBall_State::Disabled || Ball_State == EBall_State::Lost)
         return;
 
 
@@ -348,6 +370,9 @@ void ABall::Clear(HDC hdc, RECT& paint_area)
 
     if ((Ball_State == EBall_State::Teleporting || Ball_State == EBall_State::Lost) && Ball_State == Prev_Ball_State)
         return;
+
+    if(Ball_State == EBall_State::On_Parachute)
+        Clear_Parachute(hdc);
 
     if (IntersectRect(&intersection_rect, &paint_area, &Prev_Ball_Rect))
         AsTools::Ellipse(hdc, Prev_Ball_Rect, AsConfig::BG_Color);
@@ -509,9 +534,6 @@ void ABall::Draw_Parachute(HDC hdc, RECT& paint_area)
 
     if (!IntersectRect(&intersection_rect, &paint_area, &Parachute_Rect))
         return;
-
-    // 0. Очищаем фон
-    Clear_Parachute(hdc);
 
     // 1. Купол
     AsConfig::Blue_Color.Select(hdc);

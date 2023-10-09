@@ -111,7 +111,7 @@ HBRUSH AColor::Get_Brush() const
 
 
 // AsConfig
-bool AsConfig::Level_Has_Floor = false;
+bool AsConfig::Level_Has_Floor = true;
 int AsConfig::Current_Timer_Tick = 0;
 HWND AsConfig::HWnd;
 
@@ -198,7 +198,7 @@ void AsTools::Invalidate_Rect(RECT& rect)
 //
 int AsTools::Rand(int range)
 {// Вычисляет псевдослучайное число в диапазоне [0, ... range - 1]
-    return rand() * range / RAND_MAX;
+    return rand() * range / (RAND_MAX + 1);
 }
 
 

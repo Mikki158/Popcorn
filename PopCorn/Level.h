@@ -7,9 +7,14 @@
 #include "Active_Brick.h"
 #include "Falling_Letter.h"
 #include "Info_Panel.h"
+#include "Level_Data.h"
 
-struct SPoint
+class APoint
 {
+public:
+    APoint();
+    APoint(int x, int y);
+
     int X, Y;
 };
 
@@ -18,10 +23,6 @@ struct SPoint
 class AsLevel: public AHit_Checker, public AGame_Object
 {
 public:
-
-    static char Level_01[AsConfig::LEVEL_HEIGHT][AsConfig::LEVEL_WIDTH];
-    static char Test_Level[AsConfig::LEVEL_HEIGHT][AsConfig::LEVEL_WIDTH];
-
     AsLevel();
     ~AsLevel();
 
@@ -39,7 +40,7 @@ public:
     virtual bool Is_Finished();
 
     void Init();
-    void Set_Current_Level(char Level[AsConfig::LEVEL_HEIGHT][AsConfig::LEVEL_WIDTH]);
+    void Set_Current_Level(int level_number);
     void Stop();
 
     static bool Has_Brick_At(int level_x, int level_y);
@@ -49,17 +50,16 @@ public:
 
 
 private:
-    int Teleport_Bricks_Count;
     double Current_Brick_Left_X, Current_Brick_Right_X;
     double Current_Brick_Top_Y, Current_Brick_Low_Y;
     bool Need_To_Cancel_All;
-
 
     AColor Parachute_Color;
 
     char Current_Level[AsConfig::LEVEL_HEIGHT][AsConfig::LEVEL_WIDTH];
 
-    SPoint* Teleport_Bricks_Pos;
+    std::vector<ALevel_Data*> Levels_Data;
+    std::vector<APoint> Teleport_Bricks_Pos;
 
     std::vector<AGraphics_Object*> Active_Bricks;
     std::vector<AGraphics_Object*> Falling_Letters;
