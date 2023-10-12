@@ -2,6 +2,7 @@
 
 #include "Active_Brick.h"
 
+//
 enum class ELetter_Type: unsigned char
 {
     O, // "Отмена"
@@ -21,6 +22,7 @@ enum class ELetter_Type: unsigned char
     MAX // Позволяет узнать число элементов в перечислении
 };
 
+//
 enum class EFalling_Letter_State: unsigned char
 {
     Normal,
@@ -28,6 +30,7 @@ enum class EFalling_Letter_State: unsigned char
     Finished // Когда объект можно удалять
 };
 
+//
 class AFalling_Letter : public AGraphics_Object
 {
 public:

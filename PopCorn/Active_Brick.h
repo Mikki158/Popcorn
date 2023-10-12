@@ -4,6 +4,7 @@
 
 #include "Config.h"
 
+//
 enum class EBrick_Type : unsigned char
 {
 	None,
@@ -21,6 +22,7 @@ enum class EBrick_Type : unsigned char
 	Invisible
 };
 
+//
 class AActive_Brick: public AGraphics_Object
 {
 public:
@@ -43,6 +45,7 @@ protected:
 	RECT Brick_Rect;
 };
 
+//
 class AActive_Brick_Pink_Blue: public AActive_Brick
 {
 public:
@@ -53,7 +56,6 @@ public:
 	virtual void Draw(HDC hdc, RECT& paint_area);
 	virtual bool Is_Finished();
 
-	static void Setup_Color();
 	static void Draw_In_Level(HDC hdc, RECT brick_rect, EBrick_Type brick_type);
 
 private:
@@ -62,10 +64,11 @@ private:
 	static const int MAX_FADE_STEP = AsConfig::FPS;
 	static const int MAX_ANIMATION_STEP = 5;
 
-	static AColor Fading_Blue_Brick_Colors[MAX_FADE_STEP];
-	static AColor Fading_Pink_Brick_Colors[MAX_FADE_STEP];
+	static AColor_Fade Fading_Blue_Brick_Colors;
+	static AColor_Fade Fading_Pink_Brick_Colors;
 };
 
+//
 class AActive_Brick_Unbreakable : public AActive_Brick
 {
 public:
@@ -86,6 +89,7 @@ private:
 	static const int MAX_ANIMATION_STEP = 12;
 };
 
+//
 class AActive_Brick_Multihit : public AActive_Brick
 {
 public:
@@ -108,7 +112,7 @@ private:
 	static void Draw_Stage(HDC hdc, RECT brick_rect, int x, int width);
 };
 
-
+//
 enum class ETeleport_State: unsigned char
 {
 	Starting,
@@ -116,7 +120,7 @@ enum class ETeleport_State: unsigned char
 	Done
 };
 
-
+//
 enum class EDirection_Type: unsigned char
 {
 	Left,
@@ -125,6 +129,7 @@ enum class EDirection_Type: unsigned char
 	Down
 };
 
+//
 class AActive_Brick_Teleport : public AActive_Brick
 {
 public:
@@ -153,7 +158,7 @@ private:
 	void Set_Ball(ABall_Object* ball);
 };
 
-
+//
 class AAdvertisement : public AGraphics_Object
 {
 public:
@@ -187,7 +192,7 @@ private:
 	static const int DEFORMATION_HEIGHT = 2 * AsConfig::GLOBAL_SCALE;
 };
 
-
+//
 class AActive_Brick_Ad : public AActive_Brick
 {
 public:

@@ -2,6 +2,7 @@
 
 #include "Border.h"
 
+//
 enum class EExplosive_Ball_State :unsigned char
 {
     Idle,
@@ -10,6 +11,7 @@ enum class EExplosive_Ball_State :unsigned char
     Fading
 };
 
+//
 class AExplosive_Ball : public AGraphics_Object
 {
 public:
@@ -19,8 +21,6 @@ public:
     virtual void Clear(HDC hdc, RECT& paint_area);
     virtual void Draw(HDC hdc, RECT& paint_area);
     virtual bool Is_Finished();
-
-    static void Setup_Color();
 
     void Explode(int x_pos, int y_pos, int size, bool is_pink, int time_offset, int step_count);
     void Update_Ball_Rect();
@@ -35,8 +35,8 @@ private:
 
     static const int Fading_Timeout = AsConfig::FPS;
     static const int MAX_FADE_STEP = AsConfig::FPS;
-    static AColor Fading_Pink_Colors[MAX_FADE_STEP];
-    static AColor Fading_Blue_Colors[MAX_FADE_STEP];
+    static AColor_Fade Fading_Pink_Colors;
+    static AColor_Fade Fading_Blue_Colors;
 
     EExplosive_Ball_State Explosive_Ball_State;
     RECT Ball_Rect;

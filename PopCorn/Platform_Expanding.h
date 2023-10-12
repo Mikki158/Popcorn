@@ -2,6 +2,7 @@
 
 #include "Platform_State.h"
 
+//
 class AsPlatform_Expanding
 {
 public:

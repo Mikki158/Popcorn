@@ -2,6 +2,7 @@
 
 #include "Active_Brick.h"
 
+//
 class ALevel_Data
 {
 public:

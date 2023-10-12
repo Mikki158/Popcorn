@@ -1,6 +1,7 @@
 #pragma once
 #include "Ball.h"
 
+//
 class AsBall_Set : public AGame_Objects_Set
 {
 public:

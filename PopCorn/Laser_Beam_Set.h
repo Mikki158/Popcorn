@@ -2,7 +2,7 @@
 
 #include "Laser_Beam.h"
 
-
+//
 class AsLaser_Beam_Set : public AGame_Objects_Set
 {
 public:

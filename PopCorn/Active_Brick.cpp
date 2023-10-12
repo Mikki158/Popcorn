@@ -60,8 +60,8 @@ double AActive_Brick::Get_Brick_Y_Pos(bool of_center)
 
 
 // AActive_Brick_Pink_Blue
-AColor AActive_Brick_Pink_Blue::Fading_Blue_Brick_Colors[MAX_FADE_STEP];
-AColor AActive_Brick_Pink_Blue::Fading_Pink_Brick_Colors[MAX_FADE_STEP];
+AColor_Fade AActive_Brick_Pink_Blue::Fading_Blue_Brick_Colors(AsConfig::Blue_Color, MAX_FADE_STEP);
+AColor_Fade AActive_Brick_Pink_Blue::Fading_Pink_Brick_Colors(AsConfig::Pink_Color, MAX_FADE_STEP);
 
 //
 AActive_Brick_Pink_Blue::AActive_Brick_Pink_Blue(EBrick_Type brick_type, int level_x, int level_y)
@@ -69,6 +69,8 @@ AActive_Brick_Pink_Blue::AActive_Brick_Pink_Blue(EBrick_Type brick_type, int lev
 {
     if (!(brick_type == EBrick_Type::Blue || brick_type == EBrick_Type::Pink))
         AsConfig::Throw();
+
+
 }
 
 
@@ -98,11 +100,11 @@ void AActive_Brick_Pink_Blue::Draw(HDC hdc, RECT& paint_area)
     switch (Brick_Type)
     {
     case EBrick_Type::Pink:
-        color = &Fading_Pink_Brick_Colors[fade_Step];
+        color = Fading_Pink_Brick_Colors.Get_Color(fade_Step);
         break;
 
     case EBrick_Type::Blue:
-        color = &Fading_Blue_Brick_Colors[fade_Step];
+        color = Fading_Blue_Brick_Colors.Get_Color(fade_Step);
         break;
 
     default:
@@ -124,17 +126,6 @@ bool AActive_Brick_Pink_Blue::Is_Finished()
         return true;
     else
         return false;
-}
-
-
-//
-void AActive_Brick_Pink_Blue::Setup_Color()
-{
-    for (int i = 0; i < MAX_FADE_STEP; i++)
-    {
-        AsTools::Get_Fading_Color(AsConfig::Blue_Color, i, Fading_Blue_Brick_Colors[i], MAX_FADE_STEP);
-        AsTools::Get_Fading_Color(AsConfig::Pink_Color, i, Fading_Pink_Brick_Colors[i], MAX_FADE_STEP);
-    }
 }
 
 

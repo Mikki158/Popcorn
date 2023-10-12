@@ -1,6 +1,7 @@
 #pragma once
 #include "Config.h"
 
+//
 class AIndicator : public AGraphics_Object
 {
 public:

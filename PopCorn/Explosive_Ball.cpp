@@ -1,8 +1,8 @@
 #include "Explosive_Ball.h"
 
 // AExplosive_Ball
-AColor AExplosive_Ball::Fading_Pink_Colors[MAX_FADE_STEP];
-AColor AExplosive_Ball::Fading_Blue_Colors[MAX_FADE_STEP];
+AColor_Fade AExplosive_Ball::Fading_Pink_Colors(AsConfig::Pink_Color, MAX_FADE_STEP);
+AColor_Fade AExplosive_Ball::Fading_Blue_Colors(AsConfig::Blue_Color, MAX_FADE_STEP);
 
 //
 AExplosive_Ball::AExplosive_Ball()
@@ -97,9 +97,9 @@ void AExplosive_Ball::Draw(HDC hdc, RECT& paint_area)
             color_index = (int)round(ratio * (double)(MAX_FADE_STEP - 1));
 
             if (Is_Pink)
-                color = &Fading_Pink_Colors[color_index];
+                color = Fading_Pink_Colors.Get_Color(color_index);
             else
-                color = &Fading_Blue_Colors[color_index];
+                color = Fading_Blue_Colors.Get_Color(color_index);
 
             AsTools::Ellipse(hdc, Ball_Rect, *color);
         }
@@ -120,17 +120,6 @@ bool AExplosive_Ball::Is_Finished()
         return true;
     else
         return false;
-}
-
-
-//
-void AExplosive_Ball::Setup_Color()
-{
-    for (int i = 0; i < MAX_FADE_STEP; i++)
-    {
-        AsTools::Get_Fading_Color(AsConfig::Pink_Color, i, Fading_Pink_Colors[i], MAX_FADE_STEP);
-        AsTools::Get_Fading_Color(AsConfig::Blue_Color, i, Fading_Blue_Colors[i], MAX_FADE_STEP);
-    }
 }
 
 

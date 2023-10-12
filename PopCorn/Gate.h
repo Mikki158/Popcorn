@@ -2,6 +2,7 @@
 
 #include "Config.h"
 
+//
 enum class EGate_State : unsigned char
 {
     Closed,
@@ -9,6 +10,7 @@ enum class EGate_State : unsigned char
     Long_Open
 };
 
+//
 enum class EGate_Tranformation : unsigned char
 {
     Unknown,
@@ -18,6 +20,7 @@ enum class EGate_Tranformation : unsigned char
     Finalize
 };
 
+//
 class AGate : public AGraphics_Object
 {
 public:

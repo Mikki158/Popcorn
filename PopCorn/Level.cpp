@@ -23,7 +23,7 @@ AsLevel::AsLevel()
     :Level_Rect(), Current_Level(), Current_Brick_Top_Y(),
     Current_Brick_Right_X(), Current_Brick_Low_Y(), Current_Brick_Left_X(),
     Parachute_Color(AsConfig::Pink_Color, AsConfig::Blue_Color, AsConfig::GLOBAL_SCALE),
-    Advertisement(nullptr), Need_To_Cancel_All(false)
+    Advertisement(nullptr), Need_To_Cancel_All(false), Next_Level(0)
 {
     Level = this;
 }
@@ -203,6 +203,8 @@ void AsLevel::Clear(HDC hdc, RECT& paint_area)
         Cancel_All_Activity();
         Need_To_Cancel_All = false;
     }
+
+    Mop.Clear(hdc, paint_area);
 }
 
 
@@ -234,10 +236,14 @@ void AsLevel::Draw(HDC hdc, RECT& paint_area)
 
         for (auto* brick : Active_Bricks)
             brick->Draw(hdc, paint_area);
+
+        Mop.Clean_Area(hdc); // Очищаем часть, стертую шваброй (если надо)
     }
 
     for (auto* letter : Falling_Letters)
         letter->Draw(hdc, paint_area);
+
+    Mop.Draw(hdc, paint_area);
 }
 
 
@@ -249,6 +255,8 @@ void AsLevel::Act()
 
     if (Advertisement != nullptr)
         Advertisement->Act();
+
+    Mop.Act();
 }
 
 
@@ -282,6 +290,8 @@ void AsLevel::Init()
             level_data->Advertisement = new AAdvertisement(1, 9, 2, 3);
 
     }
+
+    //Mop.Erase_Level();
 }
 
 
@@ -324,6 +334,18 @@ void AsLevel::Set_Current_Level(int level_number)
 void AsLevel::Stop()
 {
     Need_To_Cancel_All = true;
+}
+
+
+//
+void AsLevel::Mop_Level(int next_level)
+{
+    if (next_level < 1 || next_level >= AsConfig::Max_Life_Count)
+        AsConfig::Throw();
+
+    Next_Level = next_level;
+
+    Mop.Activate(true);
 }
 
 
@@ -416,6 +438,23 @@ bool AsLevel::Get_Next_Falling_Leter(AFalling_Letter** falling_letter, int& inde
     }
 
     return false;
+}
+
+
+//
+bool AsLevel::Is_Level_Mopping_Done()
+{// Возврат: true/false - закончилась очистка уровня и вывод нового / еще нет
+
+    if (Mop.Get_Mop_State() == EMop_State::Descend_Done)
+        return true;
+    
+    if (Mop.Get_Mop_State() == EMop_State::Clean_Done)
+    {
+        Set_Current_Level(Next_Level);
+        Mop.Activate(false);
+    }
+
+        return false;
 }
 
 

@@ -2,6 +2,7 @@
 
 #include "Config.h"
 
+//
 enum class EPlatform_State : unsigned char
 {
     Unknown,
@@ -13,7 +14,7 @@ enum class EPlatform_State : unsigned char
     Laser
 };
 
-
+//
 enum class EPlatform_Substate_Regular : unsigned char
 {
     Unknown,
@@ -23,7 +24,7 @@ enum class EPlatform_Substate_Regular : unsigned char
     Normal
 };
 
-
+//
 enum class EPlatform_Substate_Meltdown : unsigned char
 {
     Unknown,
@@ -32,7 +33,7 @@ enum class EPlatform_Substate_Meltdown : unsigned char
     Active
 };
 
-
+//
 enum class EPlatform_Substate_Rolling : unsigned char
 {
     Unknown,
@@ -41,7 +42,7 @@ enum class EPlatform_Substate_Rolling : unsigned char
     Expand_Roll_In
 };
 
-
+//
 enum class EPlatform_Transformation : unsigned char
 {
     Unknown,
@@ -51,6 +52,7 @@ enum class EPlatform_Transformation : unsigned char
     Finalize
 };
 
+//
 enum class EPlatform_Moving_State : unsigned char
 {
     Stoping,
@@ -59,9 +61,7 @@ enum class EPlatform_Moving_State : unsigned char
     Moving_Right
 };
 
-
-
-
+//
 class AsPlatform_State
 {
 public:

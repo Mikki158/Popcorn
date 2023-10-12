@@ -3,6 +3,7 @@
 #include "resource.h"
 #include "Engine.h"
 
+//
 class AsFrame_DC
 {
 public:
@@ -18,6 +19,7 @@ private:
 	HBITMAP Bitmap;
 };
 
+//
 class AsMain_Window
 {
 public:

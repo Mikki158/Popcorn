@@ -3,6 +3,7 @@
 #include "Falling_Letter.h"
 #include "Indicator.h"
 
+//
 enum class EScore_Event_Type : unsigned char
 {
     Hit_Brick,
@@ -10,6 +11,7 @@ enum class EScore_Event_Type : unsigned char
     Catch_Letter
 };
 
+//
 class AsInfo_Panel : public AGame_Object
 {
 public:
@@ -37,7 +39,7 @@ public:
 private:
     int Extra_Lives_Count;
     HFONT Logo_Pop_Font, Logo_Corn_Font, Name_Font, Score_Font;
-    AColor* Shadow_Color, * Highlight_Color, * Dark_Blue, * Dark_Pink;
+    AColor* Dark_Blue, * Dark_Pink;
 
     AFalling_Letter Letter_P, Letter_G, Letter_M;
 

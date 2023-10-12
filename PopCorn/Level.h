@@ -8,7 +8,9 @@
 #include "Falling_Letter.h"
 #include "Info_Panel.h"
 #include "Level_Data.h"
+#include "Mop.h"
 
+//
 class APoint
 {
 public:
@@ -18,8 +20,7 @@ public:
     int X, Y;
 };
 
-
-
+//
 class AsLevel: public AHit_Checker, public AGame_Object
 {
 public:
@@ -42,17 +43,20 @@ public:
     void Init();
     void Set_Current_Level(int level_number);
     void Stop();
+    void Mop_Level(int next_level);
 
     static bool Has_Brick_At(int level_x, int level_y);
     static bool Has_Brick_At(RECT monster_rect);
 
     bool Get_Next_Falling_Leter(AFalling_Letter **falling_letter, int &index);
+    bool Is_Level_Mopping_Done();
 
 
 private:
     double Current_Brick_Left_X, Current_Brick_Right_X;
     double Current_Brick_Top_Y, Current_Brick_Low_Y;
     bool Need_To_Cancel_All;
+    int Next_Level;
 
     AColor Parachute_Color;
 
@@ -67,6 +71,7 @@ private:
     RECT Level_Rect;
 
     AAdvertisement* Advertisement;
+    AsMop Mop;
 
     static AsLevel* Level;
 

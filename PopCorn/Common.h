@@ -37,8 +37,6 @@ public:
 
 };
 
-
-
 //
 class AGraphics_Object
 {
@@ -50,8 +48,6 @@ public:
     virtual void Draw(HDC hdc, RECT& paint_area) = 0;
     virtual bool Is_Finished() = 0;
 };
-
-
 
 //
 class AMover
@@ -65,13 +61,12 @@ public:
     virtual double Get_Speed() = 0;
 };
 
-
 //
 class AGame_Object: public AMover, public AGraphics_Object
 {
 };
 
-
+//
 class AGame_Objects_Set: public AGame_Object
 {
 public:
@@ -90,6 +85,7 @@ protected:
 
 };
 
+//
 class AString
 {
 public:
@@ -104,12 +100,14 @@ private:
     std::wstring Content;
 };
 
+//
 enum class EMessage_Type : unsigned char
 {
     Floor_Is_Over,
     Unfreeze_Monsters
 };
 
+//
 class AMessage
 {
 public:
@@ -118,6 +116,7 @@ public:
     const EMessage_Type Message_Type;
 };
 
+//
 class AsMessage_Menager
 {
 public:

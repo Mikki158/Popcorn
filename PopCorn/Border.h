@@ -5,6 +5,7 @@
 #include "Gate.h"
 #include "Level.h"
 
+//
 class AsBorder: public AHit_Checker, public AGame_Object
 {
 public:

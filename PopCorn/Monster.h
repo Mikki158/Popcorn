@@ -2,6 +2,7 @@
 
 #include "Explosive_Ball.h"
 
+//
 enum class EMonster_State : unsigned char
 {
     Missing,
@@ -10,6 +11,7 @@ enum class EMonster_State : unsigned char
     Destroing
 };
 
+//
 enum class EEye_State :unsigned char
 {
     Closed,
@@ -18,7 +20,7 @@ enum class EEye_State :unsigned char
     Closing
 };
 
-
+//
 class AMonster: public AHit_Checker, public AGame_Object
 {
 public:
@@ -74,7 +76,7 @@ private:
     void Change_Direction();
 };
 
-
+//
 class AMonster_Eye : public AMonster
 {
 public:
@@ -99,7 +101,7 @@ private:
 
 };
 
-
+//
 class AMonster_Comet : public AMonster
 {
 public:

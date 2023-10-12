@@ -3,6 +3,7 @@
 #include "Platform_State.h"
 #include "Laser_Beam_Set.h"
 
+//
 enum class EFigure_Type : unsigned char
 {
     Ellipse,
@@ -10,6 +11,7 @@ enum class EFigure_Type : unsigned char
     Round_Rect_3x
 };
 
+//
 class AsPlatform_Laser
 {
 public:

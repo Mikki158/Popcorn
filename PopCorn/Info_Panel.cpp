@@ -8,7 +8,7 @@ RECT AsInfo_Panel::Data_Rect;
 //
 AsInfo_Panel::AsInfo_Panel()
     :Extra_Lives_Count(AsConfig::Initial_Life_Count), Logo_Pop_Font(0), Logo_Corn_Font(0), Name_Font(0), 
-    Score_Font(0), Shadow_Color(nullptr), Highlight_Color(nullptr), Dark_Blue(nullptr), Dark_Pink(nullptr),
+    Score_Font(0), Dark_Blue(nullptr), Dark_Pink(nullptr),
     Letter_P(EBrick_Type::Blue, ELetter_Type::P, 214 * AsConfig::GLOBAL_SCALE + 1, 151 * AsConfig::GLOBAL_SCALE + 1),
     Letter_G(EBrick_Type::Blue, ELetter_Type::G, 256 * AsConfig::GLOBAL_SCALE, 153 * AsConfig::GLOBAL_SCALE),
     Letter_M(EBrick_Type::Blue, ELetter_Type::M, 297 * AsConfig::GLOBAL_SCALE - 1, 154 * AsConfig::GLOBAL_SCALE - 1),
@@ -36,8 +36,6 @@ AsInfo_Panel::AsInfo_Panel()
 //
 AsInfo_Panel::~AsInfo_Panel()
 {
-    delete Shadow_Color;
-    delete Highlight_Color;
     delete Dark_Blue;
     delete Dark_Pink;
 
@@ -146,12 +144,12 @@ void AsInfo_Panel::Draw(HDC hdc, RECT& paint_area)
         AsTools::Rect(hdc, Score_X + 2, Score_Y + 2, Score_Width - 4, Score_Height - 4, *Dark_Blue);
 
         // 2.2 Áîðäþð
-        Highlight_Color->Select_Pen(hdc);
+        AsConfig::Highlight_Color.Select_Pen(hdc);
         MoveToEx(hdc, (Score_X + 2) * scale, (Score_Y + Score_Height - 2) * scale, 0);
         LineTo(hdc, (Score_X + 2) * scale, (Score_Y + 2) * scale);
         LineTo(hdc, (Score_X + Score_Width - 2) * scale, (Score_Y + 2) * scale);
 
-        Shadow_Color->Select_Pen(hdc);
+        AsConfig::Shadow_Color.Select_Pen(hdc);
         MoveToEx(hdc, (Score_X + Score_Width - 2) * scale, (Score_Y + 2) * scale, 0);
         LineTo(hdc, (Score_X + Score_Width - 2) * scale, (Score_Y + Score_Height - 2) * scale);
         LineTo(hdc, (Score_X + 2) * scale, (Score_Y + Score_Height - 2) * scale);
@@ -227,8 +225,6 @@ void AsInfo_Panel::Init()
     log_font.lfHeight = -44;
     Score_Font = CreateFontIndirect(&log_font);
 
-    Shadow_Color = new AColor(AsConfig::BG_Color, AsConfig::GLOBAL_SCALE);
-    Highlight_Color = new AColor(AsConfig::White_Color, AsConfig::GLOBAL_SCALE);
     Dark_Blue = new AColor(0, 190, 190);
     Dark_Pink = new AColor(228, 0, 228);
 }

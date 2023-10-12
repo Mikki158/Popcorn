@@ -2,6 +2,7 @@
 
 #include "Monster.h"
 
+//
 enum class EMonster_Set_State :unsigned char
 {
     Idle,
@@ -10,6 +11,7 @@ enum class EMonster_Set_State :unsigned char
     Waiting_Gate_Closing
 };
 
+//
 class AsMonster_Set: public AHit_Checker, public AGame_Objects_Set
 {
 public:

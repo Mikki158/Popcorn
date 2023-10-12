@@ -105,6 +105,18 @@
     <Filter Include="#Screen\Level_Data">
       <UniqueIdentifier>{232c5aad-ae97-473d-90b4-ed1e4264c1cc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="#Mop">
+      <UniqueIdentifier>{1fc8c7e6-e4a3-4f81-a834-c9561cf2aa10}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="#Mop\Mop">
+      <UniqueIdentifier>{9514a0f2-d641-4e01-a648-aa6a42d04dc2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="#Mop\Mop_Indicator">
+      <UniqueIdentifier>{0a621038-71e5-4ebe-ae0b-10d582d31110}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="#Mop\Mop_Cylinder">
+      <UniqueIdentifier>{1de856ae-538d-44c9-820a-03d36509a6f2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -190,6 +202,15 @@
     </ClInclude>
     <ClInclude Include="Level_Data.h">
       <Filter>#Screen\Level_Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Mop.h">
+      <Filter>#Mop\Mop</Filter>
+    </ClInclude>
+    <ClInclude Include="Mop_Indicator.h">
+      <Filter>#Mop\Mop_Indicator</Filter>
+    </ClInclude>
+    <ClInclude Include="Mop_Cylinder.h">
+      <Filter>#Mop\Mop_Cylinder</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -280,6 +301,15 @@
     </ClCompile>
     <ClCompile Include="Level_Data.cpp">
       <Filter>#Screen\Level_Data</Filter>
+    </ClCompile>
+    <ClCompile Include="Mop.cpp">
+      <Filter>#Mop\Mop</Filter>
+    </ClCompile>
+    <ClCompile Include="Mop_Indicator.cpp">
+      <Filter>#Mop\Mop_Indicator</Filter>
+    </ClCompile>
+    <ClCompile Include="Mop_Cylinder.cpp">
+      <Filter>#Mop\Mop_Cylinder</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

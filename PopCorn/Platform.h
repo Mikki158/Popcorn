@@ -9,7 +9,7 @@
 #include "Platform_Expanding.h"
 #include "Platform_Laser.h"
 
-
+//
 class AsPlatform: public AHit_Checker, public AGame_Object
 {
 public:

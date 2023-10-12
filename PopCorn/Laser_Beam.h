@@ -2,6 +2,7 @@
 
 #include "Config.h"
 
+//
 enum class ELaser_Beam_State :unsigned char
 {
     Disabled,
@@ -10,6 +11,7 @@ enum class ELaser_Beam_State :unsigned char
     Cleanup
 };
 
+//
 class ALaser_Beam : public AGame_Object
 {
 public:
