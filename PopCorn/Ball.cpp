@@ -365,7 +365,7 @@ void ABall::Clear(HDC hdc, RECT& paint_area)
 {// Очищаем фон
     RECT intersection_rect;
 
-    if (Ball_State == EBall_State::Disabled)
+    if (Ball_State == EBall_State::Disabled && Prev_Ball_State != EBall_State::Lost)
         return;
 
     if ((Ball_State == EBall_State::Teleporting || Ball_State == EBall_State::Lost) && Ball_State == Prev_Ball_State)

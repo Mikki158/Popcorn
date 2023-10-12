@@ -28,7 +28,8 @@ enum class EGame_State: unsigned char
     Mop_Level,
     Play_Level,
     Lost_Ball,
-    Restart_Level
+    Restart_Level,
+    Finish_Level
 };
 
 //
@@ -44,7 +45,7 @@ public:
 
     int On_Key(EKey_Type key_type, bool key_down);
     int On_Timer();  
-    bool Restart_Level();
+    void Restart_Level();
     void Game_Over();
 
 
@@ -64,10 +65,13 @@ private:
     std::vector<AGame_Object*> Modules;// Главные графические объекты (модули) игры
 
     void Play_Level();
+    void Stop_Play();
     void Advance_Movers();
     void Act();
     void Handle_Message();
     void On_Falling_Letter(AFalling_Letter* falling_letter);
+
+    void Game_Won();
 };
 
 

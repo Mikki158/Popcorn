@@ -44,6 +44,8 @@ public:
     void Set_Current_Level(int level_number);
     void Stop();
     void Mop_Level(int next_level);
+    void Mop_Next_Level();
+    bool Can_Mop_Next_Level();
 
     static bool Has_Brick_At(int level_x, int level_y);
     static bool Has_Brick_At(RECT monster_rect);
@@ -56,7 +58,8 @@ private:
     double Current_Brick_Left_X, Current_Brick_Right_X;
     double Current_Brick_Top_Y, Current_Brick_Low_Y;
     bool Need_To_Cancel_All;
-    int Next_Level;
+    int Next_Level_Number, Current_Level_Number;
+    int Available_Bricks_Count;
 
     AColor Parachute_Color;
 

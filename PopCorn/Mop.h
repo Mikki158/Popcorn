@@ -35,9 +35,11 @@ public:
     void Activate(bool cleaning);
     void Set_Mop();
     void Clean_Area(HDC hdc);
-    EMop_State Get_Mop_State();
+    bool Is_Mopping_Done();
+    bool Is_Cleaning_Done();
 
 private:
+    bool Mopping_Is_Done;
     int Y_Pos, MAX_Y_POS;
     int Start_Tick;
     int Lifting_Height;

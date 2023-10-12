@@ -56,7 +56,7 @@ void AsEngine::Init_Engine(HWND hwnd)// Настройка игры при ст�
     Modules.push_back(&Monster_Set);
     Modules.push_back(&Info_Panel);
 
-    Level.Mop_Level(1);
+    Level.Mop_Level(4);
 }
 
 
@@ -122,8 +122,12 @@ int AsEngine::On_Timer()
 
     case EGame_State::Lost_Ball:
         if (Platform.Has_State(EPlatform_Substate_Regular::Missing))
-            if (!Restart_Level())
+        {
+            if (!Info_Panel.Decrease_Life_Count())
                 Game_Over();
+
+            Restart_Level();               
+        }
         break;
 
     case EGame_State::Restart_Level:
@@ -132,6 +136,14 @@ int AsEngine::On_Timer()
             Game_State = EGame_State::Play_Level;
             Ball_Set.Set_On_Platform(Platform.Get_Middle_Pos());
             Monster_Set.Activate(10);
+        }
+        break;
+
+    case EGame_State::Finish_Level:
+        if (Monster_Set.Are_All_Destroyed())
+        {
+            Level.Mop_Next_Level();
+            Game_State = EGame_State::Mop_Level;
         }
         break;
 
@@ -146,14 +158,10 @@ int AsEngine::On_Timer()
 
 
 //
-bool AsEngine::Restart_Level()
+void AsEngine::Restart_Level()
 {
-    if (!Info_Panel.Decrease_Life_Count())
-        return false;
     Game_State = EGame_State::Restart_Level;
     Border.Open_Gate(7, true);
-
-    return true;
 }
 
 
@@ -173,12 +181,7 @@ void AsEngine::Play_Level()
     {// Потеряли все мячики 
 
         Game_State = EGame_State::Lost_Ball;
-        Level.Stop();
-        Monster_Set.Destroy_All();
-        Laser_Beam_Set.Disable_All();
-        Platform.Set_State(EPlatform_State::Meltdown);
-        Info_Panel.Floor_Indicator.Reset();
-        Info_Panel.Monster_Indicator.Reset();
+        Stop_Play();
     }
     else
         Ball_Set.Accelerate();
@@ -186,6 +189,25 @@ void AsEngine::Play_Level()
 
     if (Ball_Set.Is_Test_Finished())
         Game_State = EGame_State::Test_Ball;
+}
+
+
+//
+void AsEngine::Stop_Play()
+{
+    Level.Stop();
+    Monster_Set.Destroy_All();
+    Laser_Beam_Set.Disable_All();
+    Platform.Set_State(EPlatform_State::Meltdown);
+    Info_Panel.Floor_Indicator.Reset();
+    Info_Panel.Monster_Indicator.Reset();
+}
+
+
+//
+void AsEngine::Game_Won()
+{
+    AsConfig::Throw();
 }
 
 
@@ -266,6 +288,17 @@ void AsEngine::Handle_Message()
 
         case EMessage_Type::Unfreeze_Monsters:
             Monster_Set.Set_Freeze_State(false);
+            break;
+
+        case EMessage_Type::Level_Done:
+            if (!Level.Can_Mop_Next_Level())
+                Game_Won();
+            else
+            {
+                Stop_Play();
+                Ball_Set.Disable_All_Balls();
+                Game_State = EGame_State::Finish_Level;
+            }
             break;
 
         default:

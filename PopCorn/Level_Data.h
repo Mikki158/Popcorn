@@ -7,10 +7,13 @@ class ALevel_Data
 {
 public:
     ALevel_Data(int level_number);
+
     char* Level;
     AAdvertisement* Advertisement;
 
     static const int Max_Level_Number = 10;
+
+    int Get_Available_Bricks_Count();
 
 private:
 

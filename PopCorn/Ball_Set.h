@@ -11,6 +11,7 @@ public:
 
     void Release_From_Platform(double platform_x_pos);
     void Set_On_Platform(double platform_x_pos);
+    void Disable_All_Balls();
     void Set_For_Test();
     void Tripple_Balls();
     void Inverse_Balls();

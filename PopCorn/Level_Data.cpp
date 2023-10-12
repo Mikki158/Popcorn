@@ -18,10 +18,43 @@ char* ALevel_Data::Level_Array[Max_Level_Number] =
 ALevel_Data::ALevel_Data(int level_number)
     :Level(0), Advertisement(0)
 {
-    if (level_number < 1 || level_number > Max_Level_Number)
+    if (level_number > 1 || level_number <= Max_Level_Number)
+        Level = Level_Array[level_number - 1];
+    else
         AsConfig::Throw();
+}
 
-    Level = Level_Array[level_number - 1];
+
+//
+int ALevel_Data::Get_Available_Bricks_Count()
+{
+    int pos = 0;
+    int count = 0;
+    EBrick_Type brick_type;
+
+    for (int i = 0; i < AsConfig::LEVEL_HEIGHT; i++)
+    {
+        for (int j = 0; j < AsConfig::LEVEL_WIDTH; j++)
+        {
+            brick_type = (EBrick_Type)Level[pos++];
+
+            switch (brick_type)
+            {
+            case EBrick_Type::Pink:
+            case EBrick_Type::Blue:
+            case EBrick_Type::Multihit_1:
+            case EBrick_Type::Multihit_2:
+            case EBrick_Type::Multihit_3:
+            case EBrick_Type::Multihit_4:
+            case EBrick_Type::Parachute:
+                count++;
+                break;
+            }
+        }
+    }
+
+    //return count;
+    return 1;
 }
 
 

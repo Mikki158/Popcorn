@@ -46,6 +46,20 @@ void AsBall_Set::Set_On_Platform(double platform_x_pos)
 
 
 //
+void AsBall_Set::Disable_All_Balls()
+{
+    for (auto& ball : Balls)
+    {
+        if (ball.Get_State() != EBall_State::Disabled)
+        {
+            ball.Set_State(EBall_State::Lost);
+            ball.Set_State(EBall_State::Disabled);
+        }
+    }
+}
+
+
+//
 void AsBall_Set::Set_For_Test()
 {
     Balls[0].Set_For_Test();

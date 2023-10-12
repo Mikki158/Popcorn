@@ -28,6 +28,7 @@ public:
     void Emit_At_Gate(int gate_index);
     void Activate(int max_alive_monsters_count);
     void Destroy_All();
+    bool Are_All_Destroyed();
     void Set_Freeze_State(bool freeze);
 
 private:
