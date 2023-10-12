@@ -20,6 +20,38 @@ public:
     int X, Y;
 };
 
+enum class ELevel_Title_State : unsigned char
+{
+    Missing,
+    Showing,
+    Hiding
+};
+
+//
+class AsLevel_Title : public AGraphics_Object
+{
+public:
+    AsLevel_Title();
+
+    virtual void Act();
+    virtual void Clear(HDC hdc, RECT& paint_area);
+    virtual void Draw(HDC hdc, RECT& paint_area);
+    virtual bool Is_Finished();
+
+    void Show(int level_number);
+    void Hide();
+
+private:
+    ELevel_Title_State Level_Title_State;
+    ALabel Level_Name, Level_Number;
+    RECT Title_Rect;
+    
+    static const int Width = 96;
+    static const int Height = 14;
+    static const int X_Pos = AsConfig::MAX_X_POS / 2 - Width / 2;
+    static const int Y_Pos = 150;
+};
+
 //
 class AsLevel: public AHit_Checker, public AGame_Object
 {
@@ -46,6 +78,8 @@ public:
     void Mop_Level(int next_level);
     void Mop_Next_Level();
     bool Can_Mop_Next_Level();
+    void Show_Title();
+    void Hide_Title();
 
     static bool Has_Brick_At(int level_x, int level_y);
     static bool Has_Brick_At(RECT monster_rect);
@@ -75,6 +109,7 @@ private:
 
     AAdvertisement* Advertisement;
     AsMop Mop;
+    AsLevel_Title Level_Title; // Табличка с номером уровня
 
     static AsLevel* Level;
 

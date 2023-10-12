@@ -12,11 +12,29 @@ enum class EScore_Event_Type : unsigned char
 };
 
 //
+class ALabel
+{
+public:
+    ALabel(int x_pos, int y_pos, int width, int height, const AFont &font, const AColor& color);
+
+    AString Content;
+    RECT Content_Rect;
+
+    void Draw(HDC hdc);
+
+private:
+    int X_Pos, Y_Pos;
+    int Width, Height;
+    const AFont& Font;
+    const AColor& Color;
+
+};
+
+//
 class AsInfo_Panel : public AGame_Object
 {
 public:
     AsInfo_Panel();
-    ~AsInfo_Panel();
 
     virtual void Advance(double max_speed);
     virtual void Begin_Movement();
@@ -28,7 +46,6 @@ public:
     virtual void Draw(HDC hdc, RECT& paint_area);
     virtual bool Is_Finished();
 
-    void Init();
     void Increase_Life_Count();
     bool Decrease_Life_Count();
 
@@ -38,12 +55,13 @@ public:
 
 private:
     int Extra_Lives_Count;
-    HFONT Logo_Pop_Font, Logo_Corn_Font, Name_Font, Score_Font;
-    AColor* Dark_Blue, * Dark_Pink;
+    //HFONT Logo_Pop_Font, Logo_Corn_Font;
+    AColor Dark_Blue, Dark_Pink;
 
     AFalling_Letter Letter_P, Letter_G, Letter_M;
 
-    AString Player_Name;
+    //AString Player_Name;
+    ALabel Player_Name_Label, Score_Label;
 
     static RECT Logo_Rect; // Область логотипа
     static RECT Data_Rect; // Область данных (имени игрока, счета и индикаторов)
@@ -63,7 +81,7 @@ private:
 
 
     void Choose_Font();
-    void Draw_String(HDC hdc, RECT rect, AString &str, bool draw_name);
+    //void Draw_String(HDC hdc, RECT rect, AString &str, bool draw_name);
     void Draw_Extra_Life(HDC hdc, int x_pos, int y_pos);
     void Show_Extra_Lives(HDC hdc);
 

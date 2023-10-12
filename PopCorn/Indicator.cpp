@@ -101,7 +101,7 @@ void AIndicator::Cancel()
         AsMessage_Menager::Add_Message(message);
 
         Need_To_Notify = false;
-    }
 
-    Reset();
+        Reset();
+    }
 }

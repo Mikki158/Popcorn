@@ -26,7 +26,6 @@ void AsEngine::Init_Engine(HWND hwnd)// Настройка игры при ст�
     Level.Init();
     Platform.Init(&Ball_Set, &Laser_Beam_Set);
     Monster_Set.Init(&Border);
-    Info_Panel.Init();
 
     AFalling_Letter::Init();
      
@@ -56,7 +55,7 @@ void AsEngine::Init_Engine(HWND hwnd)// Настройка игры при ст�
     Modules.push_back(&Monster_Set);
     Modules.push_back(&Info_Panel);
 
-    Level.Mop_Level(4);
+    Level.Mop_Level(1);
 }
 
 
@@ -136,11 +135,12 @@ int AsEngine::On_Timer()
             Game_State = EGame_State::Play_Level;
             Ball_Set.Set_On_Platform(Platform.Get_Middle_Pos());
             Monster_Set.Activate(10);
+            Level.Hide_Title();
         }
         break;
 
     case EGame_State::Finish_Level:
-        if (Monster_Set.Are_All_Destroyed())
+        if (Monster_Set.Are_All_Destroyed() && Platform.Has_State(EPlatform_Substate_Regular::Missing))
         {
             Level.Mop_Next_Level();
             Game_State = EGame_State::Mop_Level;
@@ -161,6 +161,7 @@ int AsEngine::On_Timer()
 void AsEngine::Restart_Level()
 {
     Game_State = EGame_State::Restart_Level;
+    Level.Show_Title();
     Border.Open_Gate(7, true);
 }
 

@@ -46,6 +46,19 @@ private:
 };
 
 //
+class AFont
+{
+public:
+    AFont(int height, int weight, int family, const wchar_t* face_name);
+    ~AFont();
+
+    void Select(HDC hdc) const;
+
+private:
+    HFONT Font_Handle;
+};
+
+//
 class AsConfig
 {
 public:
@@ -69,6 +82,7 @@ public:
     static const int Initial_Life_Count = 5;
     static const int Max_Life_Count = 12;
     static const double D_GLOBAL_SCALE;
+    static const AFont Name_Font, Score_Font, Logo_Pop_Font, Logo_Corn_Font;
     static int Current_Timer_Tick;
     static HWND HWnd;
 

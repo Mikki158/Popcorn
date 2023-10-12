@@ -114,6 +114,57 @@ bool AGame_Objects_Set::Is_Finished()
 
 
 
+// AString
+//
+AString::AString()
+{
+
+}
+
+//
+AString::AString(const wchar_t* str)
+    :Content(str)
+{
+
+}
+
+
+//
+void AString::Append(int value, int digits)
+{
+    wchar_t buf[32];
+    wchar_t format[32];
+
+    swprintf(format, 32, L"%%.%ii", digits);
+    swprintf(buf, 32, format, value);
+
+    Content += buf;
+
+}
+
+
+//
+const wchar_t* AString::Get_Content()
+{
+    return Content.c_str();
+}
+
+
+//
+int AString::Get_Lenght()
+{
+    return Content.length();
+}
+
+
+//
+void AString::Clear()
+{
+    Content = L"";
+}
+
+
+
 // AsMessage_Menager
 std::queue<AMessage*> AsMessage_Menager::Messages_Queue;
 //

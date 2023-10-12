@@ -158,8 +158,47 @@ AColor* AColor_Fade::Get_Color(int fade_step)
 
 
 
+// AFont
+//
+AFont::AFont(int height, int weight, int family, const wchar_t *face_name)
+{
+    LOGFONT log_font{};
+
+    log_font.lfHeight = height;
+    log_font.lfWeight = weight;
+    log_font.lfOutPrecision = 3;
+    log_font.lfClipPrecision = 2;
+    log_font.lfQuality = 1;
+    log_font.lfPitchAndFamily = family;
+    wcscpy_s(log_font.lfFaceName, face_name);
+
+    Font_Handle = CreateFontIndirect(&log_font);
+
+}
+
+
+//
+AFont::~AFont()
+{
+    if (Font_Handle != 0)
+        DeleteObject(Font_Handle);
+}
+
+
+//
+void AFont::Select(HDC hdc) const
+{
+    SelectObject(hdc, Font_Handle);
+}
+
+
+
 // AsConfig
 bool AsConfig::Level_Has_Floor = false;
+const AFont AsConfig::Name_Font(-48, 700, 49, L"Consolas");
+const AFont AsConfig::Score_Font(-44, 700, 49, L"Consolas");
+const AFont AsConfig::Logo_Pop_Font(-128, 900, 34, L"Arial Black");
+const AFont AsConfig::Logo_Corn_Font(-96, 900, 34, L"Arial Black");
 int AsConfig::Current_Timer_Tick = 0;
 HWND AsConfig::HWnd;
 
@@ -417,49 +456,6 @@ bool AHit_Checker_List::Check_Hit(RECT &rect)
             return true;
 
     return false;
-}
-
-
-
-// AString
-//
-AString::AString()
-{
-
-}
-
-//
-AString::AString(const wchar_t* str)
-    :Content(str)
-{
-
-}
-
-
-//
-void AString::Append(int value)
-{
-    wchar_t buf[32];
-
-    //_itow_s(value, buf, 32, 10);
-    swprintf(buf, 32, L"%.6i", value);
-
-    Content += buf;
-
-}
-
-
-//
-const wchar_t* AString::Get_Content()
-{
-    return Content.c_str();
-}
-
-
-//
-int AString::Get_Lenght()
-{
-    return Content.length();
 }
 
 
