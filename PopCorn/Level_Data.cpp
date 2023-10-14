@@ -53,8 +53,8 @@ int ALevel_Data::Get_Available_Bricks_Count()
         }
     }
 
-    //return count;
-    return 1;
+    return count;
+    //return 1;
 }
 
 

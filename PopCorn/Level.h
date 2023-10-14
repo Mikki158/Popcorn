@@ -4,11 +4,13 @@
 #include <math.h>
 #include <Windows.h>
 
-#include "Active_Brick.h"
+//#include "Active_Brick.h"
 #include "Falling_Letter.h"
 #include "Info_Panel.h"
 #include "Level_Data.h"
 #include "Mop.h"
+#include "Level_Title.h"
+#include "Game_Title.h"
 
 //
 class APoint
@@ -20,44 +22,14 @@ public:
     int X, Y;
 };
 
-enum class ELevel_Title_State : unsigned char
-{
-    Missing,
-    Showing,
-    Hiding
-};
-
-//
-class AsLevel_Title : public AGraphics_Object
-{
-public:
-    AsLevel_Title();
-
-    virtual void Act();
-    virtual void Clear(HDC hdc, RECT& paint_area);
-    virtual void Draw(HDC hdc, RECT& paint_area);
-    virtual bool Is_Finished();
-
-    void Show(int level_number);
-    void Hide();
-
-private:
-    ELevel_Title_State Level_Title_State;
-    ALabel Level_Name, Level_Number;
-    RECT Title_Rect;
-    
-    static const int Width = 96;
-    static const int Height = 14;
-    static const int X_Pos = AsConfig::MAX_X_POS / 2 - Width / 2;
-    static const int Y_Pos = 150;
-};
-
 //
 class AsLevel: public AHit_Checker, public AGame_Object
 {
 public:
     AsLevel();
     ~AsLevel();
+
+    AsGame_Title Game_Title;
 
     virtual bool Check_Hit(double next_x_pos, double next_y_pos, ABall_Object* ball);
     virtual bool Check_Hit(double next_x_pos, double next_y_pos);

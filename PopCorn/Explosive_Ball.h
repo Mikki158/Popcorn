@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Border.h"
+#include "Config.h"
 
 //
 enum class EExplosive_Ball_State :unsigned char

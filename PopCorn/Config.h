@@ -49,7 +49,7 @@ private:
 class AFont
 {
 public:
-    AFont(int height, int weight, int family, const wchar_t* face_name);
+    AFont(int height, int weight, int family, const wchar_t* face_name, bool is_italic = false);
     ~AFont();
 
     void Select(HDC hdc) const;
@@ -79,10 +79,10 @@ public:
     static const int MAX_X_POS = LEVEL_X_OFFSET + CELL_WIDTH * LEVEL_WIDTH;
     static const int MAX_Y_POS = 199;
     static const int Max_Movers_Count = 10;
-    static const int Initial_Life_Count = 5;
+    static const int Initial_Life_Count = 0;
     static const int Max_Life_Count = 12;
     static const double D_GLOBAL_SCALE;
-    static const AFont Name_Font, Score_Font, Logo_Pop_Font, Logo_Corn_Font;
+    static const AFont Name_Font, Score_Font, Logo_Pop_Font, Logo_Corn_Font, Game_Over_Font;
     static int Current_Timer_Tick;
     static HWND HWnd;
 
@@ -106,7 +106,7 @@ public:
     static const int BRICK_HEIGHT = 7;
     static const int Max_Active_Bricks_Count = 10;
     static const int Max_Falling_Letters_Count = 10;
-    static const int Hits_Per_Letter = 1; // Вероятность выбить букву = 1.0 / Hits_Per_Letter
+    static const int Hits_Per_Letter = 10; // Вероятность выбить букву = 1.0 / Hits_Per_Letter
     
     static const AColor Pink_Color, Blue_Color, White_Color, Letter_Color, Teleport_Portal_Color, 
         Blue_Highlight_Unbreakable, Pink_Highlight_Unbreakable, Advertisement_Pink_Table, Advertisement_Blue_Table, 

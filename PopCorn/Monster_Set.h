@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Monster.h"
+#include "Border.h"
 
 //
 enum class EMonster_Set_State :unsigned char

@@ -1,6 +1,8 @@
 #pragma once
 
-#include "Explosive_Ball.h"
+#include "Explosion.h"
+#include "Gate.h"
+#include "Level.h"
 
 //
 enum class EMonster_State : unsigned char
@@ -21,7 +23,7 @@ enum class EEye_State :unsigned char
 };
 
 //
-class AMonster: public AHit_Checker, public AGame_Object
+class AMonster: public AHit_Checker, public AGame_Object, public AExplosion
 {
 public:
     AMonster();
@@ -66,11 +68,7 @@ protected:
 private:
     double Speed;
     bool Need_To_Freeze;
-    static const int Explosive_Balls_Count = 20;
 
-    std::vector<AExplosive_Ball> Explosive_Balls;
-
-    void Draw_Destroing(HDC hdc, RECT& paint_area);
     void Redraw_Monster();
     void Get_Monster_Rect(double x_pos, double y_pos, RECT& rect);
     void Change_Direction();

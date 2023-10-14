@@ -160,7 +160,7 @@ AColor* AColor_Fade::Get_Color(int fade_step)
 
 // AFont
 //
-AFont::AFont(int height, int weight, int family, const wchar_t *face_name)
+AFont::AFont(int height, int weight, int family, const wchar_t *face_name, bool is_italic)
 {
     LOGFONT log_font{};
 
@@ -171,6 +171,9 @@ AFont::AFont(int height, int weight, int family, const wchar_t *face_name)
     log_font.lfQuality = 1;
     log_font.lfPitchAndFamily = family;
     wcscpy_s(log_font.lfFaceName, face_name);
+
+    if (is_italic)
+        log_font.lfItalic = 255;
 
     Font_Handle = CreateFontIndirect(&log_font);
 
@@ -199,6 +202,7 @@ const AFont AsConfig::Name_Font(-48, 700, 49, L"Consolas");
 const AFont AsConfig::Score_Font(-44, 700, 49, L"Consolas");
 const AFont AsConfig::Logo_Pop_Font(-128, 900, 34, L"Arial Black");
 const AFont AsConfig::Logo_Corn_Font(-96, 900, 34, L"Arial Black");
+const AFont AsConfig::Game_Over_Font(-60, 700, 66, L"Comic Sans MS", true);
 int AsConfig::Current_Timer_Tick = 0;
 HWND AsConfig::HWnd;
 
@@ -207,7 +211,7 @@ const double AsConfig::Ball_RADIUS = 2.0 - 0.5 / GLOBAL_SCALE;
 const double AsConfig::Normal_Ball_Speed = 3.0;
 const double AsConfig::Moving_STEP_SIZE = 1.0 / GLOBAL_SCALE;
 const double AsConfig::START_BALL_Y_POS = 184.0;
-const double AsConfig::Ball_Accelerate = 1.001;
+const double AsConfig::Ball_Accelerate = 1.0005;
 const double AsConfig::Min_Ball_Angle = M_PI / 8.0;
 
 const AColor AsConfig::BG_Color(0, 0, 0);

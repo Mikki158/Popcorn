@@ -16,88 +16,6 @@ APoint::APoint(int x, int y)
 
 
 
-// AsLevel_Title
-// 
-AsLevel_Title::AsLevel_Title()
-    :Level_Title_State(ELevel_Title_State::Missing), Level_Name(X_Pos, Y_Pos, 72, Height, AsConfig::Name_Font, AsConfig::Blue_Color),
-    Level_Number(X_Pos + Width - 32, Y_Pos, 32, Height, AsConfig::Score_Font, AsConfig::White_Color)
-{
-    const int scale = AsConfig::GLOBAL_SCALE;
-
-    Level_Name.Content = L"УРОВЕНЬ";
-
-    Title_Rect.left = X_Pos * scale;
-    Title_Rect.top = Y_Pos * scale;
-    Title_Rect.right = Title_Rect.left + Width * scale;
-    Title_Rect.bottom = Title_Rect.top + Height * scale;
-}
-//
-void AsLevel_Title::Act()
-{
-    // !!! Надо сделать!
-}
-
-
-//
-void AsLevel_Title::Clear(HDC hdc, RECT& paint_area)
-{
-    if (Level_Title_State == ELevel_Title_State::Missing)
-        return;
-
-    AsTools::Rect(hdc, Title_Rect, AsConfig::BG_Color);
-}
-
-
-//
-void AsLevel_Title::Draw(HDC hdc, RECT& paint_area)
-{
-    RECT intersection_rect;
-
-    if (Level_Title_State != ELevel_Title_State::Showing)
-        return;
-
-    if (!IntersectRect(&intersection_rect, &paint_area, &Title_Rect))
-        return;
-
-    AsTools::Rect(hdc, Title_Rect, AsConfig::Pink_Color);
-
-    Level_Name.Draw(hdc);
-    Level_Number.Draw(hdc);
-}
-
-
-//
-bool AsLevel_Title::Is_Finished()
-{
-    return false; // !!! Надо сделать!
-}
-
-
-//
-void AsLevel_Title::Show(int level_number)
-{
-    Level_Number.Content.Clear();
-    Level_Number.Content.Append(level_number, 2);
-
-    Level_Title_State = ELevel_Title_State::Showing;
-
-    AsTools::Invalidate_Rect(Title_Rect);
-}
-
-
-//
-void AsLevel_Title::Hide()
-{
-    Level_Title_State = ELevel_Title_State::Hiding;
-
-    AsTools::Invalidate_Rect(Title_Rect);
-}
-
-
-//
-
-
-
 // AsLevel
 AsLevel* AsLevel::Level = nullptr;
 //
@@ -289,6 +207,7 @@ void AsLevel::Clear(HDC hdc, RECT& paint_area)
 
     Mop.Clear(hdc, paint_area);
     Level_Title.Clear(hdc, paint_area);
+    Game_Title.Clear(hdc, paint_area);
 }
 
 
@@ -296,7 +215,9 @@ void AsLevel::Clear(HDC hdc, RECT& paint_area)
 void AsLevel::Draw(HDC hdc, RECT& paint_area)
 {// вывод всех объектов уровня
 
-    RECT intersection_rect, brick_rect;;
+    RECT intersection_rect, brick_rect;
+
+    Game_Title.Draw(hdc, paint_area);
 
     if (Advertisement != nullptr)
         Advertisement->Draw(hdc, paint_area);
@@ -342,6 +263,7 @@ void AsLevel::Act()
         Advertisement->Act();
 
     Mop.Act();
+    Game_Title.Act();
 }
 
 
@@ -377,6 +299,7 @@ void AsLevel::Init()
     }
 
     //Mop.Erase_Level();
+    //Game_Title.Show(false);
 }
 
 
@@ -638,7 +561,7 @@ void AsLevel::Draw_Brick(HDC hdc, RECT brick_rect, int level_x, int level_y)
     switch (brick_type)
     {
     case EBrick_Type::None:
-        if (Advertisement != nullptr && Advertisement->Has_Brick_At(level_x, level_y))
+        if ((Advertisement != nullptr && Advertisement->Has_Brick_At(level_x, level_y)) || Game_Title.Is_Visible())
             break;
         // else - No break
 
@@ -677,6 +600,7 @@ void AsLevel::Draw_Brick(HDC hdc, RECT brick_rect, int level_x, int level_y)
         AsConfig::Throw();
         return;
     }
+
 }
 
 
@@ -866,7 +790,8 @@ bool AsLevel::On_Hit(int brick_x, int brick_y, ABall_Object* ball, bool vertical
 
     Redraw_Brick(brick_x, brick_y);
 
-    AsInfo_Panel::Update_Score(EScore_Event_Type::Hit_Brick);
+    if(!(brick_type == EBrick_Type::Unbreakable || brick_type == EBrick_Type::Teleport || brick_type == EBrick_Type::Invisible))
+        AsInfo_Panel::Update_Score(EScore_Event_Type::Hit_Brick);
 
     new_brick = (EBrick_Type)Current_Level[brick_y][brick_x];
 
@@ -1062,31 +987,31 @@ bool AsLevel::Add_Falling_Letter(int brick_x, int brick_y, EBrick_Type brick_typ
     letter_x = (brick_x * AsConfig::CELL_WIDTH + AsConfig::LEVEL_X_OFFSET) * AsConfig::GLOBAL_SCALE;
     letter_y = (brick_y * AsConfig::CELL_HEIGHT + AsConfig::LEVEL_Y_OFFSET) * AsConfig::GLOBAL_SCALE;
 
-    letter_type = ELetter_Type::G;
+    //letter_type = ELetter_Type::G;
     // 
-    //letter_type = AFalling_Letter::Get_Random_Letter_Type();
+    letter_type = AFalling_Letter::Get_Random_Letter_Type();
     // 
-    switch (AsTools::Rand(4))
-    {
-    case 0:
-        letter_type = ELetter_Type::L;
-        break;
-    
-    case 1:
-        letter_type = ELetter_Type::W;
-        break;
-    
-    case 2:
-        letter_type = ELetter_Type::K;
-        break;
+    //switch (AsTools::Rand(4))
+    //{
+    //case 0:
+    //    letter_type = ELetter_Type::L;
+    //    break;
+    //
+    //case 1:
+    //    letter_type = ELetter_Type::W;
+    //    break;
+    //
+    //case 2:
+    //    letter_type = ELetter_Type::K;
+    //    break;
 
-    case 3:
-        letter_type = ELetter_Type::O;
-        break;
-    
-    default:
-        break;
-    }
+    //case 3:
+    //    letter_type = ELetter_Type::O;
+    //    break;
+    //
+    //default:
+    //    break;
+    //}
 
     falling_letter = new AFalling_Letter(brick_type, letter_type, letter_x, letter_y);
     Falling_Letters.push_back(falling_letter);
