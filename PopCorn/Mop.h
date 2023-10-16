@@ -51,7 +51,7 @@ private:
 
     static const int Width = (AsConfig::LEVEL_WIDTH - 1) * AsConfig::CELL_WIDTH + AsConfig::BRICK_WIDTH;
     static const int Height = AsConfig::BRICK_HEIGHT;
-    static const int Expansion_Timeout = AsConfig::FPS * 3;
+    static const int Expansion_Timeout = AsConfig::FPS * 2;
     static const int Lifting_Timeout = AsConfig::FPS;
 
     void Act_Lifring(bool lift_up);

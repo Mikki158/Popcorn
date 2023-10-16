@@ -30,13 +30,16 @@ public:
 
     void Increase_Life_Count();
     bool Decrease_Life_Count();
+    bool Edit_Player_Name(wchar_t symbol);
 
     static void Update_Score(EScore_Event_Type event_type);
 
     AIndicator Floor_Indicator, Monster_Indicator;
 
 private:
+    bool Expecting_User_Name;
     int Extra_Lives_Count;
+    int Start_Tick;
     //HFONT Logo_Pop_Font, Logo_Corn_Font;
     AColor Dark_Blue, Dark_Pink;
 
@@ -60,6 +63,7 @@ private:
     static const int Score_Height = 90;
     static const int Score_Value_Offset = 20;
     static const int Indicator_Y_Offset = 55;
+    static const int Blink_Timeout = AsConfig::FPS / 2;
 
 
     void Choose_Font();

@@ -139,7 +139,23 @@ void AString::Append(int value, int digits)
     swprintf(buf, 32, format, value);
 
     Content += buf;
+}
 
+
+//
+void AString::Append(wchar_t symbol)
+{
+    Content.append(1, symbol);
+}
+
+
+//
+void AString::Delete_Last_Symbol()
+{
+    int len = (int)Content.size();
+
+    if (len > 0)
+        Content.resize(len - 1);
 }
 
 

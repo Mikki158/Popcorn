@@ -242,6 +242,10 @@ LRESULT CALLBACK AsMain_Window::Window_Proc(HWND hWnd, UINT message, WPARAM wPar
 		}
 		break;
 
+	case WM_CHAR:
+		Self->Engine.On_Char(wParam);
+		break;
+
 
 	case WM_TIMER:
 		if (wParam == Self->Engine.TIMER_ID)
@@ -412,14 +416,14 @@ INT_PTR CALLBACK AsMain_Window::About(HWND hDlg, UINT message, WPARAM wParam, LP
 Игра и уровни
 + 1. Список первых 10 уровней
 2. Состояние игры 
-2.1 заставка
-2.2 анимация начала уровня
+X 2.1 заставка
++ 2.2 анимация начала уровня
 + 2.3 играем уровень
 + 2.4 теряем жизнь
 + 2.5 переход на следующий уровень
 + 2.5.1 нормальный 
-2.5.2 досрочный
-2.6 окончание игры
+X 2.5.2 досрочный
+X 2.6 окончание игры
 
 3. Финальная настройка
 3.1 Исправляем 1-й уровень 

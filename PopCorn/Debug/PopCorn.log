@@ -1,10 +1,4 @@
-﻿  Border.cpp
-  Engine.cpp
-  Final_Letter.cpp
-  Game_Title.cpp
-  Level.cpp
-  Mian.cpp
-  Monster.cpp
-  Monster_Set.cpp
+﻿  Engine.cpp
+  Level_Data.cpp
   Generating Code...
   PopCorn.vcxproj -> D:\Work\PopCornProject\PopCorn\Popcorn\Debug\PopCorn.exe

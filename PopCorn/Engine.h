@@ -25,12 +25,14 @@ enum class EGame_State: unsigned char
 {
     Test_Ball,
 
+    Enter_Name,
     Mop_Level,
     Play_Level,
     Lost_Ball,
     Restart_Level,
     Finish_Level,
-    Game_Over
+    Game_Over,
+    Game_Won
 };
 
 //
@@ -48,9 +50,11 @@ public:
     int On_Timer();
     void Restart_Level();
     void Game_Over();
+    void On_Char(wchar_t symbol);
 
 
 private:
+    bool Got_Name;
     double Rest_Distance;
 
     EGame_State Game_State;

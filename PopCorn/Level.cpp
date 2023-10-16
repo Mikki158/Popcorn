@@ -291,10 +291,24 @@ void AsLevel::Init()
         level_data = new ALevel_Data(i + 1);
         Levels_Data.push_back(level_data);
 
-        if(i == 7)
+        switch (i)
+        {
+        case 7:
             level_data->Advertisement = new AAdvertisement(4, 7, 2, 3);
-        else if(i == 9)
+            break;
+
+        case 9:
             level_data->Advertisement = new AAdvertisement(1, 9, 2, 3);
+            break;
+
+        case 20:
+            level_data->Advertisement = new AAdvertisement(7, 8, 2, 3);
+            break;
+
+        case 23:
+            level_data->Advertisement = new AAdvertisement(5, 6, 2, 3);
+            break;
+        }
 
     }
 
@@ -351,7 +365,7 @@ void AsLevel::Stop()
 //
 void AsLevel::Mop_Level(int next_level)
 {
-    if (next_level < 1 || next_level >= AsConfig::Max_Life_Count)
+    if (next_level < 1 || next_level > ALevel_Data::Max_Level_Number)
         AsConfig::Throw();
 
     Next_Level_Number = next_level;
