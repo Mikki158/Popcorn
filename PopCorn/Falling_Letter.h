@@ -1,33 +1,33 @@
-#pragma once
+п»ї#pragma once
 
 #include "Active_Brick.h"
 
 //
 enum class ELetter_Type: unsigned char
 {
-    O, // "Отмена"
-    I, // "Инверсия"
-    C, // "Скорость"
-    M, // "Монстры"
-    G, // "Жизнь"
-    K, // "Клей"
-    W, // "Шире"
+    O, // "РћС‚РјРµРЅР°"
+    I, // "РРЅРІРµСЂСЃРёСЏ"
+    C, // "РЎРєРѕСЂРѕСЃС‚СЊ"
+    M, // "РњРѕРЅСЃС‚СЂС‹"
+    G, // "Р–РёР·РЅСЊ"
+    K, // "РљР»РµР№"
+    W, // "РЁРёСЂРµ"
 
-    P, // "Пол"
-    L, // "Лазер"
-    T, // "Три"
+    P, // "РџРѕР»"
+    L, // "Р›Р°Р·РµСЂ"
+    T, // "РўСЂРё"
 
-    PLUS, // "Переход на следующий уровень"
+    PLUS, // "РџРµСЂРµС…РѕРґ РЅР° СЃР»РµРґСѓСЋС‰РёР№ СѓСЂРѕРІРµРЅСЊ"
 
-    MAX // Позволяет узнать число элементов в перечислении
+    MAX // РџРѕР·РІРѕР»СЏРµС‚ СѓР·РЅР°С‚СЊ С‡РёСЃР»Рѕ СЌР»РµРјРµРЅС‚РѕРІ РІ РїРµСЂРµС‡РёСЃР»РµРЅРёРё
 };
 
 //
 enum class EFalling_Letter_State: unsigned char
 {
     Normal,
-    Finalizing, // Начинаем удалять объект
-    Finished // Когда объект можно удалять
+    Finalizing, // РќР°С‡РёРЅР°РµРј СѓРґР°Р»СЏС‚СЊ РѕР±СЉРµРєС‚
+    Finished // РљРѕРіРґР° РѕР±СЉРµРєС‚ РјРѕР¶РЅРѕ СѓРґР°Р»СЏС‚СЊ
 };
 
 //
@@ -63,7 +63,7 @@ private:
     const EBrick_Type brick_type;
 
     static int All_Letters_Popularity;
-    static int Letters_Popularity[(int)ELetter_Type::MAX]; // "Вес" каждой буквы
+    static int Letters_Popularity[(int)ELetter_Type::MAX]; // "Р’РµСЃ" РєР°Р¶РґРѕР№ Р±СѓРєРІС‹
 
     static const int Ticks_Per_Step = 4;
     static const int Max_Rotation_Step = 16;

@@ -79,7 +79,7 @@ public:
     static const int MAX_X_POS = LEVEL_X_OFFSET + CELL_WIDTH * LEVEL_WIDTH;
     static const int MAX_Y_POS = 199;
     static const int Max_Movers_Count = 10;
-    static const int Initial_Life_Count = 0;
+    static const int Initial_Life_Count = 5;
     static const int Max_Life_Count = 12;
     static const double D_GLOBAL_SCALE;
     static const AFont Name_Font, Score_Font, Logo_Pop_Font, Logo_Corn_Font, Game_Over_Font;
@@ -104,14 +104,18 @@ public:
     // Brick
     static const int BRICK_WIDTH = 15;
     static const int BRICK_HEIGHT = 7;
-    static const int Max_Active_Bricks_Count = 10;
+    static const int Max_Active_Bricks_Count = 40;
     static const int Max_Falling_Letters_Count = 10;
-    static const int Hits_Per_Letter = 10; // Вероятность выбить букву = 1.0 / Hits_Per_Letter
+    static const int Hits_Per_Letter = 4; // Вероятность выбить букву = 1.0 / Hits_Per_Letter
     
     static const AColor Pink_Color, Blue_Color, White_Color, Letter_Color, Teleport_Portal_Color, 
         Blue_Highlight_Unbreakable, Pink_Highlight_Unbreakable, Advertisement_Pink_Table, Advertisement_Blue_Table, 
         Laser_Color, Gate_Color, Monster_Dark_Pink_Color, Monster_Cornea_Color, Monster_Iris_Color, Monster_Comet_Tail,
         BG_Outline_Color, Explosion_Pink_Color, Explosion_Blue_Color, Shadow_Color, Highlight_Color;
+
+    static AColor_Fade Fading_Blue_Brick_Colors;
+    static AColor_Fade Fading_Pink_Brick_Colors;
+    static AColor_Fade Fading_Blue_Mop_Indicator_Colors;
 
 
     // Platform
@@ -122,6 +126,13 @@ public:
     static const int Platform_NORMAL_INNER_WIDTH = Platform_NORMAL_WIDTH - Platform_CIRCLE_SIZE;
     static const int Platform_Height = 7;
     static const int Platform_Expanding_Inner_Width = 12;
+
+    static const int Max_Monsters_Count = 3;
+
+    static const int MAX_BRICK_FADE_STEP = FPS;
+    static const int MAX_Mop_Indicator_FADE_STEP = AsConfig::FPS * 4 / 10; // 0.4 секунды
+
+
 
     static void Throw();
 };

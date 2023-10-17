@@ -50,6 +50,8 @@ public:
 
 
 private:
+    int Recent_Hits_Pos;
+    int Recent_Hits_Count;
     double Ball_Direction, Prev_Ball_Direction;
     double Center_X_Pos;
     double Center_Y_Pos;
@@ -64,6 +66,7 @@ private:
     RECT Ball_Rect, Prev_Ball_Rect;
     RECT Parachute_Rect, Prev_Parachute_Rect; 
 
+    APoint Recent_Hits[16];
 
     static const int On_Platform_Timeout = 10 * AsConfig::FPS;// Время нахождения на платформе
     static const int Parachute_Size = 15;
@@ -72,4 +75,5 @@ private:
     void Draw_Parachute(HDC hdc, RECT &paint_area);
     void Redraw_Parachute();
     void Clear_Parachute(HDC hdc);
+    bool Detect_Hits_Cycling();
 };

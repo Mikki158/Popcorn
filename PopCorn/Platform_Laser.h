@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 
 #include "Platform_State.h"
 #include "Laser_Beam_Set.h"
@@ -30,7 +30,7 @@ private:
     int Last_Laser_Shot_Tick;
 
     static const int Max_Laser_Transformatio_Step = 20;
-    static const int Laser_Shot_Timeout = AsConfig::FPS / 2; // 2 раза в секунду
+    static const int Laser_Shot_Timeout = AsConfig::FPS / 2; // 2 СЂР°Р·Р° РІ СЃРµРєСѓРЅРґСѓ
 
     AsPlatform_State* Platform_State;
     AColor* Inner_Color; // Use, Not Own

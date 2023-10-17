@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 
 #include "Falling_Letter.h"
 #include "Indicator.h"
@@ -32,7 +32,7 @@ public:
     bool Decrease_Life_Count();
     bool Edit_Player_Name(wchar_t symbol);
 
-    static void Update_Score(EScore_Event_Type event_type);
+    static void Update_Score(EScore_Event_Type event_type, EBrick_Type brick_type = EBrick_Type::None);
 
     AIndicator Floor_Indicator, Monster_Indicator;
 
@@ -40,16 +40,14 @@ private:
     bool Expecting_User_Name;
     int Extra_Lives_Count;
     int Start_Tick;
-    //HFONT Logo_Pop_Font, Logo_Corn_Font;
     AColor Dark_Blue, Dark_Pink;
 
     AFalling_Letter Letter_P, Letter_G, Letter_M;
 
-    //AString Player_Name;
     ALabel Player_Name_Label, Score_Label;
 
-    static RECT Logo_Rect; // Область логотипа
-    static RECT Data_Rect; // Область данных (имени игрока, счета и индикаторов)
+    static RECT Logo_Rect; // РћР±Р»Р°СЃС‚СЊ Р»РѕРіРѕС‚РёРїР°
+    static RECT Data_Rect; // РћР±Р»Р°СЃС‚СЊ РґР°РЅРЅС‹С… (РёРјРµРЅРё РёРіСЂРѕРєР°, СЃС‡РµС‚Р° Рё РёРЅРґРёРєР°С‚РѕСЂРѕРІ)
 
     static int Score;
 
@@ -66,8 +64,6 @@ private:
     static const int Blink_Timeout = AsConfig::FPS / 2;
 
 
-    void Choose_Font();
-    //void Draw_String(HDC hdc, RECT rect, AString &str, bool draw_name);
     void Draw_Extra_Life(HDC hdc, int x_pos, int y_pos);
     void Show_Extra_Lives(HDC hdc);
 

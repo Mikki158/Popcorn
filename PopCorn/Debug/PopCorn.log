@@ -1,4 +1,6 @@
-﻿  Engine.cpp
-  Level_Data.cpp
+﻿  Config.cpp
+  Engine.cpp
+  Level.cpp
+  Mian.cpp
   Generating Code...
   PopCorn.vcxproj -> D:\Work\PopCornProject\PopCorn\Popcorn\Debug\PopCorn.exe

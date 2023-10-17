@@ -8,12 +8,12 @@ AHit_Checker_List ABall::Hit_Checker_List;
 
 //
 ABall::ABall()
-    :Ball_State(EBall_State::Disabled), Prev_Ball_State(EBall_State::Disabled), Ball_Direction(0.0), Testing_Is_Active(false),
-    Center_X_Pos(-10.0), Center_Y_Pos(0.0), Ball_Speed(0.0), Ball_Rect(), Prev_Ball_Rect(), Test_Iteration(0), 
-    Parachute_Rect(), Prev_Parachute_Rect(), Rest_Test_Distance(), Prev_Ball_Direction(0.0), Prev_Ball_Speed(0.0),
-    Release_Timer_Tick(0)
+    :Ball_State(EBall_State::Disabled), Prev_Ball_State(EBall_State::Disabled), Recent_Hits_Pos(0), 
+    Recent_Hits_Count(0), Ball_Direction(0.0), Testing_Is_Active(false), Center_X_Pos(-10.0), Center_Y_Pos(0.0), 
+    Ball_Speed(0.0), Ball_Rect(), Prev_Ball_Rect(), Test_Iteration(0), Parachute_Rect(), Prev_Parachute_Rect(), 
+    Rest_Test_Distance(), Prev_Ball_Direction(0.0), Prev_Ball_Speed(0.0), Release_Timer_Tick(0)
 {
-    //Set_State(EBall_State::Normal, -10);
+
 }
 
 
@@ -64,7 +64,7 @@ void ABall::Set_Direction(double new_direction)
     // 3. Не позволим приближаться к вертикальной оси ближе, чем на угол AsConfig::Min_Ball_Angle
     // 3.1 Сверху
     // 3.1.1 Справа
-    if (new_direction < M_PI_2 - min_angle && new_direction < M_PI_2)
+    if (new_direction > M_PI_2 - min_angle && new_direction < M_PI_2)
         new_direction = M_PI_2 - min_angle;
 
     // 3.1.2 Слева
@@ -92,7 +92,6 @@ void ABall::Set_State(EBall_State new_state, double x_pos, double y_pos)
     switch (new_state)
     {
     case EBall_State::Disabled:
-        //Result_Distance = 0.0;
         Ball_Speed = 0.0;
         break;
 
@@ -100,7 +99,6 @@ void ABall::Set_State(EBall_State new_state, double x_pos, double y_pos)
         Center_X_Pos = x_pos;
         Center_Y_Pos = y_pos;
         Ball_Speed = AsConfig::Normal_Ball_Speed;
-        //Result_Distance = 0.0;
         Ball_Direction = M_PI_4;
         Redraw_Ball();
         break;
@@ -120,10 +118,7 @@ void ABall::Set_State(EBall_State new_state, double x_pos, double y_pos)
         Center_X_Pos = x_pos;
         Center_Y_Pos = y_pos;
         Prev_Ball_Speed = Ball_Speed;
-        //Ball_Speed = 0.0;
-        //Result_Distance = 0.0;
         Prev_Ball_Direction = Ball_Direction;
-        //Ball_Direction = M_PI_4;
         Release_Timer_Tick = AsConfig::Current_Timer_Tick + On_Platform_Timeout;
         Redraw_Ball();
         break;
@@ -133,7 +128,6 @@ void ABall::Set_State(EBall_State new_state, double x_pos, double y_pos)
             AsConfig::Throw(); // В это состояние можно перейти только из EBall_State::On_Parachute
 
         Ball_Speed = 0.0;
-        //Result_Distance = 0.0;
         Redraw_Ball();
         Redraw_Parachute();
         break;
@@ -147,7 +141,6 @@ void ABall::Set_State(EBall_State new_state, double x_pos, double y_pos)
             AsConfig::Throw(); // Только из этих состояний можно войти в телепорт мячик
 
         Ball_Speed = 0.0;
-        //Result_Distance = 0.0;
         Center_X_Pos = x_pos;
         Center_Y_Pos = y_pos;
         Redraw_Ball();
@@ -284,8 +277,6 @@ void ABall::Advance(double max_speed)
         next_y_pos = Center_Y_Pos - next_step * sin(Ball_Direction);
 
         // корректируем позицию при отражении:
-        //for (int i = 0; i < Hit_Checkers_Count; i++)
-        //    got_hit |= Hit_checkers[i]->Check_Hit(next_x_pos, next_y_pos, this); // от рамки
         got_hit = Hit_Checker_List.Check_Hit(next_x_pos, next_y_pos, this);
 
 
@@ -296,9 +287,11 @@ void ABall::Advance(double max_speed)
             if (prev_hits_count > max_hits_count)
             {
                 Ball_Direction += AsConfig::Min_Ball_Angle;
-
                 prev_hits_count = 0;
             }
+
+            if (Detect_Hits_Cycling())
+                Set_Direction(Ball_Direction += AsConfig::Min_Ball_Angle);
         }
         else
         {
@@ -434,12 +427,14 @@ bool ABall::Is_Finished()
 void ABall::Set_For_Test()
 {
     Testing_Is_Active = true;
-    Rest_Test_Distance = 50.0;
+    Rest_Test_Distance = 5000.0;
 
-    Set_State(EBall_State::Normal, 100 + Test_Iteration, 100);
-    Ball_Direction = M_PI_4;
+    //Set_State(EBall_State::Normal, 100 + Test_Iteration, 100);
+    Set_State(EBall_State::Normal, 30, 20);
+    Ball_Direction = M_PI * 2.0 - M_PI_4;
+    Ball_Speed = AsConfig::Normal_Ball_Speed;
 
-    Test_Iteration += 1;
+    Test_Iteration++;
 }
 
 
@@ -475,7 +470,6 @@ void ABall::Release()
 {// Продолжить принудительное движение мячика
 
     Set_State(EBall_State::Normal, Center_X_Pos, Center_Y_Pos);
-
     Ball_Speed = Prev_Ball_Speed;
 
     if (Ball_Speed < AsConfig::Normal_Ball_Speed)
@@ -582,9 +576,8 @@ void ABall::Draw_Parachute(HDC hdc, RECT& paint_area)
     MoveToEx(hdc, Parachute_Rect.right - 4 * scale + 1, line_y, 0);
     LineTo(hdc, ball_center_x, ball_center_y);
 
-    MoveToEx(hdc, Parachute_Rect.right, line_y - 1, 0);
+    MoveToEx(hdc, Parachute_Rect.right - 1, line_y - 1, 0);
     LineTo(hdc, ball_center_x, ball_center_y);
-
 }
 
 
@@ -601,4 +594,42 @@ void ABall::Clear_Parachute(HDC hdc)
 {// Очищаем фон
     AsConfig::BG_Color.Select(hdc);
     AsTools::Round_Rect(hdc, Prev_Parachute_Rect);
+}
+
+
+//
+bool ABall::Detect_Hits_Cycling()
+{
+    int matched_pos_count;
+    int buffer_len = sizeof(Recent_Hits) / sizeof(Recent_Hits[0]);
+
+    Recent_Hits[Recent_Hits_Pos++].Set_As((int)Center_X_Pos, (int)Center_Y_Pos);
+
+    if (Recent_Hits_Pos >= buffer_len)
+        Recent_Hits_Pos = 0; // Заворачиваем позицию в начало буфера
+
+    Recent_Hits_Count++;
+
+    if (Recent_Hits_Count < buffer_len)
+        return false; // Не подсчитываем повторения, пока не наберём buffer_len столкновений
+
+    // Сканируем "окнами" по 3 столкновения
+    for (int curr_pos = 3; curr_pos < buffer_len; curr_pos++)
+    {
+        matched_pos_count = 0;
+
+        for (int i = 0; i < 3; i++)
+        {
+            if (Recent_Hits[i] == Recent_Hits[curr_pos + i])
+                matched_pos_count++;
+        }
+
+        if (matched_pos_count == 3)
+        {
+            Recent_Hits_Count = 0; // Начинаем набирать статистику снова, чтобы не учитывать предыдущие серии
+            return true;
+        }
+    }
+
+    return false;
 }

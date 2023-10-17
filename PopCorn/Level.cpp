@@ -1,21 +1,5 @@
 ﻿#include "Level.h"
 
-// APoint
-// 
-APoint::APoint()
-    :X(0), Y(0)
-{
-
-}
-//
-APoint::APoint(int x, int y)
-    :X(x), Y(y)
-{
-
-}
-
-
-
 // AsLevel
 AsLevel* AsLevel::Level = nullptr;
 //
@@ -286,9 +270,9 @@ void AsLevel::Init()
 
     memset(Current_Level, 0, sizeof(Current_Level));
 
-    for (int i = 0; i < ALevel_Data::Max_Level_Number; i++)
+    for (int i = 0; i <= ALevel_Data::Max_Level_Number; i++)
     {
-        level_data = new ALevel_Data(i + 1);
+        level_data = new ALevel_Data(i);
         Levels_Data.push_back(level_data);
 
         switch (i)
@@ -308,12 +292,29 @@ void AsLevel::Init()
         case 23:
             level_data->Advertisement = new AAdvertisement(5, 6, 2, 3);
             break;
+
+        case 30:
+            level_data->Advertisement = new AAdvertisement(5, 1, 2, 3);
+            break;
+
+        case 34:
+            level_data->Advertisement = new AAdvertisement(5, 5, 2, 3);
+            break;
+
+        case 39:
+            level_data->Advertisement = new AAdvertisement(2, 10, 2, 3);
+            break;
+
+        case 42:
+            level_data->Advertisement = new AAdvertisement(5, 3, 2, 3);
+            break;
+
+        case 45:
+            level_data->Advertisement = new AAdvertisement(7, 8, 2, 3);
+            break;
         }
 
     }
-
-    //Mop.Erase_Level();
-    //Game_Title.Show(false);
 }
 
 
@@ -323,12 +324,15 @@ void AsLevel::Set_Current_Level(int level_number)
     EBrick_Type brick_type;
     ALevel_Data* level_data;
 
-    if (level_number < 1 || level_number > (int)Levels_Data.size())
+    if (level_number < 0 || level_number > (int)Levels_Data.size())
         AsConfig::Throw();
 
     Current_Level_Number = level_number;
 
-    level_data = Levels_Data[level_number - 1];
+    if (Current_Level_Number == 0)
+        AsTools::Invalidate_Rect(Level_Rect);
+
+    level_data = Levels_Data[level_number];
 
     memcpy(Current_Level, level_data->Level, sizeof(Current_Level));
 
@@ -520,7 +524,6 @@ bool AsLevel::Is_Level_Mopping_Done()
 //
 void AsLevel::Act_Objects(std::vector<AGraphics_Object*> &falling_letters)
 {
-    //std::vector<AFalling_Letter*>::iterator it;
     auto it = falling_letters.begin();
 
     while( it != falling_letters.end())
@@ -774,7 +777,7 @@ void AsLevel::Cancel_All_Activity()
 bool AsLevel::On_Hit(int brick_x, int brick_y, ABall_Object* ball, bool vertical_hit)
 {
     bool can_reflect = true;
-    EBrick_Type brick_type, new_brick;
+    EBrick_Type brick_type, origin_brick, new_brick;
     AMessage* message;
 
     if (brick_x == 1 && brick_y == 1)
@@ -782,7 +785,8 @@ bool AsLevel::On_Hit(int brick_x, int brick_y, ABall_Object* ball, bool vertical
         int yy = 1;
     }
 
-    brick_type = (EBrick_Type)Current_Level[brick_y][brick_x];
+    origin_brick = (EBrick_Type)Current_Level[brick_y][brick_x];
+    brick_type = origin_brick;
 
     if (ball == nullptr && brick_type == EBrick_Type::Parachute)
     {
@@ -804,12 +808,11 @@ bool AsLevel::On_Hit(int brick_x, int brick_y, ABall_Object* ball, bool vertical
 
     Redraw_Brick(brick_x, brick_y);
 
-    if(!(brick_type == EBrick_Type::Unbreakable || brick_type == EBrick_Type::Teleport || brick_type == EBrick_Type::Invisible))
-        AsInfo_Panel::Update_Score(EScore_Event_Type::Hit_Brick);
+    AsInfo_Panel::Update_Score(EScore_Event_Type::Hit_Brick, origin_brick);
 
     new_brick = (EBrick_Type)Current_Level[brick_y][brick_x];
 
-    if (new_brick == EBrick_Type::None)
+    if (new_brick == EBrick_Type::None || (origin_brick == EBrick_Type::Ad && new_brick == EBrick_Type::Invisible))
         Available_Bricks_Count--;
 
     if (Available_Bricks_Count <= 0)
@@ -1000,32 +1003,9 @@ bool AsLevel::Add_Falling_Letter(int brick_x, int brick_y, EBrick_Type brick_typ
 
     letter_x = (brick_x * AsConfig::CELL_WIDTH + AsConfig::LEVEL_X_OFFSET) * AsConfig::GLOBAL_SCALE;
     letter_y = (brick_y * AsConfig::CELL_HEIGHT + AsConfig::LEVEL_Y_OFFSET) * AsConfig::GLOBAL_SCALE;
-
-    //letter_type = ELetter_Type::G;
-    // 
-    letter_type = AFalling_Letter::Get_Random_Letter_Type();
-    // 
-    //switch (AsTools::Rand(4))
-    //{
-    //case 0:
-    //    letter_type = ELetter_Type::L;
-    //    break;
-    //
-    //case 1:
-    //    letter_type = ELetter_Type::W;
-    //    break;
-    //
-    //case 2:
-    //    letter_type = ELetter_Type::K;
-    //    break;
-
-    //case 3:
-    //    letter_type = ELetter_Type::O;
-    //    break;
-    //
-    //default:
-    //    break;
-    //}
+ 
+    //letter_type = AFalling_Letter::Get_Random_Letter_Type();
+    letter_type = ELetter_Type::PLUS;
 
     falling_letter = new AFalling_Letter(brick_type, letter_type, letter_x, letter_y);
     Falling_Letters.push_back(falling_letter);

@@ -1,4 +1,4 @@
-#include "Monster_Set.h"
+п»ї#include "Monster_Set.h"
 
 // AsMonster_Set
 // 
@@ -67,14 +67,14 @@ void AsMonster_Set::Act()
         if (Is_Frozen)
             break;
 
-        // Считываем количество живых монстров 
+        // РЎС‡РёС‚С‹РІР°РµРј РєРѕР»РёС‡РµСЃС‚РІРѕ Р¶РёРІС‹С… РјРѕРЅСЃС‚СЂРѕРІ 
         current_alive_count = 0;
 
         for (auto* monster : Monsters)
-            if (monster->Is_Finished()) // должно быть !monster->Is_Finished() !!!
+            if (!monster->Is_Finished())
                 current_alive_count++;
 
-        //Добавляем нового монстра, если можно
+        //Р”РѕР±Р°РІР»СЏРµРј РЅРѕРІРѕРіРѕ РјРѕРЅСЃС‚СЂР°, РµСЃР»Рё РјРѕР¶РЅРѕ
 
         if (current_alive_count < Max_Alive_Monsters_Count)
         {
@@ -147,7 +147,7 @@ void AsMonster_Set::Emit_At_Gate(int gate_index)
     if (gate_index < 0 || gate_index >= AsConfig::Gate_Count)
         AsConfig::Throw();
 
-    if (Monsters.size() >= Max_Monsters_Count)
+    if (Monsters.size() >= AsConfig::Max_Monsters_Count)
         return;
     
     monster_type = AsTools::Rand(2);
@@ -160,7 +160,7 @@ void AsMonster_Set::Emit_At_Gate(int gate_index)
     Monsters.push_back(monster);
     
     if (monster == nullptr)
-        return; // Все монстры - заняты (уже на поле)
+        return; // Р’СЃРµ РјРѕРЅСЃС‚СЂС‹ - Р·Р°РЅСЏС‚С‹ (СѓР¶Рµ РЅР° РїРѕР»Рµ)
 
     Border->Get_Gate_Pos(gate_index, gate_x_pos, gate_y_pos);
 

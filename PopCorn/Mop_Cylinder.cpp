@@ -1,4 +1,4 @@
-#include "Mop_Cylinder.h"
+п»ї#include "Mop_Cylinder.h"
 
 // AMop_Cylinder
 const int AMop_Cylinder::Max_Cylinder_Height[4] = { 88, 47, 37, 15 };
@@ -13,7 +13,7 @@ AMop_Cylinder::AMop_Cylinder(int x_pos, int y_pos, int width, int max_height)
 //
 void AMop_Cylinder::Act()
 {
-    // !!! Надо сделать!
+    // Р—Р°РіР»СѓС€РєР°, С‚.Рє. СЌС‚РѕС‚ РјРµС‚РѕРґ РЅРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ
 }
 
 
@@ -39,7 +39,7 @@ void AMop_Cylinder::Draw(HDC hdc, RECT& paint_area)
         return;
 
 
-    // 1. Крепление цилиндра
+    // 1. РљСЂРµРїР»РµРЅРёРµ С†РёР»РёРЅРґСЂР°
     rect.left = X_Pos * scale;
     rect.top = Y_Pos * scale;
     rect.right = rect.left + Width * scale;
@@ -53,7 +53,7 @@ void AMop_Cylinder::Draw(HDC hdc, RECT& paint_area)
     AsTools::Rect(hdc, X_Pos + Width - 5, Y_Pos + 1, 1, Binding_Height - 2, AsConfig::BG_Color);
     AsTools::Rect(hdc, X_Pos + Width - 3, Y_Pos + 1, 1, Binding_Height - 2, AsConfig::BG_Color);
 
-    // 2. Цилиндр
+    // 2. Р¦РёР»РёРЅРґСЂ
     AsTools::Rect(hdc, X_Pos + 2, Y_Pos + Binding_Height, 2, Height - Binding_Height, AsConfig::White_Color);
     AsTools::Rect(hdc, X_Pos + 4, Y_Pos + Binding_Height, 1, Height - Binding_Height, AsConfig::Blue_Color);
     AsTools::Rect(hdc, X_Pos + 5, Y_Pos + Binding_Height, 1, Height - Binding_Height, AsConfig::White_Color);
@@ -64,7 +64,7 @@ void AMop_Cylinder::Draw(HDC hdc, RECT& paint_area)
 //
 bool AMop_Cylinder::Is_Finished()
 {
-    return false; // !!! Надо сделать!
+    return false; // Р—Р°РіР»СѓС€РєР°, С‚.Рє. СЌС‚РѕС‚ РјРµС‚РѕРґ РЅРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ
 }
 
 

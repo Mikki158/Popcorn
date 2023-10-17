@@ -1,9 +1,6 @@
-#include "Explosive_Ball.h"
+п»ї#include "Explosive_Ball.h"
 
 // AExplosive_Ball
-AColor_Fade AExplosive_Ball::Fading_Pink_Colors(AsConfig::Pink_Color, MAX_FADE_STEP);
-AColor_Fade AExplosive_Ball::Fading_Blue_Colors(AsConfig::Blue_Color, MAX_FADE_STEP);
-
 //
 AExplosive_Ball::AExplosive_Ball()
     :Is_Pink(false), X_Pos(0), Y_Pos(0), Step_Count(0), Start_Expanding_Tick(0), Start_Fading_Tick(0), Time_Offset(0),
@@ -54,7 +51,7 @@ void AExplosive_Ball::Act()
 //
 void AExplosive_Ball::Clear(HDC hdc, RECT& paint_area)
 {
-    // Заглушка, не используется
+    // Р—Р°РіР»СѓС€РєР°, РЅРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ
 }
 
 
@@ -94,12 +91,12 @@ void AExplosive_Ball::Draw(HDC hdc, RECT& paint_area)
         else
         {
             ratio = (double)curr_timeout / (double)Fading_Timeout;
-            color_index = (int)round(ratio * (double)(MAX_FADE_STEP - 1));
+            color_index = (int)round(ratio * (double)(AsConfig::MAX_BRICK_FADE_STEP - 1));
 
             if (Is_Pink)
-                color = Fading_Pink_Colors.Get_Color(color_index);
+                color = AsConfig::Fading_Pink_Brick_Colors.Get_Color(color_index);
             else
-                color = Fading_Blue_Colors.Get_Color(color_index);
+                color = AsConfig::Fading_Blue_Brick_Colors.Get_Color(color_index);
 
             AsTools::Ellipse(hdc, Ball_Rect, *color);
         }
@@ -152,6 +149,4 @@ void AExplosive_Ball::Update_Ball_Rect()
     Ball_Rect.top = Y_Pos - (int)(Size / 2.0);
     Ball_Rect.right = Ball_Rect.left + (int)Size;
     Ball_Rect.bottom = Ball_Rect.top + (int)Size;
-
-    //AsTools::Invalidate_Rect(Ball_Rect);
 }

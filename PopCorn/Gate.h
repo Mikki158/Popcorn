@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 
 #include "Config.h"
 
@@ -29,7 +29,7 @@ public:
     static const int Width = 6;
     static const int Height = 19;
 
-    int Level_X_Pos, Level_Y_Pos; // Позиция на уровне, соответствующая верхнему кирпичу напротив гейта (-1, если гейт не находится напротив кирпича)
+    int Level_X_Pos, Level_Y_Pos; // РџРѕР·РёС†РёСЏ РЅР° СѓСЂРѕРІРЅРµ, СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰Р°СЏ РІРµСЂС…РЅРµРјСѓ РєРёСЂРїРёС‡Сѓ РЅР°РїСЂРѕС‚РёРІ РіРµР№С‚Р° (-1, РµСЃР»Рё РіРµР№С‚ РЅРµ РЅР°С…РѕРґРёС‚СЃСЏ РЅР°РїСЂРѕС‚РёРІ РєРёСЂРїРёС‡Р°)
 
     virtual void Act();
     virtual void Clear(HDC hdc, RECT& paint_area);
@@ -54,8 +54,8 @@ private:
 
     static const double Max_Gap_Short_Height, Gap_Height_Short_Step;
     static const double Max_Gap_Long_Height, Gap_Height_Long_Step;
-    static const int Short_Opening_Timeout = AsConfig::FPS; // 1 секунда
-    static const int Long_Opening_Timeout = AsConfig::FPS * 3; // 2 секунда
+    static const int Short_Opening_Timeout = AsConfig::FPS; // 1 СЃРµРєСѓРЅРґР°
+    static const int Long_Opening_Timeout = AsConfig::FPS * 3; // 2 СЃРµРєСѓРЅРґР°
 
     bool Act_For_Open(bool short_open, bool& correct_pos);
     void Draw_Cup(HDC hdc, bool top_cup);

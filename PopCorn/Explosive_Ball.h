@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Config.h"
 
@@ -34,9 +34,6 @@ private:
     double Size, Max_Size, Size_Step;
 
     static const int Fading_Timeout = AsConfig::FPS;
-    static const int MAX_FADE_STEP = AsConfig::FPS;
-    static AColor_Fade Fading_Pink_Colors;
-    static AColor_Fade Fading_Blue_Colors;
 
     EExplosive_Ball_State Explosive_Ball_State;
     RECT Ball_Rect;

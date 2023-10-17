@@ -69,6 +69,9 @@ bool AsBorder::Check_Hit(double next_x_pos, double next_y_pos, ABall_Object* bal
     {
         got_hit = true;
         ball->Reflect(true);
+
+        if (ball->Get_State() == EBall_State::On_Parachute)
+            ball->Set_State(EBall_State::Off_Parachute);
     }
 
     // Чтобы шарик смог улететь ниже пола, проверяем его max_y_pos ниже видимой границы
@@ -208,14 +211,6 @@ int AsBorder::Long_Open_Gate()
     AGate* gate;
 
     gate_index = AsTools::Rand(Gates.size());
-
-//gate_index = AsTools::Rand(Gates.size());
-//if (gate_index <= 3)
-//gate_index = 0;
-//else
-//gate_index = 1;
-
-//gate_index = 2;
 
     for (int i = 0; i < (int)Gates.size(); i++)
     {

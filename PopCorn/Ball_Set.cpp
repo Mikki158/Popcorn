@@ -1,4 +1,4 @@
-#include "Ball_Set.h"
+п»ї#include "Ball_Set.h"
 
 // AsBall_Set
 // 
@@ -68,7 +68,7 @@ void AsBall_Set::Set_For_Test()
 
 //
 void AsBall_Set::Tripple_Balls()
-{// "Растроить" самый дальний летящий от платформы мячик 
+{// "Р Р°СЃС‚СЂРѕРёС‚СЊ" СЃР°РјС‹Р№ РґР°Р»СЊРЅРёР№ Р»РµС‚СЏС‰РёР№ РѕС‚ РїР»Р°С‚С„РѕСЂРјС‹ РјСЏС‡РёРє 
 
     double curr_ball_x, curr_ball_y;
     double further_ball_x, further_ball_y;
@@ -76,7 +76,7 @@ void AsBall_Set::Tripple_Balls()
     ABall* left_candidate = nullptr;
     ABall* right_candidate = nullptr;
 
-    // 1. Выбираем самый дальний по Y мячик
+    // 1. Р’С‹Р±РёСЂР°РµРј СЃР°РјС‹Р№ РґР°Р»СЊРЅРёР№ РїРѕ Y РјСЏС‡РёРє
     for (auto& ball : Balls)
     {
         if (ball.Get_State() != EBall_State::Normal)
@@ -94,7 +94,7 @@ void AsBall_Set::Tripple_Balls()
         }
     }
 
-    // 2. Если есть "нормальныый" мячик, то размножаем его
+    // 2. Р•СЃР»Рё РµСЃС‚СЊ "РЅРѕСЂРјР°Р»СЊРЅС‹С‹Р№" РјСЏС‡РёРє, С‚Рѕ СЂР°Р·РјРЅРѕР¶Р°РµРј РµРіРѕ
     if (further_ball == nullptr)
         return;
 
@@ -110,12 +110,12 @@ void AsBall_Set::Tripple_Balls()
                 if (right_candidate == nullptr)
                 {
                     right_candidate = &ball;
-                    break; // Оба кандидата найдены
+                    break; // РћР±Р° РєР°РЅРґРёРґР°С‚Р° РЅР°Р№РґРµРЅС‹
                 }
         }
     }
 
-    // 3. Разводим боковые мячики в стороны
+    // 3. Р Р°Р·РІРѕРґРёРј Р±РѕРєРѕРІС‹Рµ РјСЏС‡РёРєРё РІ СЃС‚РѕСЂРѕРЅС‹
     if (left_candidate != nullptr)
     {
         *left_candidate = *further_ball;
@@ -132,7 +132,7 @@ void AsBall_Set::Tripple_Balls()
 
 //
 void AsBall_Set::Inverse_Balls()
-{// Меняем направление на обратное у всех мячиков
+{// РњРµРЅСЏРµРј РЅР°РїСЂР°РІР»РµРЅРёРµ РЅР° РѕР±СЂР°С‚РЅРѕРµ Сѓ РІСЃРµС… РјСЏС‡РёРєРѕРІ
 
     for (auto& ball : Balls)
         if (ball.Get_State() == EBall_State::Normal)
@@ -170,7 +170,7 @@ void AsBall_Set::On_Platform_Advance(double direction, double platform_speed, do
 //
 bool AsBall_Set::Is_Test_Finished()
 {
-    return Balls[0].Is_Test_Finished(); // В повторяющихся тестах участвует только 0-й мячик
+    return Balls[0].Is_Test_Finished(); // Р’ РїРѕРІС‚РѕСЂСЏСЋС‰РёС…СЃСЏ С‚РµСЃС‚Р°С… СѓС‡Р°СЃС‚РІСѓРµС‚ С‚РѕР»СЊРєРѕ 0-Р№ РјСЏС‡РёРє
 }
 
 
@@ -192,8 +192,6 @@ bool AsBall_Set::All_Balls_Are_Lost()
             lost_balls_count++;
             continue;
         }
-
-        //Balls[i].Move();
     }
 
     if (active_balls_count == lost_balls_count)
@@ -233,7 +231,7 @@ bool AsBall_Set::Get_Next_Game_Object(int& index, AGame_Object** game_obj)
 
 //
 void AsBall_Set::Turn_Tripled_Ball(ABall *ball, bool add_min_angle)
-{// Корректируем направление растроившегося мячика
+{// РљРѕСЂСЂРµРєС‚РёСЂСѓРµРј РЅР°РїСЂР°РІР»РµРЅРёРµ СЂР°СЃС‚СЂРѕРёРІС€РµРіРѕСЃСЏ РјСЏС‡РёРєР°
     double prev_direction, direction_delts;
     double correction_angle;
 

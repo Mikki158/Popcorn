@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 
 #include "Monster.h"
 #include "Border.h"
@@ -33,13 +33,11 @@ public:
     void Set_Freeze_State(bool freeze);
 
 private:
-    static const int Max_Monsters_Count = 10;
     bool Is_Frozen;
     int Max_Alive_Monsters_Count;
     int Current_Gate_Index;
 
     EMonster_Set_State Monster_Set_State;
-    //AMonster *Monsters[Max_Monsters_Count]; // !!! Заменить на вектор!
     std::vector<AMonster*> Monsters;
     AsBorder* Border;
 

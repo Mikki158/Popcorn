@@ -1,4 +1,4 @@
-#include "Laser_Beam_Set.h"
+ï»¿#include "Laser_Beam_Set.h"
 
 
 //AsLaser_Beam_Set
@@ -29,7 +29,7 @@ void AsLaser_Beam_Set::Fire(double left_gun_x_pos, double right_gun_x_pos)
     }
 
     if (left_beam == nullptr || right_beam == nullptr)
-        AsConfig::Throw(); // Íå õâàòèëî "ñâîáîäíûõ" ëàçåðíûõ ëó÷åé
+        AsConfig::Throw(); // ÐÐµ Ñ…Ð²Ð°Ñ‚Ð¸Ð»Ð¾ "ÑÐ²Ð¾Ð±Ð¾Ð´Ð½Ñ‹Ñ…" Ð»Ð°Ð·ÐµÑ€Ð½Ñ‹Ñ… Ð»ÑƒÑ‡ÐµÐ¹
 
     left_beam->Set_At(left_gun_x_pos, AsConfig::Platform_Y_POS - 1);
     right_beam->Set_At(right_gun_x_pos, AsConfig::Platform_Y_POS - 1);

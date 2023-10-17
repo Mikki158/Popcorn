@@ -1,7 +1,6 @@
-#include "Mop_Indicator.h"
+﻿#include "Mop_Indicator.h"
 
 // AMop_Indicator
-AColor_Fade AMop_Indicator::Fading_Blue_Colors(AsConfig::Blue_Color, AsConfig::Pink_Color, MAX_FADE_STEP);
 //
 AMop_Indicator::AMop_Indicator(int x_pos, int y_pos, int time_offset)
     :X_Pos(x_pos), Y_Pos(y_pos), Time_Offset(time_offset), Current_Color(&AsConfig::Pink_Color)
@@ -13,7 +12,7 @@ AMop_Indicator::AMop_Indicator(int x_pos, int y_pos, int time_offset)
 //
 void AMop_Indicator::Act()
 {
-    int total_timeout = Normal_Timeout + MAX_FADE_STEP;
+    int total_timeout = Normal_Timeout + AsConfig::MAX_Mop_Indicator_FADE_STEP;
     int current_tick = (AsConfig::Current_Timer_Tick + Time_Offset) % total_timeout;
     int current_offset;
 
@@ -23,10 +22,10 @@ void AMop_Indicator::Act()
     {
         current_offset = current_tick - Normal_Timeout;
 
-        if (current_offset < 0 || current_offset >= MAX_FADE_STEP)
+        if (current_offset < 0 || current_offset >= AsConfig::MAX_Mop_Indicator_FADE_STEP)
             AsConfig::Throw();
 
-        Current_Color = Fading_Blue_Colors.Get_Color(current_offset);
+        Current_Color = AsConfig::Fading_Blue_Mop_Indicator_Colors.Get_Color(current_offset);
     }
 
     AsTools::Invalidate_Rect(Indicator_Rect);
@@ -36,7 +35,7 @@ void AMop_Indicator::Act()
 //
 void AMop_Indicator::Clear(HDC hdc, RECT& paint_area)
 {
-    // !!! ���� �������!
+    // Заглушка, т.к. этот метод не используется
 }
 
 
@@ -52,7 +51,7 @@ void AMop_Indicator::Draw(HDC hdc, RECT& paint_area)
 
     AsTools::Rect(hdc, Indicator_Rect, *Current_Color);
 
-    // ����� ����������
+    // Рамка индикатора
     AsConfig::Highlight_Color.Select_Pen(hdc);
     MoveToEx(hdc, X_Pos * scale, (Y_Pos + Height) * scale, 0);
     LineTo(hdc, X_Pos * scale, Y_Pos * scale);
@@ -69,7 +68,7 @@ void AMop_Indicator::Draw(HDC hdc, RECT& paint_area)
 //
 bool AMop_Indicator::Is_Finished()
 {
-    return false; // !!! ���� �������!
+    return false; // Заглушка, т.к. этот метод не используется
 }
 
 

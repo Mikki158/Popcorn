@@ -1,4 +1,4 @@
-#include "Platform_Laser.h"
+ï»¿#include "Platform_Laser.h"
 
 
 // AsPlatform_Laser
@@ -79,31 +79,31 @@ bool AsPlatform_Laser::Act(EPlatform_State& next_state, double x_pos)
 
 //
 void AsPlatform_Laser::Draw_State(HDC hdc, double x_pos, RECT& platform_rect)
-{// Ðèñóåì ëàçåðíóþ ïëàòôîðìó
+{// Ð Ð¸ÑÑƒÐµÐ¼ Ð»Ð°Ð·ÐµÑ€Ð½ÑƒÑŽ Ð¿Ð»Ð°Ñ‚Ñ„Ð¾Ñ€Ð¼Ñƒ
     HRGN region;
 
     region = CreateRectRgnIndirect(&platform_rect);
     SelectClipRgn(hdc, region);
 
-    // 1. Ëåâîå êðûëî
+    // 1. Ð›ÐµÐ²Ð¾Ðµ ÐºÑ€Ñ‹Ð»Ð¾
     Draw_Laser_Wing(hdc, x_pos, true);
 
-    // 1. Ïðàâîå êðûëî
+    // 1. ÐŸÑ€Ð°Ð²Ð¾Ðµ ÐºÑ€Ñ‹Ð»Ð¾
     Draw_Laser_Wing(hdc, x_pos, false);
 
-    // 3. Öåíòðàëüíàÿ ÷àòü
-    // 3.0  Íîðìàëüíàÿ ñðåäíÿÿ ÷àòü
+    // 3. Ð¦ÐµÐ½Ñ‚Ñ€Ð°Ð»ÑŒÐ½Ð°Ñ Ñ‡Ð°Ñ‚ÑŒ
+    // 3.0  ÐÐ¾Ñ€Ð¼Ð°Ð»ÑŒÐ½Ð°Ñ ÑÑ€ÐµÐ´Ð½ÑÑ Ñ‡Ð°Ñ‚ÑŒ
 
     Draw_Laser_Inner_Part(hdc, x_pos);
 
 
-    // 3.1 Ëåâàÿ íîãà
+    // 3.1 Ð›ÐµÐ²Ð°Ñ Ð½Ð¾Ð³Ð°
     Draw_Laser_Leg(hdc, x_pos, true);
 
-    // 3.2 Ïðàâàÿ íîãà
+    // 3.2 ÐŸÑ€Ð°Ð²Ð°Ñ Ð½Ð¾Ð³Ð°
     Draw_Laser_Leg(hdc, x_pos, false);
 
-    // 3.3 Êàáèíà
+    // 3.3 ÐšÐ°Ð±Ð¸Ð½Ð°
     Draw_Laser_Cabin(hdc, x_pos);
 
     SelectClipRgn(hdc, 0);
@@ -123,7 +123,7 @@ void AsPlatform_Laser::Fire(bool fire_on)
 {
 
     if (Platform_State->Laser != EPlatform_Transformation::Active)
-        return; // Èãíîðèðóåì âûñòðåë, ïîêà ïëàòôîðìà íå ñâîðìèðóåòñÿ
+        return; // Ð˜Ð³Ð½Ð¾Ñ€Ð¸Ñ€ÑƒÐµÐ¼ Ð²Ñ‹ÑÑ‚Ñ€ÐµÐ», Ð¿Ð¾ÐºÐ° Ð¿Ð»Ð°Ñ‚Ñ„Ð¾Ñ€Ð¼Ð° Ð½Ðµ ÑÐ²Ð¾Ñ€Ð¼Ð¸Ñ€ÑƒÐµÑ‚ÑÑ
 
     Enable_Laser_Firing = fire_on;
 
@@ -138,12 +138,12 @@ void AsPlatform_Laser::Fire(bool fire_on)
 
 //
 void AsPlatform_Laser::Draw_Laser_Inner_Part(HDC hdc, double x_pos)
-{// Ðèñóåì óìåíüøàþùóþñÿ ÷àñòü îáû÷íîé ïëàòôîðìû
+{// Ð Ð¸ÑÑƒÐµÐ¼ ÑƒÐ¼ÐµÐ½ÑŒÑˆÐ°ÑŽÑ‰ÑƒÑŽÑÑ Ñ‡Ð°ÑÑ‚ÑŒ Ð¾Ð±Ñ‹Ñ‡Ð½Ð¾Ð¹ Ð¿Ð»Ð°Ñ‚Ñ„Ð¾Ñ€Ð¼Ñ‹
 
     int x, y;
     double ratio = (double)Laser_Transformatio_Step / (double)Max_Laser_Transformatio_Step;
 
-    // Ðàçìåð: 20 x 5 -> 8 x 1
+    // Ð Ð°Ð·Ð¼ÐµÑ€: 20 x 5 -> 8 x 1
     x = (int)x_pos;
     y = AsConfig::Platform_Y_POS;
 
@@ -154,7 +154,7 @@ void AsPlatform_Laser::Draw_Laser_Inner_Part(HDC hdc, double x_pos)
 
 //
 void AsPlatform_Laser::Draw_Laser_Wing(HDC hdc, double x_pos, bool is_left)
-{// Ðèñóåì "êðûëî" ëàçåðíîé ïëàòôîðìû 
+{// Ð Ð¸ÑÑƒÐµÐ¼ "ÐºÑ€Ñ‹Ð»Ð¾" Ð»Ð°Ð·ÐµÑ€Ð½Ð¾Ð¹ Ð¿Ð»Ð°Ñ‚Ñ„Ð¾Ñ€Ð¼Ñ‹ 
 
     const int scale = AsConfig::GLOBAL_SCALE;
     const double d_scale = AsConfig::D_GLOBAL_SCALE;
@@ -170,14 +170,14 @@ void AsPlatform_Laser::Draw_Laser_Wing(HDC hdc, double x_pos, bool is_left)
     if (!is_left)
         x += AsConfig::Platform_NORMAL_WIDTH - AsConfig::Platform_CIRCLE_SIZE;
 
-    // 1. Êðûëî
+    // 1. ÐšÑ€Ñ‹Ð»Ð¾
     Circle_Color->Select(hdc);
 
     Draw_Expanding_Figure(hdc, EFigure_Type::Ellipse, x, y, 7, 7, ratio, x, y + 1, 7, 12);
 
-    // 1.1 Ïåðåìû÷êà
-    // Ïîçèöèÿ: (3 : 6) -> (5 : 2)
-    // Ðàçìåð: 1 x 1 -> 6 x 5
+    // 1.1 ÐŸÐµÑ€ÐµÐ¼Ñ‹Ñ‡ÐºÐ°
+    // ÐŸÐ¾Ð·Ð¸Ñ†Ð¸Ñ: (3 : 6) -> (5 : 2)
+    // Ð Ð°Ð·Ð¼ÐµÑ€: 1 x 1 -> 6 x 5
 
     if (is_left)
         x_offset = 5;
@@ -187,7 +187,7 @@ void AsPlatform_Laser::Draw_Laser_Wing(HDC hdc, double x_pos, bool is_left)
     Draw_Expanding_Figure(hdc, EFigure_Type::Rectangle, x + 3, y + 6, 1, 1, ratio, x + x_offset, y + 2, 6, 5);
 
 
-    // 1.2 Ïóøêà
+    // 1.2 ÐŸÑƒÑˆÐºÐ°
     if (Laser_Transformatio_Step >= half_max_step)
     {
         ratio = (double)(Laser_Transformatio_Step - half_max_step) / (double)half_max_step;
@@ -202,14 +202,14 @@ void AsPlatform_Laser::Draw_Laser_Wing(HDC hdc, double x_pos, bool is_left)
         MoveToEx(hdc, (int)(x * d_scale + 1.0), (int)(y * d_scale + 3.0 * d_scale + 1.0), 0);
         LineTo(hdc, (int)(x * d_scale + 1.0), (int)(y * d_scale + height + 1.0));
 
-        // 1.3 Õâîñò
+        // 1.3 Ð¥Ð²Ð¾ÑÑ‚
         Draw_Expanding_Figure(hdc, EFigure_Type::Ellipse, x + 1, y + 5, 0, 0, ratio, x - 1, y + 5 + 1.0 / d_scale, 3, 6);
     }
 }
 
 
 void AsPlatform_Laser::Draw_Laser_Leg(HDC hdc, double x_pos, bool is_left)
-{// Ðèñóåì "íîãó" ëàçåðíîé ïëàòôîðìû 
+{// Ð Ð¸ÑÑƒÐµÐ¼ "Ð½Ð¾Ð³Ñƒ" Ð»Ð°Ð·ÐµÑ€Ð½Ð¾Ð¹ Ð¿Ð»Ð°Ñ‚Ñ„Ð¾Ñ€Ð¼Ñ‹ 
     const double d_scale = AsConfig::D_GLOBAL_SCALE;
     double x, y;
     double x_scale;
@@ -247,7 +247,7 @@ void AsPlatform_Laser::Draw_Laser_Leg(HDC hdc, double x_pos, bool is_left)
 
 //
 void AsPlatform_Laser::Draw_Laser_Cabin(HDC hdc, double x_pos)
-{// Ðèñóåì "êàáèíó" ëàçåðíîé ïëàòôîðìû 
+{// Ð Ð¸ÑÑƒÐµÐ¼ "ÐºÐ°Ð±Ð¸Ð½Ñƒ" Ð»Ð°Ð·ÐµÑ€Ð½Ð¾Ð¹ Ð¿Ð»Ð°Ñ‚Ñ„Ð¾Ñ€Ð¼Ñ‹ 
 
     const int scale = AsConfig::GLOBAL_SCALE;
     int x, y;
@@ -257,19 +257,19 @@ void AsPlatform_Laser::Draw_Laser_Cabin(HDC hdc, double x_pos)
     x = (int)x_pos;
     y = AsConfig::Platform_Y_POS;
 
-    // 3.3.1 Âíåøíåå êîëüöî
-    // Ðàçìåð: 2 x 1 -> 10 x 8
+    // 3.3.1 Ð’Ð½ÐµÑˆÐ½ÐµÐµ ÐºÐ¾Ð»ÑŒÑ†Ð¾
+    // Ð Ð°Ð·Ð¼ÐµÑ€: 2 x 1 -> 10 x 8
     Inner_Color->Select(hdc);
     Draw_Expanding_Figure(hdc, EFigure_Type::Ellipse, x + 13, y + 1, 2, 1, ratio, x + 9, y - 1, 10, 8 - one_pixel);
 
-    // 3.3.2 Ñðåäíåå êîëüöî
+    // 3.3.2 Ð¡Ñ€ÐµÐ´Ð½ÐµÐµ ÐºÐ¾Ð»ÑŒÑ†Ð¾
     AsConfig::BG_Color.Select(hdc);
     Draw_Expanding_Figure(hdc, EFigure_Type::Rectangle, x + 13, y + 1, 2, 1, ratio, x + 11, y, 6, 1);
     Draw_Expanding_Figure(hdc, EFigure_Type::Ellipse, x + 13, y + 1, 2, 1, ratio, x + 10, y, 8, 5 - one_pixel);
 
 
-    // 3.3.3 Âíóòðåííåå êîëüöî
-    // ÐÀçìåð: 2 x 1 -> 6 x 4
+    // 3.3.3 Ð’Ð½ÑƒÑ‚Ñ€ÐµÐ½Ð½ÐµÐµ ÐºÐ¾Ð»ÑŒÑ†Ð¾
+    // Ð ÐÐ·Ð¼ÐµÑ€: 2 x 1 -> 6 x 4
     AsConfig::White_Color.Select(hdc);
     Draw_Expanding_Figure(hdc, EFigure_Type::Ellipse, x + 13, y + 1, 2, 1, ratio, x + 11, y, 6, 4 - one_pixel);
 }

@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include "Config.h"
 
 //
@@ -20,9 +20,7 @@ private:
 
     static const int Width = 17;
     static const int Height = 5;
-    static const int MAX_FADE_STEP = AsConfig::FPS * 4 / 10; // 0.4 секунды
-    static const int Normal_Timeout = AsConfig::FPS; // 1 секунда
-    static AColor_Fade Fading_Blue_Colors;
+    static const int Normal_Timeout = AsConfig::FPS; // 1 СЃРµРєСѓРЅРґР°
 
     RECT Indicator_Rect;
     const AColor* Current_Color;

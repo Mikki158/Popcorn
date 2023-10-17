@@ -1,4 +1,4 @@
-#include "Monster.h"
+п»ї#include "Monster.h"
 
 // AMonster
 // 
@@ -20,7 +20,7 @@ AMonster::~AMonster()
 
 //
 bool AMonster::Check_Hit(double next_x_pos, double next_y_pos, ABall_Object* ball)
-{// Возвращаем: true/false - мячик коснулся монстра и направление было скоректировано / не коснулся
+{// Р’РѕР·РІСЂР°С‰Р°РµРј: true/false - РјСЏС‡РёРє РєРѕСЃРЅСѓР»СЃСЏ РјРѕРЅСЃС‚СЂР° Рё РЅР°РїСЂР°РІР»РµРЅРёРµ Р±С‹Р»Рѕ СЃРєРѕСЂРµРєС‚РёСЂРѕРІР°РЅРѕ / РЅРµ РєРѕСЃРЅСѓР»СЃСЏ
 
     double radius = (double)Width / 2.0;
 
@@ -39,7 +39,7 @@ bool AMonster::Check_Hit(double next_x_pos, double next_y_pos, ABall_Object* bal
 
 //
 bool AMonster::Check_Hit(double next_x_pos, double next_y_pos)
-{// Возвра: true, если в позиции (next_x_pos, next_y_pos) луч коснется монстра
+{// Р’РѕР·РІСЂР°: true, РµСЃР»Рё РІ РїРѕР·РёС†РёРё (next_x_pos, next_y_pos) Р»СѓС‡ РєРѕСЃРЅРµС‚СЃСЏ РјРѕРЅСЃС‚СЂР°
 
     if (!(Monster_State == EMonster_State::Emitting || Monster_State == EMonster_State::Alive))
         return false;
@@ -57,7 +57,7 @@ bool AMonster::Check_Hit(double next_x_pos, double next_y_pos)
 
 //
 bool AMonster::Check_Hit(RECT& rect)
-{// Возвра: true, если в позиции (next_x_pos, next_y_pos) прямоугольник rect коснется монстра
+{// Р’РѕР·РІСЂР°: true, РµСЃР»Рё РІ РїРѕР·РёС†РёРё (next_x_pos, next_y_pos) РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє rect РєРѕСЃРЅРµС‚СЃСЏ РјРѕРЅСЃС‚СЂР°
 
     RECT intersection_rect;
 
@@ -114,7 +114,7 @@ void AMonster::Advance(double max_speed)
     }
 
 
-    // Ограничиваем перемещение рамками уровня
+    // РћРіСЂР°РЅРёС‡РёРІР°РµРј РїРµСЂРµРјРµС‰РµРЅРёРµ СЂР°РјРєР°РјРё СѓСЂРѕРІРЅСЏ
     if (Monster_State == EMonster_State::Alive)
     {
         if (next_x_pos < (double)AsConfig::LEVEL_X_OFFSET)
@@ -138,7 +138,7 @@ void AMonster::Advance(double max_speed)
 //
 void AMonster::Begin_Movement()
 {
-    // Заглушка, не используется
+    // Р—Р°РіР»СѓС€РєР°, РЅРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ
 }
 
 
@@ -340,7 +340,7 @@ void AMonster::Change_Direction()
     {
         Next_Direction_Switch_Tick += AsConfig::FPS;
 
-        // Выбираем случайное направление +/- 45 градусов
+        // Р’С‹Р±РёСЂР°РµРј СЃР»СѓС‡Р°Р№РЅРѕРµ РЅР°РїСЂР°РІР»РµРЅРёРµ +/- 45 РіСЂР°РґСѓСЃРѕРІ
         direction_delta = (double)(AsTools::Rand(90) - 45) * M_PI / 180.0;
         Direction += direction_delta;
     }
@@ -381,8 +381,8 @@ void AMonster_Eye::Draw_Alive(HDC hdc)
         return;
 
 
-    // 1. Рисуем фон
-    // 1.1 Ограничиваем вывод фона
+    // 1. Р РёСЃСѓРµРј С„РѕРЅ
+    // 1.1 РћРіСЂР°РЅРёС‡РёРІР°РµРј РІС‹РІРѕРґ С„РѕРЅР°
     rect = Monster_Rect;
 
     rect.right++;
@@ -391,10 +391,10 @@ void AMonster_Eye::Draw_Alive(HDC hdc)
     region = CreateEllipticRgnIndirect(&rect);
     SelectClipRgn(hdc, region);
 
-    // 1.2 Темный фон
+    // 1.2 РўРµРјРЅС‹Р№ С„РѕРЅ
     AsTools::Ellipse(hdc, Monster_Rect, AsConfig::Monster_Dark_Pink_Color);
 
-    // 1.3 Красный фон
+    // 1.3 РљСЂР°СЃРЅС‹Р№ С„РѕРЅ
     rect = Monster_Rect;
 
     rect.left -= 2 * scale;
@@ -408,12 +408,12 @@ void AMonster_Eye::Draw_Alive(HDC hdc)
     DeleteObject(region);
 
 
-    // 2. Рисуем сам глаз
+    // 2. Р РёСЃСѓРµРј СЃР°Рј РіР»Р°Р·
 
     if (Eye_State == EEye_State::Closed)
         return;
 
-    // 2.1 Роговица
+    // 2.1 Р РѕРіРѕРІРёС†Р°
     cornea_rect = Monster_Rect;
 
     cornea_rect.left += scale + half_scale;
@@ -421,14 +421,14 @@ void AMonster_Eye::Draw_Alive(HDC hdc)
     cornea_rect.right -= scale + half_scale;
     cornea_rect.bottom = cornea_rect.top + (int)(Cornea_Height * d_scale);
 
-    // 2.2 Огранициваем вывод внутренней части глаза
+    // 2.2 РћРіСЂР°РЅРёС†РёРІР°РµРј РІС‹РІРѕРґ РІРЅСѓС‚СЂРµРЅРЅРµР№ С‡Р°СЃС‚Рё РіР»Р°Р·Р°
     region = CreateEllipticRgnIndirect(&cornea_rect);
     SelectClipRgn(hdc, region);
 
     AsTools::Ellipse(hdc, cornea_rect, AsConfig::Monster_Cornea_Color);
 
 
-    // 2.3 Радужка
+    // 2.3 Р Р°РґСѓР¶РєР°
     rect = Monster_Rect;
 
     rect.left += 4 * scale + half_scale;
@@ -438,7 +438,7 @@ void AMonster_Eye::Draw_Alive(HDC hdc)
 
     AsTools::Ellipse(hdc, rect, AsConfig::Monster_Iris_Color);
 
-    // 2.4 Зрачок
+    // 2.4 Р—СЂР°С‡РѕРє
     rect = Monster_Rect;
 
     rect.left += 7 * scale;
@@ -452,7 +452,7 @@ void AMonster_Eye::Draw_Alive(HDC hdc)
     SelectClipRgn(hdc, 0);
     DeleteObject(region);
 
-    // 2.5 Обводим роговицу
+    // 2.5 РћР±РІРѕРґРёРј СЂРѕРіРѕРІРёС†Сѓ
     AsConfig::BG_Outline_Color.Select(hdc);
 
     Arc(hdc, cornea_rect.left, cornea_rect.top, cornea_rect.right - 1, cornea_rect.bottom - 1, 0, 0, 0, 0);
@@ -519,7 +519,7 @@ void AMonster_Eye::On_Activation()
     double curr_timeout = 0.0;
     int tick_offset = 0;
 
-    // Расчитываем тики анимации
+    // Р Р°СЃС‡РёС‚С‹РІР°РµРј С‚РёРєРё Р°РЅРёРјР°С†РёРё
     Start_Blink_Timeout = AsConfig::Current_Timer_Tick;
 
     for (int i = 0; i < Blink_Stage_Count; i++)
@@ -570,8 +570,6 @@ void AMonster_Comet::Draw_Alive(HDC hdc)
 
     if (Monster_State == EMonster_State::Missing)
         return;
-
-    //AsTools::Rect(hdc, Monster_Rect, AsConfig::Blue_Color);
 
     monster_radius = (double)(Width) * d_scale / 2.0 - 1.0;
     alpha = Current_Angle;

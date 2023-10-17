@@ -1,4 +1,4 @@
-#include "CodeStyle.h"
+﻿#include "CodeStyle.h"
 
 double CodeStyle::e = 12.3;
 

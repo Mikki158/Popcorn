@@ -1,4 +1,4 @@
-#include "Mop.h"
+п»ї#include "Mop.h"
 
 // AsMop
 // 
@@ -37,34 +37,6 @@ AsMop::~AsMop()
 
     Mop_Indicators.erase(Mop_Indicators.begin(), Mop_Indicators.end());
     Mop_Cylinders.erase(Mop_Cylinders.begin(), Mop_Cylinders.end());
-}
-
-
-//
-void AsMop::Advance(double max_speed)
-{
-    // !!! Надо сделать!
-}
-
-
-//
-void AsMop::Begin_Movement()
-{
-    // !!! Надо сделать!
-}
-
-
-//
-void AsMop::Finish_Movement()
-{
-    // !!! Надо сделать!
-}
-
-
-//
-double AsMop::Get_Speed()
-{
-    return 0.0; // !!! Надо сделать!
 }
 
 
@@ -117,7 +89,7 @@ void AsMop::Act()
     switch (Mop_State)
     {
     case EMop_State::Ascending:
-        Act_Lifring(true); // Поднимаем сложенную швабру
+        Act_Lifring(true); // РџРѕРґРЅРёРјР°РµРј СЃР»РѕР¶РµРЅРЅСѓСЋ С€РІР°Р±СЂСѓ
         break;
 
     case EMop_State::Cleaning:
@@ -135,7 +107,7 @@ void AsMop::Act()
         break;
 
     case EMop_State::Descending:
-        Act_Lifring(false); // Опускаем сложенную швабру
+        Act_Lifring(false); // РћРїСѓСЃРєР°РµРј СЃР»РѕР¶РµРЅРЅСѓСЋ С€РІР°Р±СЂСѓ
         break;
 
     case EMop_State::Descend_Done:
@@ -211,7 +183,7 @@ void AsMop::Draw(HDC hdc, RECT& paint_area)
 //
 bool AsMop::Is_Finished()
 {
-    return false; // !!! Надо сделать!
+    return false; // Р—Р°РіР»СѓС€РєР°, С‚.Рє. СЌС‚РѕС‚ РјРµС‚РѕРґ РЅРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ
 }
 
 

@@ -69,11 +69,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 }
 
 
-// AsMain_Window
 AsMain_Window* AsMain_Window::Self = 0;
 // 
 AsMain_Window::AsMain_Window()
-	:Instance(0), szTitle{}, szWindowClass{}
+	:Instance(0)
 {
 	Self = this;
 }
@@ -84,11 +83,16 @@ int APIENTRY AsMain_Window::Main(HINSTANCE instance, int command_show)
 {
 	MSG msg;
 	HACCEL accel_table;
+	wchar_t str_buff[Max_String_Size];
 
 	Instance = instance; // Сохранить маркер экземпляра в глобальной переменной
 
-	LoadStringW(Instance, IDS_APP_TITLE, szTitle, Max_String_Size);
-	LoadStringW(Instance, IDC_POPCORN, szWindowClass, Max_String_Size);
+	LoadStringW(Instance, IDS_APP_TITLE, str_buff, Max_String_Size);
+	Title = str_buff;
+
+	LoadStringW(Instance, IDC_POPCORN, str_buff, Max_String_Size);
+	Window_Class_Name = str_buff;
+
 	Register_Class();
 
 	// Выполнить инициализацию приложения:
@@ -130,7 +134,7 @@ ATOM AsMain_Window::Register_Class()
 	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
 	wcex.hbrBackground = AsConfig::BG_Color.Get_Brush();
 	wcex.lpszMenuName = MAKEINTRESOURCEW(IDC_POPCORN);
-	wcex.lpszClassName = szWindowClass;
+	wcex.lpszClassName = Window_Class_Name.Get_Content();
 	wcex.hIconSm = LoadIcon(Instance, MAKEINTRESOURCE(IDI_SMALL));
 
 	return RegisterClassExW(&wcex);
@@ -148,9 +152,9 @@ BOOL AsMain_Window::Init_Instance(int command_show)
 	window_rect.right = 320 * 3;
 	window_rect.bottom = 200 * 3;
 
-	AdjustWindowRect(&window_rect, WS_OVERLAPPEDWINDOW, TRUE);
+	AdjustWindowRect(&window_rect, WS_OVERLAPPEDWINDOW - WS_THICKFRAME, TRUE);
 
-	hwnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+	hwnd = CreateWindowW(Window_Class_Name.Get_Content(), Title.Get_Content(), WS_OVERLAPPEDWINDOW - WS_THICKFRAME,
 		0, 0, window_rect.right - window_rect.left, window_rect.bottom - window_rect.top, nullptr, nullptr, Instance, nullptr);
 
 	Engine.Init_Engine(hwnd);
@@ -288,18 +292,6 @@ INT_PTR CALLBACK AsMain_Window::About(HWND hDlg, UINT message, WPARAM wParam, LP
 
 /*
 
-Отрефакторить код
-Уменьшить скорость прироста скорости мячика
-убрать добавление очков за неразбиваемый кирпич
-Мячик на парашюте можно ловить полом
-
-БАГИ:
-При телепортации шарик сбрасывает полученное ускорение
-При некоторых телепортациях в телепорте появляется черный круг
-Когда шарик получает парашют, он сначала летит наверх
-Платформа не растворяется при поражении
-После разбиения многоразового кирпича остается 100
-
 + Конец уровня при потере мяча
 + 1. Анимация пасплавления платформы
 + 2. Анимация выкатывания новой платформы
@@ -413,10 +405,10 @@ INT_PTR CALLBACK AsMain_Window::About(HWND hDlg, UINT message, WPARAM wParam, LP
 + 5. Окно дополнительных жизней
 + 6. Учет игровых действий и отображение на индикаторах
 
-Игра и уровни
++ Игра и уровни
 + 1. Список первых 10 уровней
-2. Состояние игры 
-X 2.1 заставка
++ 2. Состояние игры 
++ 2.1 заставка
 + 2.2 анимация начала уровня
 + 2.3 играем уровень
 + 2.4 теряем жизнь
@@ -426,7 +418,7 @@ X 2.5.2 досрочный
 X 2.6 окончание игры
 
 3. Финальная настройка
-3.1 Исправляем 1-й уровень 
++ 3.1 Исправляем 1-й уровень 
 3.2 Играем и исправляем ошибки
 3.3 Компиляция и релиз
 

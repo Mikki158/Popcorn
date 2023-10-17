@@ -4,23 +4,12 @@
 #include <math.h>
 #include <Windows.h>
 
-//#include "Active_Brick.h"
 #include "Falling_Letter.h"
 #include "Info_Panel.h"
 #include "Level_Data.h"
 #include "Mop.h"
 #include "Level_Title.h"
 #include "Game_Title.h"
-
-//
-class APoint
-{
-public:
-    APoint();
-    APoint(int x, int y);
-
-    int X, Y;
-};
 
 //
 class AsLevel: public AHit_Checker, public AGame_Object

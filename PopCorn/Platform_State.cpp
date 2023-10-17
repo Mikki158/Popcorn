@@ -1,4 +1,4 @@
-#include "Platform_State.h"
+п»ї#include "Platform_State.h"
 
 
 //AsPlatform_State
@@ -35,14 +35,14 @@ void AsPlatform_State::Set_Next_State(EPlatform_State nex_state)
     switch (Current_State)
     {
     case EPlatform_State::Regular:
-        AsConfig::Throw(); // Обычное состояние "само" не заканчивается, переключение в другое состояние должно быть явным
+        AsConfig::Throw(); // РћР±С‹С‡РЅРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ "СЃР°РјРѕ" РЅРµ Р·Р°РєР°РЅС‡РёРІР°РµС‚СЃСЏ, РїРµСЂРµРєР»СЋС‡РµРЅРёРµ РІ РґСЂСѓРіРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ СЏРІРЅС‹Рј
         break;
 
     case EPlatform_State::Meltdown:
-        return; // Игнорируем любое следующее состояние после Meltdown, т.к. после него должен рестартиться игровой процесс
+        return; // РРіРЅРѕСЂРёСЂСѓРµРј Р»СЋР±РѕРµ СЃР»РµРґСѓСЋС‰РµРµ СЃРѕСЃС‚РѕСЏРЅРёРµ РїРѕСЃР»Рµ Meltdown, С‚.Рє. РїРѕСЃР»Рµ РЅРµРіРѕ РґРѕР»Р¶РµРЅ СЂРµСЃС‚Р°СЂС‚РёС‚СЊСЃСЏ РёРіСЂРѕРІРѕР№ РїСЂРѕС†РµСЃСЃ
 
     case EPlatform_State::Rolling:
-        AsConfig::Throw(); // Состояние Rolling "само" должно переключиться в следующее 
+        AsConfig::Throw(); // РЎРѕСЃС‚РѕСЏРЅРёРµ Rolling "СЃР°РјРѕ" РґРѕР»Р¶РЅРѕ РїРµСЂРµРєР»СЋС‡РёС‚СЊСЃСЏ РІ СЃР»РµРґСѓСЋС‰РµРµ 
         break;
 
     case EPlatform_State::Glue:
@@ -96,9 +96,9 @@ EPlatform_State AsPlatform_State::Set_State(EPlatform_Substate_Regular new_regul
 
         if (transformation_state != nullptr)
         {
-            if (*transformation_state == EPlatform_Transformation::Unknown) // Финализация состояния 
+            if (*transformation_state == EPlatform_Transformation::Unknown) // Р¤РёРЅР°Р»РёР·Р°С†РёСЏ СЃРѕСЃС‚РѕСЏРЅРёСЏ 
                 return Set_Next_Or_Regular_State(new_regular_state);
-            else // Запускаем финализацию состояния
+            else // Р—Р°РїСѓСЃРєР°РµРј С„РёРЅР°Р»РёР·Р°С†РёСЋ СЃРѕСЃС‚РѕСЏРЅРёСЏ
                 *transformation_state = EPlatform_Transformation::Finalize;
 
             return EPlatform_State::Unknown;
@@ -120,7 +120,7 @@ EPlatform_State AsPlatform_State::Get_Next_State()
 
 //
 EPlatform_State AsPlatform_State::Set_Next_Or_Regular_State(EPlatform_Substate_Regular new_regular_state)
-{// Возврат: если Ubrnow, то надо перейти в жто новое состояние
+{// Р’РѕР·РІСЂР°С‚: РµСЃР»Рё Ubrnow, С‚Рѕ РЅР°РґРѕ РїРµСЂРµР№С‚Рё РІ Р¶С‚Рѕ РЅРѕРІРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
 
     EPlatform_State next_state;
 
@@ -128,7 +128,7 @@ EPlatform_State AsPlatform_State::Set_Next_Or_Regular_State(EPlatform_Substate_R
 
     next_state = Get_Next_State();
 
-    // Если есть отложенное состояние, то переводим в него, а не в Regular
+    // Р•СЃР»Рё РµСЃС‚СЊ РѕС‚Р»РѕР¶РµРЅРЅРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ, С‚Рѕ РїРµСЂРµРІРѕРґРёРј РІ РЅРµРіРѕ, Р° РЅРµ РІ Regular
     if (next_state == EPlatform_State::Unknown)
         Regular = new_regular_state;
 

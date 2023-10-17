@@ -1,4 +1,4 @@
-#include "Level_Title.h"
+﻿#include "Level_Title.h"
 
 // AsLevel_Title
 // 
@@ -8,7 +8,7 @@ AsLevel_Title::AsLevel_Title()
 {
     const int scale = AsConfig::GLOBAL_SCALE;
 
-    Level_Name.Content = L"�������";
+    Level_Name.Content = L"УРОВЕНЬ";
 
     Title_Rect.left = X_Pos * scale;
     Title_Rect.top = Y_Pos * scale;
@@ -18,7 +18,7 @@ AsLevel_Title::AsLevel_Title()
 //
 void AsLevel_Title::Act()
 {
-    // !!! ���� �������!
+    // Заглушка, т.к. этот метод не используется
 }
 
 
@@ -53,7 +53,7 @@ void AsLevel_Title::Draw(HDC hdc, RECT& paint_area)
 //
 bool AsLevel_Title::Is_Finished()
 {
-    return false; // !!! ���� �������!
+    return false; // Заглушка, т.к. этот метод не используется
 }
 
 

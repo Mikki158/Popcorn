@@ -39,9 +39,6 @@ void AsEngine::Init_Engine(HWND hwnd)// Настройка игры при ст�
 
     AsPlatform::Hit_Checker_List.Add_Hit_Checker(&Monster_Set);
 
-
-    //Level.Set_Current_Level(1);
-
     Platform.Redraw_Platform();
 
     SetTimer(AsConfig::HWnd, TIMER_ID, 1000 / AsConfig::FPS, 0);
@@ -54,8 +51,6 @@ void AsEngine::Init_Engine(HWND hwnd)// Настройка игры при ст�
     Modules.push_back(&Laser_Beam_Set);
     Modules.push_back(&Monster_Set);
     Modules.push_back(&Info_Panel);
-
-    //Level.Mop_Level(29);
 }
 
 
@@ -107,13 +102,14 @@ int AsEngine::On_Timer()
     {
     case EGame_State::Test_Ball:
         Ball_Set.Set_For_Test();
+        Level.Set_Current_Level(0);
         Game_State = EGame_State::Play_Level;
         break;
 
     case EGame_State::Enter_Name:
         if (Got_Name)
         {
-            Level.Mop_Level(30);
+            Level.Mop_Level(1);
             Game_State = EGame_State::Mop_Level;
         }
         break;
@@ -142,7 +138,7 @@ int AsEngine::On_Timer()
         {
             Game_State = EGame_State::Play_Level;
             Ball_Set.Set_On_Platform(Platform.Get_Middle_Pos());
-            Monster_Set.Activate(10);
+            Monster_Set.Activate(AsConfig::Max_Monsters_Count);
             Level.Hide_Title();
         }
         break;
@@ -195,7 +191,8 @@ void AsEngine::Game_Over()
 //
 void AsEngine::On_Char(wchar_t symbol)
 {
-    Got_Name = Info_Panel.Edit_Player_Name(symbol);
+    if(!Got_Name)
+        Got_Name = Info_Panel.Edit_Player_Name(symbol);
 }
 
 
@@ -233,19 +230,12 @@ void AsEngine::Play_Level()
 void AsEngine::Stop_Play()
 {
     Level.Stop();
+    Set_Floor_State(false);
     Monster_Set.Destroy_All();
     Laser_Beam_Set.Disable_All();
     Platform.Set_State(EPlatform_State::Meltdown);
     Info_Panel.Floor_Indicator.Reset();
     Info_Panel.Monster_Indicator.Reset();
-}
-
-
-//
-void AsEngine::Game_Won()
-{
-    Level.Game_Title.Show(false);
-    Game_State = EGame_State::Game_Over;
 }
 
 
@@ -319,8 +309,7 @@ void AsEngine::Handle_Message()
         switch (message->Message_Type)
         {
         case EMessage_Type::Floor_Is_Over:
-            AsConfig::Level_Has_Floor = false;
-            Border.Redraw_Floor();
+            Set_Floor_State(false);
             delete message;
             break;
 
@@ -351,6 +340,8 @@ void AsEngine::Handle_Message()
 //
 void AsEngine::On_Falling_Letter(AFalling_Letter* falling_letter)
 {
+    AMessage* message;
+
     switch (falling_letter->letter_type)
     {
     case ELetter_Type::O:
@@ -388,8 +379,7 @@ void AsEngine::On_Falling_Letter(AFalling_Letter* falling_letter)
         break;
 
     case ELetter_Type::P:
-        AsConfig::Level_Has_Floor = true;
-        Border.Redraw_Floor();
+        Set_Floor_State(true);
         Info_Panel.Floor_Indicator.Restart();
         Platform.Set_State(EPlatform_Substate_Regular::Normal);
         break;
@@ -404,6 +394,8 @@ void AsEngine::On_Falling_Letter(AFalling_Letter* falling_letter)
         break;
 
     case ELetter_Type::PLUS:
+        message = new AMessage(EMessage_Type::Level_Done);
+        AsMessage_Menager::Add_Message(message);
         break;
 
     default:
@@ -414,6 +406,22 @@ void AsEngine::On_Falling_Letter(AFalling_Letter* falling_letter)
     falling_letter->Finalize();
 
     AsInfo_Panel::Update_Score(EScore_Event_Type::Catch_Letter);
+}
+
+
+//
+void AsEngine::Set_Floor_State(bool turn_on)
+{
+    AsConfig::Level_Has_Floor = turn_on;
+    Border.Redraw_Floor();
+}
+
+
+//
+void AsEngine::Game_Won()
+{
+    Level.Game_Title.Show(false);
+    Game_State = EGame_State::Game_Over;
 }
 
 

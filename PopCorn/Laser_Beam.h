@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 
 #include "Config.h"
 
@@ -15,7 +15,7 @@ enum class ELaser_Beam_State :unsigned char
 class ALaser_Beam : public AGame_Object
 {
 public:
-    int Release_Timer_Tick;// Значение счетчика времени, после которого надо отпускать прикрепленный мячик 
+    int Release_Timer_Tick;// Р—РЅР°С‡РµРЅРёРµ СЃС‡РµС‚С‡РёРєР° РІСЂРµРјРµРЅРё, РїРѕСЃР»Рµ РєРѕС‚РѕСЂРѕРіРѕ РЅР°РґРѕ РѕС‚РїСѓСЃРєР°С‚СЊ РїСЂРёРєСЂРµРїР»РµРЅРЅС‹Р№ РјСЏС‡РёРє 
 
     static AHit_Checker_List Hit_Checker_List;
 

@@ -1,4 +1,4 @@
-#include "Falling_Letter.h"
+п»ї#include "Falling_Letter.h"
 
 int AFalling_Letter::Letters_Popularity[(int)ELetter_Type::MAX] = {7, 7, 7, 7, 7, 7, 7,  3, 3, 3,  1};
 int AFalling_Letter::All_Letters_Popularity;
@@ -24,7 +24,7 @@ void AFalling_Letter::Clear(HDC hdc, RECT& paint_area)
 {
     RECT intersection_rect;
 
-    // 1. Стираем предыдущее изображение
+    // 1. РЎС‚РёСЂР°РµРј РїСЂРµРґС‹РґСѓС‰РµРµ РёР·РѕР±СЂР°Р¶РµРЅРёРµ
     if (!IntersectRect(&intersection_rect, &paint_area, &Prev_Letter_Cell))
         return;
 
@@ -163,7 +163,7 @@ ELetter_Type AFalling_Letter::Get_Random_Letter_Type()
 
 //
 void AFalling_Letter::Draw_Brick_Letter(HDC hdc)
-{// Вывод падающих букв
+{// Р’С‹РІРѕРґ РїР°РґР°СЋС‰РёС… Р±СѓРєРІ
     double offSet;
     double rotation_angle;
     double y_ration;
@@ -177,7 +177,7 @@ void AFalling_Letter::Draw_Brick_Letter(HDC hdc)
         return;
     }
 
-    // корректируем шаг вращения и угол поворота
+    // РєРѕСЂСЂРµРєС‚РёСЂСѓРµРј С€Р°Рі РІСЂР°С‰РµРЅРёСЏ Рё СѓРіРѕР» РїРѕРІРѕСЂРѕС‚Р°
     Rotation_step = Rotation_step % Max_Rotation_Step;
     if (Rotation_step < 8)
     {
@@ -207,15 +207,16 @@ void AFalling_Letter::Draw_Brick_Letter(HDC hdc)
 
     if (Rotation_step == 4 || Rotation_step == 12)
     {
-        // выводим фон
+        // РІС‹РІРѕРґРёРј С„РѕРЅ
         front_color->Select(hdc);
         Rectangle(hdc, X, Y + Brick_Half_Height - AsConfig::GLOBAL_SCALE,
-            X + AsConfig::BRICK_WIDTH * AsConfig::GLOBAL_SCALE, Y + Brick_Half_Height);
+            X + AsConfig::BRICK_WIDTH * AsConfig::GLOBAL_SCALE - 1, Y + Brick_Half_Height - 1);
 
-        // выводим передний план
+        // РІС‹РІРѕРґРёРј РїРµСЂРµРґРЅРёР№ РїР»Р°РЅ
         back_color->Select(hdc);
         Rectangle(hdc, X, Y + Brick_Half_Height,
-            X + AsConfig::BRICK_WIDTH * AsConfig::GLOBAL_SCALE, Y + Brick_Half_Height + AsConfig::GLOBAL_SCALE);
+            X + AsConfig::BRICK_WIDTH * AsConfig::GLOBAL_SCALE - 1, 
+            Y + Brick_Half_Height + AsConfig::GLOBAL_SCALE - 1);
     }
     else
     {
@@ -235,46 +236,46 @@ void AFalling_Letter::Draw_Brick_Letter(HDC hdc)
         offSet = 3.0 * (1.0 - fabs(xForm.eM22)) * AsConfig::D_GLOBAL_SCALE;
         back_part_offset = (int)round(offSet);
 
-        // выводим фон
+        // РІС‹РІРѕРґРёРј С„РѕРЅ
         front_color->Select(hdc);
         if (y_ration < 0.0)
             back_part_offset = -back_part_offset;
 
         Rectangle(hdc, 0, -Brick_Half_Height - back_part_offset, 
-            AsConfig::BRICK_WIDTH * AsConfig::GLOBAL_SCALE - 1, Brick_Half_Height - back_part_offset);
+            AsConfig::BRICK_WIDTH * AsConfig::GLOBAL_SCALE - 1, Brick_Half_Height - back_part_offset - 1);
 
-        // выводим передний план
+        // РІС‹РІРѕРґРёРј РїРµСЂРµРґРЅРёР№ РїР»Р°РЅ
         back_color->Select(hdc);
-        Rectangle(hdc, 0, -Brick_Half_Height, AsConfig::BRICK_WIDTH * AsConfig::GLOBAL_SCALE - 1, Brick_Half_Height);
+        Rectangle(hdc, 0, -Brick_Half_Height, AsConfig::BRICK_WIDTH * AsConfig::GLOBAL_SCALE - 1, Brick_Half_Height - 1);
 
         if (Rotation_step > 4 && Rotation_step <= 12)
         {
             AsConfig::Letter_Color.Select_Pen(hdc);
             switch (letter_type)
             {
-            case ELetter_Type::O: // "Отмена"
+            case ELetter_Type::O: // "РћС‚РјРµРЅР°"
                 Ellipse(hdc, 0 + 5 * AsConfig::GLOBAL_SCALE, 1 * AsConfig::GLOBAL_SCALE - Brick_Half_Height - 1,
                     0 + 10 * AsConfig::GLOBAL_SCALE, 6 * AsConfig::GLOBAL_SCALE - Brick_Half_Height);
                 break;
 
-            case ELetter_Type::I: // "Инверсия"
+            case ELetter_Type::I: // "РРЅРІРµСЂСЃРёСЏ"
                 Draw_Line(hdc, 5, 1, 5, 6);
                 Draw_Line_To(hdc, 9, 1);
                 Draw_Line_To(hdc, 9, 6);
                 break;
 
-            case ELetter_Type::C: // "Скорость"
+            case ELetter_Type::C: // "РЎРєРѕСЂРѕСЃС‚СЊ"
                 Draw_C(hdc);
                 break;
 
-            case ELetter_Type::M: // "Монстры"
+            case ELetter_Type::M: // "РњРѕРЅСЃС‚СЂС‹"
                 Draw_Line(hdc, 5, 6, 5, 1);
                 Draw_Line_To(hdc, 7, 3);
                 Draw_Line_To(hdc, 9, 1);
                 Draw_Line_To(hdc, 9, 6);
                 break;
 
-            case ELetter_Type::G: // "Жизнь"
+            case ELetter_Type::G: // "Р–РёР·РЅСЊ"
                 Draw_Line(hdc, 7, 1, 7, 6);
                 Draw_Line(hdc, 5, 3, 9, 3);
                 Draw_Line(hdc, 4, 1, 5, 3);              
@@ -283,37 +284,37 @@ void AFalling_Letter::Draw_Brick_Letter(HDC hdc)
                 Draw_Line(hdc, 9, 3, 10, 6);           
                 break;
 
-            case ELetter_Type::K: // "Клей"
+            case ELetter_Type::K: // "РљР»РµР№"
                 Draw_Line(hdc, 6, 1, 6, 6);
                 Draw_Line(hdc, 9, 1, 6, 4);
                 Draw_Line(hdc, 9, 6, 6, 3);
                 
                 break;
             
-            case ELetter_Type::W: // "Шире"
+            case ELetter_Type::W: // "РЁРёСЂРµ"
                 Draw_Line(hdc, 4, 1, 4, 6);
                 Draw_Line_To(hdc, 10, 6);
                 Draw_Line_To(hdc, 10, 1);
                 Draw_Line(hdc, 7, 1, 7, 6);
                 break;
 
-            case ELetter_Type::P: // "Пол"
+            case ELetter_Type::P: // "РџРѕР»"
                 Draw_Line(hdc, 5, 6, 5, 1);
                 Draw_Line_To(hdc, 9, 1);
                 Draw_Line_To(hdc, 9, 6);
                 break;
 
-            case ELetter_Type::L: // "Лазер"
+            case ELetter_Type::L: // "Р›Р°Р·РµСЂ"
                 Draw_Line(hdc, 5, 6, 7, 1);
                 Draw_Line_To(hdc, 9, 6);
                 break;
 
-            case ELetter_Type::T: // "Три"
+            case ELetter_Type::T: // "РўСЂРё"
                 Draw_Line(hdc, 5, 1, 9, 1);
                 Draw_Line(hdc, 7, 1, 7, 6);
                 break;
 
-            case ELetter_Type::PLUS: // "Переход на следующий уровень"
+            case ELetter_Type::PLUS: // "РџРµСЂРµС…РѕРґ РЅР° СЃР»РµРґСѓСЋС‰РёР№ СѓСЂРѕРІРµРЅСЊ"
                 Draw_Line(hdc, 7, 1, 7, 5);
                 Draw_Line(hdc, 5, 3, 9, 3);
                 break;

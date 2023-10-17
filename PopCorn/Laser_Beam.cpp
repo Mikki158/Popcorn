@@ -1,4 +1,4 @@
-#include "Laser_Beam.h"
+п»ї#include "Laser_Beam.h"
 
 //ALaser_Beam
 AHit_Checker_List ALaser_Beam::Hit_Checker_List;
@@ -8,7 +8,7 @@ ALaser_Beam::ALaser_Beam()
     :X_Pos(0.0), Y_Pos(0.0), Beam_Rect{}, Speed(0.0), Prev_Beam_Rect{},
     Laser_Beam_State(ELaser_Beam_State::Disabled)
 {
-    // !!! Надо сделать
+
 }
 
 
@@ -35,7 +35,7 @@ void ALaser_Beam::Advance(double max_speed)
 //
 void ALaser_Beam::Begin_Movement()
 {
-    // Заглушка, т.к. этот метод не используется
+    // Р—Р°РіР»СѓС€РєР°, С‚.Рє. СЌС‚РѕС‚ РјРµС‚РѕРґ РЅРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ
 }
 
 
@@ -57,7 +57,7 @@ double ALaser_Beam::Get_Speed()
 //
 void ALaser_Beam::Act()
 {
-    // Заглушка, т.к. этот метод не используется
+    // Р—Р°РіР»СѓС€РєР°, С‚.Рє. СЌС‚РѕС‚ РјРµС‚РѕРґ РЅРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ
 }
 
 
@@ -106,7 +106,7 @@ void ALaser_Beam::Draw(HDC hdc, RECT& paint_area)
 //
 bool ALaser_Beam::Is_Finished()
 {
-    return false; // Заглушка, т.к. этот метод не используется
+    return false; // Р—Р°РіР»СѓС€РєР°, С‚.Рє. СЌС‚РѕС‚ РјРµС‚РѕРґ РЅРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ
 }
 
 

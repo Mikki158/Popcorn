@@ -1,4 +1,4 @@
-#include "Platform_Expanding.h"
+ï»¿#include "Platform_Expanding.h"
 
 
 // AsPlatform_Expanding
@@ -34,7 +34,7 @@ void AsPlatform_Expanding::Init(AColor& inner_color, AColor& circle_color)
 
 //
 void AsPlatform_Expanding::Draw_State(HDC hdc, double x)
-{// Ðèñóåì ðàñøèðÿþùóþñÿ ïëàòôîðìó
+{// Ð Ð¸ÑÑƒÐµÐ¼ Ñ€Ð°ÑÑˆÐ¸Ñ€ÑÑŽÑ‰ÑƒÑŽÑÑ Ð¿Ð»Ð°Ñ‚Ñ„Ð¾Ñ€Ð¼Ñƒ
 
     int y = AsConfig::Platform_Y_POS;
     const int scale = AsConfig::GLOBAL_SCALE;
@@ -47,23 +47,23 @@ void AsPlatform_Expanding::Draw_State(HDC hdc, double x)
     inner_rect.right = inner_rect.left + AsConfig::Platform_Expanding_Inner_Width * scale;
     inner_rect.bottom = (y + 1 + 5) * scale;
 
-    // 1. Ëåâàÿ ñòîðîíà
-    // 1.1 Øàðèê
+    // 1. Ð›ÐµÐ²Ð°Ñ ÑÑ‚Ð¾Ñ€Ð¾Ð½Ð°
+    // 1.1 Ð¨Ð°Ñ€Ð¸Ðº
     Draw_Expanding_Platform_Ball(hdc, true, x);
 
-    // 1.2 Ôåðìû
+    // 1.2 Ð¤ÐµÑ€Ð¼Ñ‹
     Draw_Expanding_Truss(hdc, inner_rect, true);
 
 
-    // 2. Ëåâàÿ ñòîðîíà
-    // 2.1 Øàðèê
+    // 2. Ð›ÐµÐ²Ð°Ñ ÑÑ‚Ð¾Ñ€Ð¾Ð½Ð°
+    // 2.1 Ð¨Ð°Ñ€Ð¸Ðº
     Draw_Expanding_Platform_Ball(hdc, false, x);
 
-    // 2.2 Ôåðìû
+    // 2.2 Ð¤ÐµÑ€Ð¼Ñ‹
     Draw_Expanding_Truss(hdc, inner_rect, false);
 
 
-    // 3. Ðèñóåì ñðåäíþþ ïëàòôîðìó
+    // 3. Ð Ð¸ÑÑƒÐµÐ¼ ÑÑ€ÐµÐ´Ð½ÑŽÑŽ Ð¿Ð»Ð°Ñ‚Ñ„Ð¾Ñ€Ð¼Ñƒ
     AsTools::Rect(hdc, inner_rect, *Inner_Color);
 }
 
@@ -136,7 +136,7 @@ void AsPlatform_Expanding::Draw_Expanding_Platform_Ball(HDC hdc, bool is_left, d
     const double d_scale = AsConfig::D_GLOBAL_SCALE;
     RECT rect, arc_rect;
 
-    // 1.1 Øàðèê
+    // 1.1 Ð¨Ð°Ñ€Ð¸Ðº
     if (is_left)
         rect.left = (int)(x * d_scale);
     else
@@ -148,14 +148,14 @@ void AsPlatform_Expanding::Draw_Expanding_Platform_Ball(HDC hdc, bool is_left, d
 
     AsTools::Ellipse(hdc, rect, *Circle_Color);
 
-    // 1.2 Ïåðåõîäíèê íà ôåðìó
+    // 1.2 ÐŸÐµÑ€ÐµÑ…Ð¾Ð´Ð½Ð¸Ðº Ð½Ð° Ñ„ÐµÑ€Ð¼Ñƒ
     if (is_left)
         Rectangle(hdc, rect.left + 4 * scale, rect.top, rect.right - scale + 1, rect.bottom - 1);
     else
         Rectangle(hdc, rect.left + 1, rect.top, rect.left + 3 * scale, rect.bottom - 1);
 
 
-    // 1.3 Äóãà ôåðìû íà øàðèêå        
+    // 1.3 Ð”ÑƒÐ³Ð° Ñ„ÐµÑ€Ð¼Ñ‹ Ð½Ð° ÑˆÐ°Ñ€Ð¸ÐºÐµ        
     arc_rect.left = rect.left + 4 * scale + 2;
     arc_rect.top = rect.top + scale + 1;
     arc_rect.right = rect.left + (4 + 3) * scale + 2;
@@ -180,10 +180,10 @@ void AsPlatform_Expanding::Draw_Expanding_Platform_Ball(HDC hdc, bool is_left, d
         arc_mid_x -= arc_right_offset;
     }
 
-    // 1.3.1 Äûðêà â øàðèêå ïîä äóãîé 
+    // 1.3.1 Ð”Ñ‹Ñ€ÐºÐ° Ð² ÑˆÐ°Ñ€Ð¸ÐºÐµ Ð¿Ð¾Ð´ Ð´ÑƒÐ³Ð¾Ð¹ 
     AsTools::Ellipse(hdc, arc_rect, AsConfig::BG_Color);
 
-    // 1.3.2 Ñàìà äóãà
+    // 1.3.2 Ð¡Ð°Ð¼Ð° Ð´ÑƒÐ³Ð°
     Truss_Color->Select(hdc);
     Arc(hdc, arc_rect.left, arc_rect.top, arc_rect.right - 1, arc_rect.bottom - 1,
         arc_mid_x, arc_start_y, arc_mid_x, arc_end_y);

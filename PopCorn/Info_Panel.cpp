@@ -1,4 +1,4 @@
-#include "Info_Panel.h"
+п»ї#include "Info_Panel.h"
 
 // AsInfo_Panel
 int AsInfo_Panel::Score = 0;
@@ -38,28 +38,28 @@ AsInfo_Panel::AsInfo_Panel()
 //
 void AsInfo_Panel::Advance(double max_speed)
 {
-    // Заглушка, пока не используется
+    // Р—Р°РіР»СѓС€РєР°, РїРѕРєР° РЅРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ
 }
 
 
 //
 void AsInfo_Panel::Begin_Movement()
 {
-    // Заглушка, пока не используется
+    // Р—Р°РіР»СѓС€РєР°, РїРѕРєР° РЅРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ
 }
 
 
 //
 void AsInfo_Panel::Finish_Movement()
 {
-    // Заглушка, пока не используется
+    // Р—Р°РіР»СѓС€РєР°, РїРѕРєР° РЅРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ
 }
 
 
 //
 double AsInfo_Panel::Get_Speed()
 {
-    return 0.0; // Заглушка, пока не используется
+    return 0.0; // Р—Р°РіР»СѓС€РєР°, РїРѕРєР° РЅРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ
 }
 
 
@@ -80,7 +80,7 @@ void AsInfo_Panel::Act()
             Start_Tick = AsConfig::Current_Timer_Tick;
 
             if (Player_Name_Label.Content.Get_Lenght() == 0)
-                Player_Name_Label.Content = L"ВЕДИТЕ ИМЯ";
+                Player_Name_Label.Content = L"Р’Р•Р”РРўР• РРњРЇ";
             else
                 Player_Name_Label.Content = L"";
 
@@ -93,7 +93,7 @@ void AsInfo_Panel::Act()
 //
 void AsInfo_Panel::Clear(HDC hdc, RECT& paint_area)
 {
-    // !!! Надо сделать!
+    // Р—Р°РіР»СѓС€РєР°, С‚.Рє. СЌС‚РѕС‚ РјРµС‚РѕРґ РЅРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ
 }
 
 
@@ -107,7 +107,7 @@ void AsInfo_Panel::Draw(HDC hdc, RECT& paint_area)
 
     RECT intersection_rect;
 
-    // 1. Логотип
+    // 1. Р›РѕРіРѕС‚РёРї
     if (IntersectRect(&intersection_rect, &paint_area, &Logo_Rect))
     {
         AsTools::Rect(hdc, 211, 5, 104, 100, AsConfig::Blue_Color);
@@ -132,10 +132,10 @@ void AsInfo_Panel::Draw(HDC hdc, RECT& paint_area)
     }
 
 
-    // 2. Таблица счета
+    // 2. РўР°Р±Р»РёС†Р° СЃС‡РµС‚Р°
     if (IntersectRect(&intersection_rect, &paint_area, &Data_Rect))
     {
-        // 2.1 Рамка
+        // 2.1 Р Р°РјРєР°
         AsTools::Rect(hdc, Score_X, Score_Y, Score_Width, 2, Dark_Pink);
         AsTools::Rect(hdc, Score_X, Score_Y, 2, Score_Height, Dark_Pink);
         AsTools::Rect(hdc, Score_X, Score_Y + Score_Height - 2, Score_Width, 2, Dark_Pink);
@@ -143,7 +143,7 @@ void AsInfo_Panel::Draw(HDC hdc, RECT& paint_area)
 
         AsTools::Rect(hdc, Score_X + 2, Score_Y + 2, Score_Width - 4, Score_Height - 4, Dark_Blue);
 
-        // 2.2 Бордюр
+        // 2.2 Р‘РѕСЂРґСЋСЂ
         AsConfig::Highlight_Color.Select_Pen(hdc);
         MoveToEx(hdc, (Score_X + 2) * scale, (Score_Y + Score_Height - 2) * scale, 0);
         LineTo(hdc, (Score_X + 2) * scale, (Score_Y + 2) * scale);
@@ -154,29 +154,29 @@ void AsInfo_Panel::Draw(HDC hdc, RECT& paint_area)
         LineTo(hdc, (Score_X + Score_Width - 2) * scale, (Score_Y + Score_Height - 2) * scale);
         LineTo(hdc, (Score_X + 2) * scale, (Score_Y + Score_Height - 2) * scale);
 
-        // 2.3 Имя игрока
-        AsTools::Rect(hdc, Player_Name_Label.Content_Rect, Dark_Pink); // Выводим плашку фона
+        // 2.3 РРјСЏ РёРіСЂРѕРєР°
+        AsTools::Rect(hdc, Player_Name_Label.Content_Rect, Dark_Pink); // Р’С‹РІРѕРґРёРј РїР»Р°С€РєСѓ С„РѕРЅР°
 
         
         Player_Name_Label.Draw(hdc);
 
-        // 3. Счет игрока
-        AsTools::Rect(hdc, Score_Label.Content_Rect, Dark_Pink); // Выводим плашку фона
+        // 3. РЎС‡РµС‚ РёРіСЂРѕРєР°
+        AsTools::Rect(hdc, Score_Label.Content_Rect, Dark_Pink); // Р’С‹РІРѕРґРёРј РїР»Р°С€РєСѓ С„РѕРЅР°
 
         Score_Label.Content = L"SCORE:";
         Score_Label.Content.Append(Score, 6);
         Score_Label.Draw(hdc);
 
-        // 4. Буквы индикаторов
+        // 4. Р‘СѓРєРІС‹ РёРЅРґРёРєР°С‚РѕСЂРѕРІ
         Letter_P.Draw(hdc, paint_area);
         Letter_G.Draw(hdc, paint_area);
         Letter_M.Draw(hdc, paint_area);
 
-        // 5. Индикаторы
+        // 5. РРЅРґРёРєР°С‚РѕСЂС‹
         Floor_Indicator.Draw(hdc, paint_area);
         Monster_Indicator.Draw(hdc, paint_area);
 
-        // 6. Вывод дополнительных жизней
+        // 6. Р’С‹РІРѕРґ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹С… Р¶РёР·РЅРµР№
         Show_Extra_Lives(hdc);
     }
 }
@@ -185,7 +185,7 @@ void AsInfo_Panel::Draw(HDC hdc, RECT& paint_area)
 //
 bool AsInfo_Panel::Is_Finished()
 {
-    return false; // Заглушка, пока не используется
+    return false; // Р—Р°РіР»СѓС€РєР°, РїРѕРєР° РЅРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ
 }
 
 
@@ -228,7 +228,7 @@ bool AsInfo_Panel::Edit_Player_Name(wchar_t symbol)
 
 
 //
-void AsInfo_Panel::Update_Score(EScore_Event_Type event_type)
+void AsInfo_Panel::Update_Score(EScore_Event_Type event_type, EBrick_Type brick_type)
 {
     const int scale = AsConfig::GLOBAL_SCALE;
     RECT rect;
@@ -236,7 +236,41 @@ void AsInfo_Panel::Update_Score(EScore_Event_Type event_type)
     switch (event_type)
     {
     case EScore_Event_Type::Hit_Brick:
-        Score += 20;
+        switch (brick_type)
+        {
+        case EBrick_Type::Pink:
+        case EBrick_Type::Blue:
+            Score += 20;
+            break;
+
+        case EBrick_Type::Multihit_1:
+            Score += 100;
+            break;
+
+        case EBrick_Type::Multihit_2:
+            Score += 50;
+            break;
+
+        case EBrick_Type::Multihit_3:
+            Score += 30;
+            break;
+
+        case EBrick_Type::Multihit_4:
+            Score += 20;
+            break;
+
+        case EBrick_Type::Parachute:
+            Score += 50;
+            break;
+
+        case EBrick_Type::Teleport:
+            Score += 25;
+            break;
+
+        case EBrick_Type::Ad:
+            Score += 33;
+            break;
+        }
         break;
 
     case EScore_Event_Type::Hit_Monster:
@@ -259,57 +293,6 @@ void AsInfo_Panel::Update_Score(EScore_Event_Type event_type)
 
     AsTools::Invalidate_Rect(Data_Rect);
 }
-
-
-//
-void AsInfo_Panel::Choose_Font()
-{
-    //CHOOSEFONT cf{};
-    //LOGFONT lf{};
-
-    //cf.lStructSize = sizeof(CHOOSEFONT);
-    //cf.lpLogFont = &lf;
-    //cf.Flags = CF_SCREENFONTS;
-    //cf.nFontType = SCREEN_FONTTYPE;
-    //
-    //ChooseFont(&cf);
-}
-
-
-//
-//void AsInfo_Panel::Draw_String(HDC hdc, RECT rect, AString& str, bool draw_name)
-//{
-//    const int scale = AsConfig::GLOBAL_SCALE;
-//
-//    int str_left_offset, str_top_offset;
-//    SIZE str_size;
-//
-//    // 1. Выводим плашку фона
-//    AsTools::Rect(hdc, rect, *Dark_Pink);
-//
-//    // 2. Выводим строку
-//    if (draw_name)
-//        AsConfig::Name_Font.Select(hdc);
-//    else
-//        
-//
-//    GetTextExtentPoint32(hdc, str.Get_Content(), str.Get_Lenght(), &str_size);
-//
-//    str_left_offset = rect.left + (rect.right - rect.left) / 2 - str_size.cx / 2;
-//    str_top_offset = rect.top + (rect.bottom - rect.top) / 2 - str_size.cy / 2 - scale;
-//
-//    // 2.1 Сначала - тень
-//    SetTextColor(hdc, AsConfig::BG_Color.Get_RGB());
-//    TextOut(hdc, str_left_offset + 2 * scale, str_top_offset + 2 * scale, str.Get_Content(), str.Get_Lenght());
-//
-//    // 2.2 Потом - саму строку
-//    if (draw_name)
-//        SetTextColor(hdc, AsConfig::Blue_Color.Get_RGB());
-//    else
-//        SetTextColor(hdc, AsConfig::White_Color.Get_RGB());
-//
-//    TextOut(hdc, str_left_offset, str_top_offset, str.Get_Content(), str.Get_Lenght());
-//}
 
 
 //

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Laser_Beam.h"
 

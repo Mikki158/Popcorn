@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 
 #include "Final_Letter.h"
 
@@ -39,7 +39,7 @@ private:
     RECT Prev_Title_Rect, Title_Rect;
     std::vector<AFinal_Letter*> Title_Letters;
 
-    static const int Descent_Timeout = AsConfig::FPS * 6; // Спускается за 6 секунд
+    static const int Descent_Timeout = AsConfig::FPS * 6; // РЎРїСѓСЃРєР°РµС‚СЃСЏ Р·Р° 6 СЃРµРєСѓРЅРґ
     static const int Game_Over_Show_Timeout = AsConfig::FPS * 2;
     static const int Game_Won_Animate_Timeout = AsConfig::FPS * 30;
     static const int Destroy_Delay = AsConfig::FPS / 2;

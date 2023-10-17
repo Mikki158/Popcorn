@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <Windows.h>
 
@@ -16,9 +16,9 @@ enum class EBrick_Type : unsigned char
 	Multihit_2,
 	Multihit_3,
 	Multihit_4,
-	Parachute,
-	Teleport,
-	Ad,
+	Parachute, 
+	Teleport, 
+	Ad, 
 	Invisible
 };
 
@@ -61,11 +61,7 @@ public:
 private:
 	int fade_Step;
 
-	static const int MAX_FADE_STEP = AsConfig::FPS;
 	static const int MAX_ANIMATION_STEP = 5;
-
-	static AColor_Fade Fading_Blue_Brick_Colors;
-	static AColor_Fade Fading_Pink_Brick_Colors;
 };
 
 //

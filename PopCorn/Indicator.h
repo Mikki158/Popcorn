@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include "Config.h"
 
 //
@@ -27,6 +27,6 @@ private:
     static const int Height = 30;
     static const int Inner_Width = Width - 2;
     static const int Inner_Height = Height - 2;
-    static const int Indicator_Timeout = AsConfig::FPS * 50; // 50 секунд
+    static const int Indicator_Timeout = AsConfig::FPS * 50; // 50 СЃРµРєСѓРЅРґ
 
 };

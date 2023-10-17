@@ -211,7 +211,7 @@ const double AsConfig::Ball_RADIUS = 2.0 - 0.5 / GLOBAL_SCALE;
 const double AsConfig::Normal_Ball_Speed = 3.0;
 const double AsConfig::Moving_STEP_SIZE = 1.0 / GLOBAL_SCALE;
 const double AsConfig::START_BALL_Y_POS = 184.0;
-const double AsConfig::Ball_Accelerate = 1.0005;
+const double AsConfig::Ball_Accelerate = 1.00025;
 const double AsConfig::Min_Ball_Angle = M_PI / 8.0;
 
 const AColor AsConfig::BG_Color(0, 0, 0);
@@ -236,6 +236,9 @@ const AColor AsConfig::Explosion_Blue_Color(White_Color, Blue_Color, 0);
 const AColor AsConfig::Shadow_Color (BG_Color, GLOBAL_SCALE);
 const AColor AsConfig::Highlight_Color (White_Color, GLOBAL_SCALE);
 
+AColor_Fade AsConfig::Fading_Blue_Brick_Colors(Blue_Color, MAX_BRICK_FADE_STEP);
+AColor_Fade AsConfig::Fading_Pink_Brick_Colors(Pink_Color, MAX_BRICK_FADE_STEP);
+AColor_Fade AsConfig::Fading_Blue_Mop_Indicator_Colors(Blue_Color, Pink_Color, MAX_Mop_Indicator_FADE_STEP);
 
 //
 void AsConfig::Throw()

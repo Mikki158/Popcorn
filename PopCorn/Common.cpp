@@ -1,4 +1,4 @@
-#include "Common.h"
+п»ї#include "Common.h"
 
 
 // AGraphics_Object
@@ -109,7 +109,43 @@ void AGame_Objects_Set::Draw(HDC hdc, RECT& paint_area)
 //
 bool AGame_Objects_Set::Is_Finished()
 {
-    return false; // Заглушка, т.к. этот метод не используется
+    return false; // Р—Р°РіР»СѓС€РєР°, С‚.Рє. СЌС‚РѕС‚ РјРµС‚РѕРґ РЅРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ
+}
+
+
+
+// APoint
+// 
+APoint::APoint()
+    :X(0), Y(0)
+{
+
+}
+
+
+//
+APoint::APoint(int x, int y)
+    : X(x), Y(y)
+{
+
+}
+
+
+//
+bool APoint::operator == (const APoint& another)
+{
+    if (X == another.X && Y == another.Y)
+        return true;
+    else
+        return false;
+}
+
+
+//
+void APoint::Set_As(int x, int y)
+{
+    X = x;
+    Y = y;
 }
 
 
